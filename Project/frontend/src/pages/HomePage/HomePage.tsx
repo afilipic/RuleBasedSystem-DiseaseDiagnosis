@@ -64,7 +64,7 @@ const HomePage = () => {
             
             {/* Right Side */}
             <RightSide>
-                <StyledSmartHomeImage src="/pic2.png" alt="Smart Home" />
+                <StyledSmartHomeImage src="/pic2.png" alt="Doctor" />
             </RightSide>
             </HomePageContainer>
             
