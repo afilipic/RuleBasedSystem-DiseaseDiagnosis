@@ -46,8 +46,8 @@ export const navbarTitle = "MedicLab";
   export const menuOptions = [
     { href: "", value: "Home", role: "guest" },
     { href: "/", value: "Home", role: "logged" },
-    { href: "/user-home-page", value: "Real estates", role: "user" },
-    { href: "/shared-real-estates", value: "Shared real estates", role: "user" },
+    { href: "/patient-home-page", value: "Real estates", role: "patient" },
+    { href: "/patient-history", value: "Shared real estates", role: "patient" },
     { href: "/admin-home-page", value: "Requests", role: "admin" },
     { href: "/energy-consumption", value: "Energy Consumption", role: "admin" },
     { href: "#", value: "Add Admin", role: "superadmin" },
