@@ -37,8 +37,8 @@ export const icons = [
   
   export const infoItems = [
     { label: "Email", value: "smartHome@gmail.com" },
-    { label: "Phone", value: "+123456789" },
-    { label: "Address", value: "Strumicka 6, Novi Sad" },
+    { label: "Telefon", value: "+123456789" },
+    { label: "Adresa", value: "Strumicka 6, Novi Sad" },
   ];
 
 export const navbarTitle = "MedicLab";

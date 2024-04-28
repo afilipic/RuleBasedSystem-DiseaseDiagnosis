@@ -1,10 +1,13 @@
 import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
-  width: 400px;
+  width: 70%;
   margin: 50px auto;
   text-align: center;
   position: relative;
+  display: flex;
+  justify-content: center; /* Centriranje horizontalno */
+  align-items: center;
 `;
 
 export const Fieldset = styled.fieldset`
@@ -12,10 +15,10 @@ export const Fieldset = styled.fieldset`
   border: 0 none;
   border-radius: 3px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-  padding: 20px 30px;
+  padding: 0;
   box-sizing: border-box;
   width: 80%;
-  margin: 0 10%;
+  margin: 0
   position: relative;
 
   input, textarea {
@@ -25,14 +28,13 @@ export const Fieldset = styled.fieldset`
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
-    font-family: montserrat;
     color: #2C3E50;
     font-size: 13px;
   }
 
   .action-button {
     width: 100px;
-    background:  ${({ theme }) => theme.colors.lightblue};;
+    background:  ${({ theme }) => theme.colors.superlightblue};;
     font-weight: bold;
     color: white;
     border: 0 none;
@@ -108,7 +110,7 @@ export const ProgressBar = styled.ul`
     }
 
     &.active:before, &.active:after {
-      background:  ${({ theme }) => theme.colors.lightblue};;
+      background:  ${({ theme }) => theme.colors.darkblue};;
       color: white;
     }
   }
@@ -119,15 +121,91 @@ const fillAnimationNext = (fromPercent: number, toPercent: number) => keyframes`
   to { width: ${toPercent}%; }
 `;
 
-const fillAnimationPrevious = (fromPercent: number, toPercent: number) => keyframes`
+const fillAnimationPrevious = (fromPercent: number, toPercent: number) => keyframes`  
   from { width: ${fromPercent}%; }
   to { width: ${toPercent}%; }
 `;
 
 export const ProgressBarr = styled.div<{ percent: number,previous:boolean, toPercent: number }>`
   width: ${({ percent }) => percent}%;
-  height: 5px;
-  background-color: blue;
-  margin-bottom: 20px;
-  animation: ${({ percent, previous,toPercent }) => (previous ? fillAnimationPrevious(percent, toPercent) : fillAnimationNext(toPercent, percent))} 0.5s ease-out forwards;
+  height: 8px;
+  background-color: ${({ theme }) => theme.colors.lightblue};
+  margin-bottom: 8px;
+  animation: ${({ percent, previous,toPercent }) => (previous ? fillAnimationPrevious(toPercent, percent) : fillAnimationNext(toPercent, percent))} 0.5s ease-out forwards;
   `;
+
+
+  export const StepIndicatorContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const StepCircle = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.lightblue};
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 17px;
+  margin-left: 10px;
+`;
+
+export const TitleContainer = styled.div`
+  margin-left: 15px;
+ 
+`;
+
+export const FormTitle = styled.div`
+    font-size: 28px;
+    color: #2C3E50;
+    margin-bottom: 8px;
+    font-weight:600;
+`;
+export const Content = styled.div`
+  padding:0 20px;
+  margin-top:20px;
+`;
+interface CardContainerProps {
+  isClicked: boolean;
+}
+
+export const CardContainer = styled.div<CardContainerProps>`
+  display: inline-block;
+  background-color: ${(props) => (props.isClicked ? '#0fbaa7' : '#ffffff')};
+  border: 1px solid ${({ theme }) => theme.colors.lightblue};
+  border-radius: 20px;
+  padding: 12px;
+  margin-right:10px;
+  margin-bottom:10px;
+  width: calc(33.33% - 40px);
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;  
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.superlightblue};
+    color:black;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    color: ${(props) => (props.isClicked ? '#ffffff' : '#333333')};
+  }
+  div {
+    display: flex;
+    align-items: center;
+  }
+`;
+export const SymptomIcon = styled.span`
+  margin-right: 5px;
+`;
+
+export const SymptomTitle = styled.h2`
+  margin: 0;
+`;

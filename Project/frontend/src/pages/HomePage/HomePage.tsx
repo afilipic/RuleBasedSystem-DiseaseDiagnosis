@@ -45,7 +45,7 @@ const HomePage = () => {
         <HomePageContainer>
             {/* Left Side */}
             <LeftSide>
-                <Title>Best Medical and Healthcare Service</Title>
+                <Title>Najbolja medicinska i zdravstvena usluga</Title>
                 <SmallText>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </SmallText>
@@ -57,7 +57,7 @@ const HomePage = () => {
                 )}
                 
                 <CustomButton onClick={handleShowMore}>
-                    {showMore ? 'Show Less' : 'Show More'}
+                    {showMore ? 'Prikaži manje' : 'Prikaži više'}
                     <StyledFontAwesomeIcon icon={showMore ? faArrowUp : faArrowDown} />
                 </CustomButton>
             </LeftSide>
@@ -70,15 +70,15 @@ const HomePage = () => {
             
             <>
             
-                <Title3>Our Healthcare Services</Title3>
-                <StyledTitleWithLines>MedicLab Services</StyledTitleWithLines>
+                <Title3>Naše zdravstvene usluge</Title3>
+                <StyledTitleWithLines>MedicLab</StyledTitleWithLines>
                 
             <InfoCardContainer>
                 <InfoCard>
                     <CircleIcon>
                             <StyledFontAwesomeIconInfo icon={faUserMd} />         
                     </CircleIcon>
-                    <Title2>Doctors Timtable</Title2>
+                    <Title2>Raspored doktora</Title2>
                     <SmallText2>Some description text here.</SmallText2>
                 </InfoCard>
 
@@ -87,7 +87,7 @@ const HomePage = () => {
                     <CircleIcon>
                             <StyledFontAwesomeIconInfo icon={faHeartbeat} />
                     </CircleIcon>
-                    <TitleB>Emergency Call</TitleB>
+                    <TitleB>Hitan poziv</TitleB>
                     <SmallText3>Some description text here.</SmallText3>
                 </InfoCard2>
 
@@ -96,7 +96,7 @@ const HomePage = () => {
                     <CircleIcon>
                             <StyledFontAwesomeIconInfoWhite icon={faCalendarPlus} />
                     </CircleIcon>
-                        <TitleW>Make An Appointemnt</TitleW>
+                        <TitleW>Zakažite svoj termin</TitleW>
                     <SmallText3>Some description text here.</SmallText3>
                 </InfoCard3>
             </InfoCardContainer>
@@ -106,7 +106,7 @@ const HomePage = () => {
                     <Image2 src="/home2.png" alt="Your Image" />
                 </ImageContainer>
                 <OverlayText>
-                    <Title4>What you can expect?</Title4>
+                    <Title4>Šta možete da očekujete?</Title4>
                     <Description>Additional text goes here. You can add more details about making homes smarter.Additional text goes here. You can add more details about making homes smarter.Additional text goes here. You can add more details about making homes smarter.Additional text goes here. You can add more details about making homes smarter.</Description>
                 </OverlayText>
             </Container>
