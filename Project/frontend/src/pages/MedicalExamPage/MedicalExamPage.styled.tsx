@@ -130,7 +130,7 @@ export const ProgressBarr = styled.div<{ percent: number,previous:boolean, toPer
   width: ${({ percent }) => percent}%;
   height: 8px;
   background-color: ${({ theme }) => theme.colors.lightblue};
-  margin-bottom: 8px;
+  margin-bottom: 22px;
   animation: ${({ percent, previous,toPercent }) => (previous ? fillAnimationPrevious(toPercent, percent) : fillAnimationNext(toPercent, percent))} 0.5s ease-out forwards;
   `;
 
@@ -168,6 +168,12 @@ export const Content = styled.div`
   padding:0 20px;
   margin-top:20px;
 `;
+
+export const ButtonContent = styled.div`
+display: flex;
+justify-content: space-between;
+`;
+
 interface CardContainerProps {
   isClicked: boolean;
 }
@@ -180,7 +186,7 @@ export const CardContainer = styled.div<CardContainerProps>`
   padding: 12px;
   margin-right:10px;
   margin-bottom:10px;
-  width: calc(33.33% - 40px);
+  width: calc(33.33% - 50px);
   box-sizing: border-box;
   display: inline-block;
   vertical-align: top;  
@@ -208,4 +214,29 @@ export const SymptomIcon = styled.span`
 
 export const SymptomTitle = styled.h2`
   margin: 0;
+`;
+
+export const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom:15px
+`;
+
+export const Button = styled.button`
+  background-color: ${({ theme }) => theme.colors.darkblue};
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size:15px;
+  font-weight:700;
+`;
+
+export const Label = styled.span`
+  margin: 0 5px;
 `;

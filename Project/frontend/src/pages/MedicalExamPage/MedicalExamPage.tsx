@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CardContainer, Container, Content, Fieldset, FormTitle, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomTitle, TitleContainer } from './MedicalExamPage.styled';
+import { Button, ButtonContent, ButtonWrapper, CardContainer, Container, Content, Fieldset, FormTitle, Label, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomTitle, TitleContainer } from './MedicalExamPage.styled';
 import { FaCheck } from 'react-icons/fa';
 
 const symptomsList = [
@@ -27,16 +27,12 @@ const symptomsList = [
 
 ];
 
-
-
 const MedicalExamPage: React.FC = () => {
   const [step, setStep] = useState(0);
   const [previous, setPrevious] = useState(false);
   const [percent, setPercent] = useState(0);
   const [toPercent, setToPercent] = useState(0);
-
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
-
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = (symptom: string) => {
@@ -46,9 +42,6 @@ const MedicalExamPage: React.FC = () => {
     } else {
       setSelectedSymptoms(selectedSymptoms.filter(item => item !== symptom));
     }
-  };
-  const divStyle: React.CSSProperties = {
-    padding: '20px 30px'
   };
 
   const nextStep = () => {
@@ -67,10 +60,6 @@ const MedicalExamPage: React.FC = () => {
     setPrevious(true);
   };
 
-
-
-
-
   return (
     <Container>
       {/* <ProgressBar>
@@ -78,7 +67,6 @@ const MedicalExamPage: React.FC = () => {
         <li className={step === 1 || step===2 ? 'active' : ''}>Social Profiles</li>
         <li className={step === 2 ? 'active' : ''}>Personal Details</li>
       </ProgressBar> */}
-
 
       <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
         <ProgressBarr percent={(step + 1) * 33.33} previous={previous} toPercent={toPercent} />
@@ -103,9 +91,17 @@ const MedicalExamPage: React.FC = () => {
               ))}
             </div>
           </div>
-          <input type="button" className="next action-button" onClick={nextStep} value="Next" />
+          <ButtonContent>
+            <ButtonWrapper>
+            </ButtonWrapper>
+            <ButtonWrapper>
+              <Label>Sledeci korak</Label>
+              <Button onClick={nextStep}>
+                <span>&#8594;</span>
+              </Button>
+            </ButtonWrapper>
+          </ButtonContent>
         </Content>
-
       </Fieldset>
 
       <Fieldset className="fieldset" style={{ display: step === 1 ? 'block' : 'none' }}>
@@ -115,18 +111,25 @@ const MedicalExamPage: React.FC = () => {
             {step + 1}
           </StepCircle>
           <TitleContainer className='TitleN'>
-            <h2 >Analize krvi</h2>
+            <FormTitle>Analize krvi</FormTitle>
           </TitleContainer>
         </StepIndicatorContainer>
-        <h3 className="fs-subtitle">This is step 2</h3>
         <Content>
-          <input type="text" name="twitter" placeholder="Twitter" />
-          <input type="text" name="facebook" placeholder="Facebook" />
-          <input type="text" name="gplus" placeholder="Google Plus" />
-          <input type="button" className="previous action-button" onClick={prevStep} value="Previous" />
-          <input type="button" className="next action-button" onClick={nextStep} value="Next" />
+          <ButtonContent>
+            <ButtonWrapper>
+              <Button onClick={prevStep}>
+                <span>&#8592;</span>
+              </Button>
+              <Label>Prethodni korak</Label>
+            </ButtonWrapper>
+            <ButtonWrapper>
+              <Label>Sledeci korak</Label>
+              <Button onClick={nextStep}>
+                <span>&#8594;</span>
+              </Button>
+            </ButtonWrapper>
+          </ButtonContent>
         </Content>
-
       </Fieldset>
 
       <Fieldset className="fieldset" style={{ display: step === 2 ? 'block' : 'none' }}>
@@ -136,19 +139,27 @@ const MedicalExamPage: React.FC = () => {
             {step + 1}
           </StepCircle>
           <TitleContainer className='TitleN'>
-            <h2>Anamneza</h2>
+            <FormTitle>Anamneza</FormTitle>
           </TitleContainer>
         </StepIndicatorContainer>
-        <h3 className="fs-subtitle">This is step 3</h3>
         <Content>
-          <input type="text" name="fname" placeholder="First Name" />
-          <input type="text" name="lname" placeholder="Last Name" />
-          <input type="text" name="phone" placeholder="Phone" />
-          <textarea name="address" placeholder="Address"></textarea>
-          <input type="button" className="previous action-button" onClick={prevStep} value="Previous" />
+        <ButtonContent>
+            <ButtonWrapper>
+              <Button onClick={prevStep}>
+                <span>&#8592;</span>
+              </Button>
+              <Label>Prethodni korak</Label>
+            </ButtonWrapper>
+            <ButtonWrapper>
+              <Label>Sledeci korak</Label>
+              <Button onClick={nextStep}>
+                <span>&#8594;</span>
+              </Button>
+            </ButtonWrapper>
+          </ButtonContent>
         </Content>
-
       </Fieldset>
+
     </Container>
   );
 };
