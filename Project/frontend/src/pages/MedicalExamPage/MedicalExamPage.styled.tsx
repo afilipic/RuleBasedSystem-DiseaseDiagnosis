@@ -325,3 +325,24 @@ export const PatientHistoryList = styled.ul`
 export const PatientHistoryItem = styled.li`
   margin-bottom: 5px;
 `;
+
+export const DiseaseCard = styled.div<CardContainerProps>`
+  background-color: ${(props) => (props.isClicked ? '#0fbaa7' : '#ffffff')};
+  border: 1px solid ${({ theme }) => theme.colors.lightblue};
+  border-radius: 20px;
+  padding: 16px;
+  margin: 0 auto; /* Centriranje */
+  width:60%;
+  margin-bottom: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.superlightblue};
+    color:black;
+  }
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    color: ${(props) => (props.isClicked ? '#ffffff' : '#333333')};
+  }
+`;
