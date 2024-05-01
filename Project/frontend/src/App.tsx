@@ -8,6 +8,8 @@ import { useRef, useState } from 'react';
 import { icons, infoItems, menuOptions, navbarTitle, theme } from './utils/data';
 import { ThemeProvider } from 'styled-components';
 import { LoginUser } from './models/User';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -59,7 +61,8 @@ function App() {
                 isMenuOpen={isMenuOpen}
                 setIsMenuOpen={setIsMenuOpen}
                 options={finalOptions}
-              />              
+              /> 
+              <ToastContainer className="toast-container" />             
               <ContentContainer isMenuOpen={isMenuOpen}>
                 <MyRoutes />
               </ContentContainer>

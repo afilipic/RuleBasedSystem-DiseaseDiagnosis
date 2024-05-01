@@ -13,6 +13,7 @@ export const Container = styled.div`
 export const Fieldset = styled.fieldset`
   background: white;
   border: 0 none;
+  min-height:530px;
   border-radius: 3px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
   padding: 0;
@@ -173,7 +174,19 @@ export const ButtonContent = styled.div`
 display: flex;
 justify-content: space-between;
 `;
-
+export const MainContent = styled.div`
+  min-height:380px;
+`;
+export const APContent = styled.div<{ columns: number }>`
+margin:0 50px;
+display: grid;
+grid-template-columns: ${({ columns }) => {
+  if (columns === 1) return 'auto';
+  else if (columns === 2) return '280px 280px';
+  else return 'auto auto auto'; // Tri kolone
+}};
+gap: 1px; /* Razmak između stavki */
+`;
 interface CardContainerProps {
   isClicked: boolean;
 }
@@ -208,10 +221,44 @@ export const CardContainer = styled.div<CardContainerProps>`
     align-items: center;
   }
 `;
+
+export const CardContainer2 = styled.div<CardContainerProps>`
+  display: inline-block;
+  background-color: white;
+  border-radius: 20px;
+  padding: 12px;
+  margin-bottom:8px;
+  box-sizing: border-box; 
+  display: inline-block;
+  vertical-align: top;  
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.superlightblue};
+    color:black;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    color: #333333;
+  }
+  div {
+    display: flex;
+    align-items: center;
+  }
+`;
 export const SymptomIcon = styled.span`
   margin-right: 5px;
 `;
-
+export const SymptomIcon2 = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+`;
 export const SymptomTitle = styled.h2`
   margin: 0;
 `;
@@ -239,4 +286,42 @@ export const Button = styled.button`
 
 export const Label = styled.span`
   margin: 0 5px;
+`;
+
+export const Circle = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0fbaa7; /* Boja kruga */
+  margin-right: 10px;
+  padding:2px;
+`;
+export const MainContentA = styled.div`
+margin:0 50px;
+display: grid;
+grid-template-columns: 1fr 2fr;
+gap: 1px; /* Razmak između stavki */
+`;
+
+export const HistoryLabel = styled.span`
+  margin-top:7px;
+  font-weight: bold;
+  margin-right: 10px;
+`;
+
+export const Card = styled.div`
+  background-color: ${({ theme }) => theme.colors.superlightblue};
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom:10px;
+`;
+
+export const PatientHistoryList = styled.ul`
+  list-style: none;
+  padding: 20;
+  text-align: left;
+`;
+
+export const PatientHistoryItem = styled.li`
+  margin-bottom: 5px;
 `;

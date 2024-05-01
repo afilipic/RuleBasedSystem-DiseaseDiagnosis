@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Button, ButtonContent, ButtonWrapper, CardContainer, Container, Content, Fieldset, FormTitle, Label, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomTitle, TitleContainer } from './MedicalExamPage.styled';
+import React, { useEffect, useState } from 'react';
+import { APContent, Button, ButtonContent, ButtonWrapper, Card, CardContainer, CardContainer2, Circle, Container, Content, Fieldset, FormTitle, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomIcon2, SymptomTitle, TitleContainer } from './MedicalExamPage.styled';
 import { FaCheck } from 'react-icons/fa';
+import Modal from '../../components/shared/modal/Modal';
+import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton } from '../../components/shared/styled/SharedStyles.styled';
+import { showToast } from '../../components/shared/toast/CustomToast';
 
 const symptomsList = [
   "Umor",
@@ -27,13 +30,47 @@ const symptomsList = [
 
 ];
 
+const analysisParametersList = [
+  "TSH",
+  "T3",
+  "T4",
+  "Anti-TPO",
+  "Anti-Tg",
+  "ANA",
+  "Anti-dsDNA",
+  "Anti-Sm",
+  "Glukoza",
+  "HbA1c",
+  "C-peptid",
+  "Insulin "
+];
+
+const patientHistory = [
+  { key: "Datum rođenja", value: "01.01.1990." },
+  { key: "Visina", value: "180 cm" },
+  { key: "Težina", value: "80 kg" },
+  { key: "Krvna grupa", value: "A+" },  
+  { key: "Alergije", value: "Prašina, polen" },
+  { key: "Prethodne bolesti", value: "Upala pluća (2015), Grip (2018)" },
+];
+
 const MedicalExamPage: React.FC = () => {
   const [step, setStep] = useState(0);
   const [previous, setPrevious] = useState(false);
   const [percent, setPercent] = useState(0);
   const [toPercent, setToPercent] = useState(0);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [selectedAnalysisParam, setSelectedAnalysisParam] = useState<string[]>([]);
   const [isClicked, setIsClicked] = useState(false);
+  const [isClickedAnalysisParam, setIsClickedAnalysisParam] = useState(false);
+  const columns = analysisParametersList.length < 6 ? 1 : analysisParametersList.length < 11 ? 2 : 3;
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+
+  const firstCardHistory = patientHistory.slice(0, 4);
+  const secondCardHistory = patientHistory.slice(4); 
+
+  useEffect(() => {
+  }, [selectedAnalysisParam]);
 
   const handleClick = (symptom: string) => {
     setIsClicked(!isClicked);
@@ -43,16 +80,45 @@ const MedicalExamPage: React.FC = () => {
       setSelectedSymptoms(selectedSymptoms.filter(item => item !== symptom));
     }
   };
+  const handleFormCancel = () => {
+    setIsModalVisible(false);
+  }
 
+  const handleModalCancelButton = () => {
+    setIsModalVisible(false);
+  }
+
+  const handleClickAnalysisParam = (analysisParam: string) => {
+    setIsClickedAnalysisParam(!isClicked);
+    if (!selectedAnalysisParam.includes(analysisParam)) {
+      setSelectedAnalysisParam([...selectedAnalysisParam, analysisParam]);
+    } else {
+      setSelectedAnalysisParam(selectedAnalysisParam.filter(item => item !== analysisParam));
+    }
+  };
   const nextStep = () => {
     setPercent((step + 1) * 33.33);
-    setStep((prevStep) => prevStep < 2 ? prevStep + 1 : prevStep);
+    setStep((prevStep) => prevStep < 3 ? prevStep + 1 : prevStep);
     setToPercent(percent + 33.33)
     setPrevious(false);
+    
+  };
+  const decisionMaking = () => {
+    if (step === 2) {
+      if (selectedSymptoms.length > 0 && selectedAnalysisParam.length > 0) {
+        setIsModalVisible(true);
+      } else {
+        showToast("Niste popunili potrebna polja!");
+      }
+    }
     console.log("Odabrani simptomi:", selectedSymptoms);
+    console.log("Odabrane analize:", selectedAnalysisParam);
+  };
+  const diagnosisMaking = () => {
+    nextStep();
+    setIsModalVisible(false);
 
   };
-
   const prevStep = () => {
     setPercent((step - 1) * 33.33);
     setStep((prevStep) => prevStep > 0 ? prevStep - 1 : prevStep);
@@ -61,12 +127,8 @@ const MedicalExamPage: React.FC = () => {
   };
 
   return (
+    <>
     <Container>
-      {/* <ProgressBar>
-        <li className={step === 0 || step===1 || step === 2 ? 'active' : ''}>Account Setup</li>
-        <li className={step === 1 || step===2 ? 'active' : ''}>Social Profiles</li>
-        <li className={step === 2 ? 'active' : ''}>Personal Details</li>
-      </ProgressBar> */}
 
       <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
         <ProgressBarr percent={(step + 1) * 33.33} previous={previous} toPercent={toPercent} />
@@ -79,7 +141,7 @@ const MedicalExamPage: React.FC = () => {
           </TitleContainer>
         </StepIndicatorContainer>
         <Content>
-          <div>
+          <MainContent>
             <div>
               {symptomsList.map((symptom, index) => (
                 <CardContainer key={index} onClick={() => handleClick(symptom)} isClicked={selectedSymptoms.includes(symptom)}>
@@ -90,7 +152,7 @@ const MedicalExamPage: React.FC = () => {
                 </CardContainer>
               ))}
             </div>
-          </div>
+          </MainContent>
           <ButtonContent>
             <ButtonWrapper>
             </ButtonWrapper>
@@ -115,6 +177,20 @@ const MedicalExamPage: React.FC = () => {
           </TitleContainer>
         </StepIndicatorContainer>
         <Content>
+          <MainContent>
+            <APContent columns={columns}>
+              {analysisParametersList.map((analysisParam, index) => (
+                <CardContainer2 key={index} onClick={() => handleClickAnalysisParam(analysisParam)} isClicked={selectedAnalysisParam.includes(analysisParam)}>
+                  <div>
+                    <Circle>
+                      {selectedAnalysisParam.includes(analysisParam) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
+                    </Circle>
+                    <SymptomTitle>{analysisParam}</SymptomTitle>
+                  </div>
+                </CardContainer2>
+              ))}
+            </APContent>
+          </MainContent>
           <ButtonContent>
             <ButtonWrapper>
               <Button onClick={prevStep}>
@@ -143,7 +219,31 @@ const MedicalExamPage: React.FC = () => {
           </TitleContainer>
         </StepIndicatorContainer>
         <Content>
-        <ButtonContent>
+          <MainContent>
+          <MainContentA>
+          <HistoryLabel>Informacije o pacijentu:</HistoryLabel>
+          <Card>
+            <PatientHistoryList>
+              {firstCardHistory.map((item, index) => (
+                <PatientHistoryItem key={index}>
+                  <strong>{item.key}:</strong> {item.value}
+                </PatientHistoryItem>
+              ))}
+            </PatientHistoryList>
+          </Card>
+          <HistoryLabel>Istorija bolesti pacijenta:</HistoryLabel>
+          <Card>
+            <PatientHistoryList>
+              {secondCardHistory.map((item, index) => (
+                <PatientHistoryItem key={index}>
+                  <strong>{item.key}:</strong> {item.value}
+                </PatientHistoryItem>
+              ))}
+            </PatientHistoryList>
+          </Card>
+          </MainContentA>
+          </MainContent>
+          <ButtonContent>
             <ButtonWrapper>
               <Button onClick={prevStep}>
                 <span>&#8592;</span>
@@ -152,7 +252,7 @@ const MedicalExamPage: React.FC = () => {
             </ButtonWrapper>
             <ButtonWrapper>
               <Label>Sledeci korak</Label>
-              <Button onClick={nextStep}>
+              <Button onClick={decisionMaking}>
                 <span>&#8594;</span>
               </Button>
             </ButtonWrapper>
@@ -160,7 +260,48 @@ const MedicalExamPage: React.FC = () => {
         </Content>
       </Fieldset>
 
+      <Fieldset className="fieldset" style={{ display: step === 3 ? 'block' : 'none' }}>
+        {/* <ProgressBarr percent={(step + 1) * 33.33} previous={previous} toPercent={toPercent} /> */}
+        <StepIndicatorContainer>
+          <StepCircle>
+            {step + 1}
+          </StepCircle>
+          <TitleContainer className='TitleN'>
+            <FormTitle>Diagnoza</FormTitle>
+          </TitleContainer>
+        </StepIndicatorContainer>
+        <Content>
+          <MainContent>
+          <MainContentA>
+          <HistoryLabel>Moguce bolesti:</HistoryLabel>
+          <Card>
+            <PatientHistoryList>
+              {firstCardHistory.map((item, index) => (
+                <PatientHistoryItem key={index}>
+                  <strong>{item.key}:</strong> {item.value}
+                </PatientHistoryItem>
+              ))}
+            </PatientHistoryList>
+          </Card>
+          </MainContentA>
+          </MainContent>
+        </Content>
+      </Fieldset>
+
+
     </Container>
+      <Modal isVisible={isModalVisible} onClose={handleFormCancel}>
+      <div>
+      <Message>Da li ste sigurni da želite potvrditi diagnozu?</Message>
+      <ModalButtonContainer>
+        <ModalConfirmButton onClick={diagnosisMaking}>Da</ModalConfirmButton>
+        <ModalCancelButton onClick={handleModalCancelButton}>Ne</ModalCancelButton>
+      </ModalButtonContainer>
+    </div>
+      </Modal>
+    
+    </>
+    
   );
 };
 

@@ -8,7 +8,7 @@ export default function MyRoutes() {
   return (
     <Routes>
       <Route path="" element={<HomePage />} />
-      <Route path="patient-home-page" element={<MedicalExapPage />} />
+      <Route path="medical-examination" element={<MedicalExapPage />} />
       
     </Routes>
   );
