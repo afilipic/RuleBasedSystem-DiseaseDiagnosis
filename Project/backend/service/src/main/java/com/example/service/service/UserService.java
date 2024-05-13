@@ -31,6 +31,8 @@ public class UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private ResonerService resonerService;
 
 
     public User save(User user){return userRepository.save(user);}

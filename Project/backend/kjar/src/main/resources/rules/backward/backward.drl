@@ -1,3 +1,9 @@
-package backward;
+package rules.backward;
 
-import com.example.model.User
+
+rule "go" salience 10
+when
+    $s : String()
+then
+    System.out.println("aaaaa" );
+end
