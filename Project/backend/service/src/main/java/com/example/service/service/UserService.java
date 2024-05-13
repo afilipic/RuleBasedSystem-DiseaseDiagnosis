@@ -87,6 +87,11 @@ public class UserService {
         patient.setFirstname(userDTO.getFirstname());
         patient.setLastname(userDTO.getLastname());
         patient.setTelephoneNumber(userDTO.getTelephoneNumber());
+        patient.setBirthDate(userDTO.getBirthDate());
+        patient.setGender(userDTO.getGender());
+        patient.setBloodType(userDTO.getBloodType());
+        patient.setHeight(userDTO.getHeight());
+        patient.setWeight(userDTO.getWeight());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         patient.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         patient.setRole(Role.PATIENT);

@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping(
             value = "/register",
             consumes = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity registration(@RequestBody UserDTO userDTO){
 
         try{
@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping(
             value = "/registerPatient",
             consumes = "application/json")
-    @PreAuthorize("hasRole('DOCTOR')")
+    @PreAuthorize("hasAnyAuthority('DOCTOR')")
     public ResponseEntity patientRegistration(@RequestBody UserDTO userDTO){
 
         try{
