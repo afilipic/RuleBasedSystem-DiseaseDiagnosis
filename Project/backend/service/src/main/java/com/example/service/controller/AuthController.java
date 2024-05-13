@@ -9,6 +9,7 @@ import com.example.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,25 @@ public class AuthController {
     @PostMapping(
             value = "/register",
             consumes = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity registration(@RequestBody UserDTO userDTO){
+
+        try{
+            userService.createNewUser(userDTO);
+            return new ResponseEntity<>("Check your email", HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+    @PostMapping(
+            value = "/registerPatient",
+            consumes = "application/json")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity patientRegistration(@RequestBody UserDTO userDTO){
 
         try{
             userService.createNewPatient(userDTO);

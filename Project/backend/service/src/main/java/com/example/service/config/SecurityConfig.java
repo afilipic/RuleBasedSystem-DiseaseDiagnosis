@@ -23,7 +23,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow all OPTIONS requests
-                .requestMatchers("/api/user/login","/api/user/register", "/api/user/activate/**", "/api/user/resetPassword", "/api/user/getResetCode")
+                .requestMatchers("/api/user/login", "/api/user/activate/**", "/api/user/resetPassword", "/api/user/getResetCode")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

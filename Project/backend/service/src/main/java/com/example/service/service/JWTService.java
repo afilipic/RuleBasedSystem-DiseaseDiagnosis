@@ -3,10 +3,12 @@ package com.example.service.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public class JWTService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(SignatureAlgorithm.HS512, getSignInKey())
+                .signWith(getSignInKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -59,8 +61,8 @@ public class JWTService {
                 .getBody();
     }
 
-    private byte[] getSignInKey() {
-        return this.secretKey.getBytes(StandardCharsets.UTF_8);
+    private SecretKey getSignInKey() {
+        return Keys.hmacShaKeyFor(this.secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
 }
