@@ -1,10 +1,14 @@
 package com.example.service.service;
 
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
 import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
+import com.example.model.enums.Symptoms;
 import com.example.service.DTO.TokenDTO;
 import com.example.service.DTO.UserDTO;
+import com.example.service.repository.PatientRepository;
 import com.example.service.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +30,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private UserRepository patientRepository;
+    private PatientRepository patientRepository;
     @Autowired
     private JWTService jwtService;
     @Autowired

@@ -1,15 +1,24 @@
 package com.example.service.service;
 
-import lombok.AllArgsConstructor;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Patient;
+import com.example.model.enums.Symptoms;
+import com.example.service.repository.BloodTestAnalysisRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ResonerService {
     @Autowired
     private KieContainer kieContainer;
+
+    @Autowired
+    private BloodTestAnalysisRepository bloodTestAnalysisRepository;
+
 
     private void run(KieSession kieSession) {
         kieSession.fireAllRules();
@@ -17,20 +26,16 @@ public class ResonerService {
         kieSession.destroy();
     }
 
-    public void testCep() {
-        KieSession kieSession = this.kieContainer.newKieSession("cep-rules");
-        String response = new String();
-        kieSession.insert(response);
-        this.run(kieSession);
-        System.out.println(response);
-    }
 
-    public void testBackwrards() {
-        KieSession kieSession = this.kieContainer.newKieSession("backward-rules");
-        String response = new String();
-        kieSession.insert(response);
+    public List<BloodTestAnalysis> bloodTestRequest(Patient patient, List<Symptoms> symptoms) {
+        KieSession kieSession = this.kieContainer.newKieSession("blood-test-rules");
+        kieSession.insert(patient);
+        kieSession.insert(symptoms);
         this.run(kieSession);
-        System.out.println(response);
+        List<BloodTestAnalysis> tests =  patient.getBloodTestAnalyses();
+//        tests = bloodTestAnalysisRepository.saveAll(tests);
+        return tests;
+
     }
 
 

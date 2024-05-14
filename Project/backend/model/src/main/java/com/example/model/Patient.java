@@ -1,10 +1,7 @@
 package com.example.model;
 
 import com.example.model.enums.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -35,5 +32,18 @@ public class Patient extends User{
 
     public Patient() {
         this.setRole(Role.PATIENT);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "id=" + getId() +
+                ", birthDate=" + birthDate +
+                ", gender='" + gender + '\'' +
+                ", height=" + height +
+                ", weight=" + weight +
+                ", bloodType='" + bloodType + '\'' +
+                '}';
     }
 }

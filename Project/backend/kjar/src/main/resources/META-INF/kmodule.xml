@@ -6,5 +6,7 @@
     <kbase name="cep" packages="rules.cep">
         <ksession name="cep-rules"/>
     </kbase>
-
+    <kbase name="bloodTests" packages="rules.bloodTestRequest">
+        <ksession name="blood-test-rules"/>
+    </kbase>
 </kmodule>

@@ -1,9 +1,9 @@
 package rules.backward;
 
 
-rule "go" salience 10
+rule "go"
 when
     $s : String()
 then
-    System.out.println("aaaaa" );
+    System.out.println("aaaa" );
 end
