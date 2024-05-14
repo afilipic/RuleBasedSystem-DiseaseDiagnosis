@@ -82,14 +82,6 @@ const MedicalTechHomePage: React.FC = () => {
   const firstCardHistory = patientHistory.slice(0, 4);
   const secondCardHistory = patientHistory.slice(4);
 
-  const [clickedRow, setClickedRow] = useState<{ [key: string]: string } | null>(null);
-
-    // Funkcija koja se poziva kada se klikne na red u tabeli
-    const handleRowClick = (row: { [key: string]: string }) => {
-        setClickedRow(row); // Ažuriranje stanja sa podacima kliknutog reda
-        console.log(row);
-    };
-
 
   const data = [
     { ime: 'Ana', prezime: 'Marković', jmbg: '1234567890123', doktor:'Jovan Savic' },
@@ -120,7 +112,12 @@ const inputRefs = useRef<Array<{ value: string } | null>>(Array(analysisParamete
     setIsModalVisible(false);
   }
 
+  const [selectedRow, setSelectedRow] = useState<any | null>(null);
 
+  const handleClickRow = (item: any) => {
+      setSelectedRow(item)
+      console.log(item)
+  }; 
 
   const nextStep = () => {
     setPercent((step + 1) * 25.00);
@@ -135,6 +132,7 @@ const inputRefs = useRef<Array<{ value: string } | null>>(Array(analysisParamete
     setIsModalVisible(false);
 
   };
+
 
   const analysisConfirmation = () => {
 
@@ -152,7 +150,7 @@ const inputRefs = useRef<Array<{ value: string } | null>>(Array(analysisParamete
 
   return (
     <>
-    <Container2 style={{ display: clickedRow ? 'none' : 'block' }}>
+    <Container2 style={{ display: selectedRow ? 'none' : 'block' }}>
     <Title>Laboratorijska diagnostika</Title>
             <SearchContainer>
             <StyledFontAwesomeIcon icon={faSearch} />
@@ -163,10 +161,10 @@ const inputRefs = useRef<Array<{ value: string } | null>>(Array(analysisParamete
                 onChange={(e) => setSearchInput(e.target.value)}
             />
             </SearchContainer>
-            <MedicalTable data={data} searchInput={searchInput} onRowClick={handleRowClick}/>
+            <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow}/>
     </Container2>
 
-    <Container style={{ display: clickedRow ? 'block' : 'block' }}>
+    <Container style={{ display: selectedRow ? 'block' : 'block' }}>
     
       <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
         <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />

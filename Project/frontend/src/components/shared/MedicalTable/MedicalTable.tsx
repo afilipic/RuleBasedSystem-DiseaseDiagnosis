@@ -7,7 +7,7 @@ import { ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "
 export type MedicalTableProps = {
     data: { [key: string]: string }[];
     searchInput: string;
-    onRowClick: (row: { [key: string]: string }) => void;
+    onRowClick: (row: any) => void;
 };
 
 export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTableProps) {
@@ -16,14 +16,14 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage: number = 10;
-    const [clickedRow, setClickedRow] = useState<{ [key: string]: string } | null>(null);
+    // const [clickedRow, setClickedRow] = useState< any | null>(null);
 
     useEffect(() => {
         const newSortedData = [...data].sort((a, b) => {
             let valueA = a[sortField];
             let valueB = b[sortField];
-            console.log("a:", a); // Provjerite vrijednost objekta a
-            console.log("b:", b);
+            // console.log("a:", a); // Provjerite vrijednost objekta a
+            // console.log("b:", b);
             if (typeof valueA === 'string') valueA = valueA.toLowerCase();
             if (typeof valueB === 'string') valueB = valueB.toLowerCase();
             if (typeof valueA === 'undefined' || typeof valueB === 'undefined') {
@@ -68,9 +68,8 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
             regex.test(part) ? <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span> : part
         );
     };
-    const handleClickRow = (row: { [key: string]: string }) => {
-        setClickedRow(row);
-
+    const handleClickRow = (item: any) => {
+        onRowClick(item);
     };
 
     return (

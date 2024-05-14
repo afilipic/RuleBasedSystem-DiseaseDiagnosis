@@ -30,7 +30,7 @@ const DiagnosesPage = () => {
             </SearchContainer>
             <MedicalTable data={data} searchInput={searchInput} onRowClick={function (row: { [key: string]: string; }): void {
                 throw new Error('Function not implemented.');
-            } }/>
+            }}/>
         </Container>
     );
 };
