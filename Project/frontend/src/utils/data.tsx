@@ -43,16 +43,15 @@ export const icons = [
 
 export const navbarTitle = "MedicLab";
   
-  export const menuOptions = [
-    { href: "", value: "Početna", role: "guest" },
-    { href: "/", value: "Početna", role: "logged" },
-    { href: "/medical-examination", value: "Medicinski pregled", role: "all" },
-    { href: "/doctor-home-page", value: "Pacijenti", role: "all" },
-    { href: "/diagnoses-page", value: "Diagnoze", role: "all" },
-    { href: "/admin-home-page", value: "Requests", role: "admin" },
-    { href: "/medical-tech-page", value: "Analize", role: "all" },  
-    { href: "#", value: "Add Admin", role: "superadmin" },
-    { href: "/login", value: "Sign In/Sign up", role: "guest" },
-    { href: "/login", value: "Log Out", role: "logged" },
-    { href: "#", value: "Kontakt", role: "guest" },
+export const menuOptions = [
+    { href: "", value: "Početna", role: "all" },
+    { href: "/medical-examination", value: "Medicinski pregled", role: "doctor" },
+    { href: "/doctor-home-page", value: "Pacijenti", role: "doctor" },
+    { href: "/diagnoses-page", value: "Dijagnoze", role: "doctor" },
+    { href: "/admin-home-page", value: "Dodaj korisnika", role: "admin" },
+    { href: "/medical-tech-page", value: "Analize", role: "technician" },  
+    { href: "/patient-home-page", value: "Moj profil", role: "patient" },  
+    { href: "/login", value: "Uloguj se", role: "guest" },
+    { href: "/", value: "Izloguj se", role: "logged" },
+    { href: "#", value: "Kontakt", role: "all" },
   ];

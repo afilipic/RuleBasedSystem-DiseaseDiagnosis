@@ -7,7 +7,7 @@ export function getNext(role: string): string {
         case "DOCTOR":
             return "/doctor-home-page";
         case "TECHNICIAN":
-            return "/technician-home-page";
+            return "/medical-tech-page";
         default:
             return ""
     }

@@ -8,6 +8,7 @@ import {
   Hamburger,
 } from "./Navbar.styled";
 import { Link } from "react-router-dom";
+import UserContext from "../../../utils/UserContext/userContext";
 
 
 export interface NavbarProps {
@@ -28,23 +29,17 @@ export default function Navbar({
   footerRef,
 }: NavbarProps) {
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-
-
-
-  const handleAddAdminClick = () => {
-    setIsModalVisible(true);
-
-  };
-
   const handleContactClick = () => {
     footerRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
-  const handleFormCancel = () => {
-    setIsModalVisible(false);
-  };
 
+  const userContext = useContext(UserContext);
+  const { setUser } = userContext!;
+
+  const handleLogOutClick = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
   return (
     <>
@@ -60,8 +55,11 @@ export default function Navbar({
                 as={Link}
                 onClick={() => {
                   
-                  if (link.value === "Contact") {
+                  if (link.value === "Kontakt") {
                     handleContactClick();
+                  }
+                  if (link.value === "Izloguj se") {
+                    handleLogOutClick();
                   }
                   setIsMenuOpen(false);
                 }}

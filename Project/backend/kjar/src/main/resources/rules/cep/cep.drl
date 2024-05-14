@@ -4,6 +4,7 @@ import com.example.model.enums.Symptoms;
 import java.util.List;
 
 rule "go cep" salience 10
+	agenda-group "cep tests"
 
 when
     $s : String( )
@@ -24,23 +25,27 @@ declare AlarmEvent
     patient : Patient
 end
 
-rule "Create alarm event for possible Thyroid Storm in Graves' disease"
-when
-    $patient : Patient()
-    $symptoms : List()
-    eval(
-        $symptoms.contains(Symptoms.FEVER) &&
-        $symptoms.contains(Symptoms.ELEVATED_BODY_TEMPERATURE) &&
-        $patient.getDiagnoses()==("Graves disease")
-    )
-then
-    insert(new AlarmEvent($patient));
-end
-
-rule "Send emergency alert when alarm event is detected"
-when
-    $alarmEvent : AlarmEvent()
-    not AlarmEvent(patient != $alarmEvent.patient) over window:time(5s)
-then
-    System.out.println("Alarm: Tiroidna kriza kod pacijenta " + $alarmEvent.getPatient());
-end
+//rule "Create alarm event for possible Thyroid Storm in Graves' disease"
+//	agenda-group "cep tests"
+//
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    eval(
+//        $symptoms.contains(Symptoms.FEVER) &&
+//        $symptoms.contains(Symptoms.ELEVATED_BODY_TEMPERATURE) &&
+//        $patient.getDiagnoses()==("Graves disease")
+//    )
+//then
+//    insert(new AlarmEvent($patient));
+//end
+//
+//rule "Send emergency alert when alarm event is detected"
+//	agenda-group "cep tests"
+//
+//when
+//    $alarmEvent : AlarmEvent()
+//    not AlarmEvent(patient != $alarmEvent.patient) over window:time(5s)
+//then
+//    System.out.println("Alarm: Tiroidna kriza kod pacijenta " + $alarmEvent.getPatient());
+//end
