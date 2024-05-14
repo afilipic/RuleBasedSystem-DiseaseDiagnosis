@@ -161,7 +161,7 @@ const inputRefs = useRef<Array<{ value: string } | null>>(Array(analysisParamete
                 onChange={(e) => setSearchInput(e.target.value)}
             />
             </SearchContainer>
-            <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow}/>
+            {/* <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow}/> */}
     </Container2>
 
     <Container style={{ display: selectedRow ? 'block' : 'block' }}>

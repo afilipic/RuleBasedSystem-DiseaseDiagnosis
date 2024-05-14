@@ -6,6 +6,7 @@ import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
 import com.example.model.enums.Symptoms;
+import com.example.service.DTO.PatientDTO;
 import com.example.service.DTO.TokenDTO;
 import com.example.service.DTO.UserDTO;
 import com.example.service.repository.PatientRepository;
@@ -114,6 +115,15 @@ public class UserService {
         catch (MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException("Verification mail failed",e);
         }
+
+    }
+
+    public List<PatientDTO> getAllPatients() {
+        List<PatientDTO> patientDTOS = new ArrayList<>();
+        for (Patient patient : patientRepository.findAll()) {
+            patientDTOS.add(new PatientDTO(patient));
+        }
+        return patientDTOS;
 
     }
 

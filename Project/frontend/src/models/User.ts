@@ -28,3 +28,25 @@ export interface ChangePassword{
   password: string;
   confPassword : string;
 }
+
+export interface PatientDTO{
+  birthDate: string;
+  bloodTestAnalyses: BloodTestAnalysis[];
+  bloodType: string;
+  diagnoses: Diagnosis[];
+  firstname: string;
+  gender: string;
+  height: number;
+  lastname: string;
+  telephoneNumber: string;
+  username: string;
+  weight: number;
+}
+
+interface BloodTestAnalysis {
+  // Define properties for BloodTestAnalysis here
+}
+
+interface Diagnosis {
+  // Define properties for Diagnosis here
+}

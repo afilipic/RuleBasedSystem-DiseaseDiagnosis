@@ -2,16 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { ScrollableContainer, StyledPagination, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
+import { PatientDTO } from '../../../models/User';
 
 
 export type MedicalTableProps = {
-    data: { [key: string]: string }[];
+    data: PatientDTO[];
     searchInput: string;
     onRowClick: (row: any) => void;
 };
 
 export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTableProps) {
-    const [sortedData, setSortedData] = useState<{ [key: string]: string }[]>(data);
+    const [sortedData, setSortedData] = useState<PatientDTO[]>(data);
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -19,21 +20,21 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
     // const [clickedRow, setClickedRow] = useState< any | null>(null);
 
     useEffect(() => {
-        const newSortedData = [...data].sort((a, b) => {
-            let valueA = a[sortField];
-            let valueB = b[sortField];
-            // console.log("a:", a); // Provjerite vrijednost objekta a
-            // console.log("b:", b);
-            if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-            if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-            if (typeof valueA === 'undefined' || typeof valueB === 'undefined') {
-                return 0; // Ako nisu definirane, vratite neutralnu vrijednost
-            }
-            return sortOrder === 'asc' ?
-                valueA.localeCompare(valueB) :
-                valueB.localeCompare(valueA);
-        });
-        setSortedData(newSortedData);
+        // const newSortedData = [...data].sort((a, b) => {
+        //     let valueA = a[sortField];
+        //     let valueB = b[sortField];
+        //     // console.log("a:", a); // Provjerite vrijednost objekta a
+        //     // console.log("b:", b);
+        //     if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+        //     if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+        //     if (typeof valueA === 'undefined' || typeof valueB === 'undefined') {
+        //         return 0; // Ako nisu definirane, vratite neutralnu vrijednost
+        //     }
+        //     return sortOrder === 'asc' ?
+        //         valueA.localeCompare(valueB) :
+        //         valueB.localeCompare(valueA);
+        // });
+        // setSortedData(newSortedData);
     }, [data, sortField, sortOrder]);
 
     const onSortChange = (field: string) => {
@@ -52,7 +53,7 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
     const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
     const indexOfLastItem: number = currentPage * itemsPerPage;
     const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
-    const currentItems: { [key: string]: string }[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems: PatientDTO[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     
 

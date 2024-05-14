@@ -15,6 +15,10 @@ class UserService {
     return customAxios.post(`/user/changePassword`, userData);
   }
 
+  getAllPatients() {
+    return customAxios.get(`/patient/all`);
+  }
+
 }
 
 export default new UserService();
