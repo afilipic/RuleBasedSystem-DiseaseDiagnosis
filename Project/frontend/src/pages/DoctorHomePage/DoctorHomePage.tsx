@@ -14,7 +14,12 @@ const DoctorHomePage = () => {
         // Dodajte više podataka po potrebi
     ];
     const [searchInput, setSearchInput] = useState('');
+    const [selectedRow, setSelectedRow] = useState<any | null>(null);
 
+    const handleClickRow = (item: any) => {
+        setSelectedRow(item)
+        console.log(item)
+    }; 
     return (
         <Container>
             <Title>Pacijenti</Title>
@@ -27,9 +32,7 @@ const DoctorHomePage = () => {
                 onChange={(e) => setSearchInput(e.target.value)}
             />
             </SearchContainer>
-            <MedicalTable data={data} searchInput={searchInput} onRowClick={function (row: { [key: string]: string; }): void {
-                throw new Error('Function not implemented.');
-            } } />
+            <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
             {/* <CardContainer>
                 <Card   >
                     <span>Ana</span>

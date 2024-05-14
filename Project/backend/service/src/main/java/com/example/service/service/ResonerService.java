@@ -4,7 +4,6 @@ import com.example.model.BloodTestAnalysis;
 import com.example.model.Disease;
 import com.example.model.Patient;
 import com.example.model.enums.Symptoms;
-import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -16,12 +15,10 @@ import java.util.List;
 @Service
 public class ResonerService {
 
-    private KieContainer kieContainer;
     private KieSession kieSession;
 
     @Autowired
     public ResonerService(KieContainer kieContainer, DiseaseRepository diseaseRepository) {
-        this.kieContainer = kieContainer;
         this.kieSession = kieContainer.newKieSession("myKieSession");
         List<Disease> allDiseases = diseaseRepository.findAll();
         this.kieSession.setGlobal("allDiseases", allDiseases);
