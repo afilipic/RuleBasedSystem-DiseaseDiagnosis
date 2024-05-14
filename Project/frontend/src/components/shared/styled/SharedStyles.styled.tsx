@@ -50,9 +50,9 @@ display: flex;
 
 export const StyledInputSearch = styled.input`
   width: 170px;
-  padding: 8px;
+  padding: 12px;
   border: 2px solid  ${({ theme }) => theme.colors.secondColor};
-  border-radius: 10px;
+  border-radius: 20px;
   font-size: ${({ theme }) => theme.fontSizes.standard};
   margin: 5px;
 

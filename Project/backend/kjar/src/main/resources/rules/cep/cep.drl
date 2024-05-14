@@ -27,7 +27,6 @@ end
 
 //rule "Create alarm event for possible Thyroid Storm in Graves' disease"
 //	agenda-group "cep tests"
-//
 //when
 //    $patient : Patient()
 //    $symptoms : List()

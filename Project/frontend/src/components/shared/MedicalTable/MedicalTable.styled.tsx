@@ -5,15 +5,13 @@ export const StyledTable = styled.table`
   margin: 10px;
   width: 98%;
   border-collapse: separate;
-  border-spacing: 0;
+  border-spacing: 0 10px; 
   font-size: 15px;
   color: #333333;
   font-weight:bold;
   
   th, td {
-    border: 1px solid ${({ theme }) => theme.colors.lightblue};
     padding: 8px;
-    border-radius: 25px;
     height:35px;
     background-color:white;
   }
@@ -24,31 +22,34 @@ export const StyledTable = styled.table`
     color: ${({ theme }) => theme.colors.lightblue};
 
   }
-  tr {
-    margin-bottom: 10px; /* Margina između redova */
+
+  /* Zaobljeni rubovi prvog reda */
+  tr td:first-child,
+  tr th:first-child {
+    border-radius: 20px 0 0 20px;
+  }
+
+  /* Zaobljeni rubovi poslednjeg reda */
+  tr td:last-child,
+  tr th:last-child {
+    border-radius: 0 20px 20px 0;
+  }
+
+  tbody tr,thead tr {
+    margin-bottom: 20px;
+    border-radius: 20px; /* Zaobljeni rubovi */
+    position: relative; /* Dodajemo relativni položaj za pseudo-element */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.17);
   }
 
 
-  /* Pseudo-element ::before za stvaranje prostora iznad redova */
-  tr::before {
-    content: '';
-    display: block;
-    margin-bottom:15px;
-    position: absolute;
-    top: -10px; /* Postavite prostor iznad reda */
-    left: 0;
-    right: 0;
-    height: 20px; /* Visina prostora */
-    border-radius: 15px; /* Zaobljeni rubovi */
-    background-color: transparent; /* Transparentna boja */
-  } 
 
-  
-  tr{
+  tbody tr{
     :hover{
       cursor: pointer;
     }
   }
+  
 
  
 `;
@@ -60,35 +61,17 @@ export const ScrollableContainer = styled.div`
     width:100%;
 `;
 
-export const StyledPagination = styled.div`
-    padding: 20px;
-`;
 export const TableWrapper = styled.div`
+ border-radius: 10px
+ overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center ;
 `;
-
-
-
 export const StyledTableRow = styled.tr`
   background-color: white; /* Bijela boja pozadine */
   border-radius: 10px; /* Zaobljeni rubovi */
   margin-bottom: 10px; /* Margina između redova */
 `;
 
-export const StyledTableCell = styled.td`
-  padding: 10px; /* Prostor unutar ćelije */
-`;
 
-export const StyledTableHeaderCell = styled.th`
-  padding: 10px; /* Prostor unutar zaglavlja */
-`;
-
-// Kako bi se promijenile boje pri kliku na zaglavlje, mogli biste dodati dodatne stilove
-export const StyledClickableHeaderCell = styled(StyledTableHeaderCell)`
-  cursor: pointer; /* Kursor pokazuje da je zaglavlje klikabilno */
-  &:hover {
-    background-color: lightgray; /* Promijeni boju zaglavlja na hover */
-  }
-`;

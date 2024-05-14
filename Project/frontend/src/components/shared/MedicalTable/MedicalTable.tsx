@@ -1,7 +1,7 @@
 // MedicalTable.tsx
 
 import React, { useEffect, useState } from 'react';
-import { ScrollableContainer, StyledPagination, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
+import { ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
 
 
 export type MedicalTableProps = {
