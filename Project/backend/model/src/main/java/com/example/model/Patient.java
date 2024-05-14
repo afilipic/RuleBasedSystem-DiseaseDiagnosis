@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.example.model.enums.BloodTestType;
 import com.example.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class Patient extends User{
     @Column
     private String bloodType;
 
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
     private List<BloodTestAnalysis> bloodTestAnalyses;
 
     @OneToMany(mappedBy = "patient")
@@ -34,6 +35,10 @@ public class Patient extends User{
         this.setRole(Role.PATIENT);
     }
 
+    public void addBloodTestAnalysis(BloodTestType type){
+        BloodTestAnalysis bloodTestAnalysis = new BloodTestAnalysis(type, this);
+        this.bloodTestAnalyses.add(bloodTestAnalysis);
+    }
 
     @Override
     public String toString() {

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,14 +27,16 @@ public class Disease {
     private String name;
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @CollectionTable(name = "symptoms",
             joinColumns = @JoinColumn(name = "disease_id"))
     @Column(name = "symptom")
     private List<Symptoms> symptoms;
 
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @CollectionTable(name = "blood_tests",
             joinColumns = @JoinColumn(name = "disease_id"))
     @Column(name = "bloodTests")

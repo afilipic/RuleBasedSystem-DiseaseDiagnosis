@@ -1,12 +1,5 @@
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
-    <kbase name="backwards" packages="rules.backward">
-        <ksession name="backward-rules"/>
-    </kbase>
-
-    <kbase name="cep" packages="rules.cep">
-        <ksession name="cep-rules"/>
-    </kbase>
-    <kbase name="bloodTests" packages="rules.bloodTestRequest">
-        <ksession name="blood-test-rules"/>
+    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.bloodTestRequest">
+        <ksession name="myKieSession"/>
     </kbase>
 </kmodule>

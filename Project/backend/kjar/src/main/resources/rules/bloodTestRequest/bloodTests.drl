@@ -3,6 +3,7 @@ package rules.bloodTestRequest;
 import com.example.model.Patient;
 import com.example.model.enums.BloodTestType;
 import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
 import com.example.model.enums.Symptoms;
 
 import java.util.List;
@@ -10,160 +11,93 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+global java.util.List allDiseases;
+
 
 rule "Request blood tests for Hashimoto disease"
+	agenda-group "blood tests"
 when
     $patient : Patient()
     $symptoms : List()
+    $disease : Disease(name == "Hashimoto") from allDiseases
     $count : Number() from accumulate(
-                Symptoms($sym : this) from $symptoms,
-                init( int total = 0; ),
-                action( if ($sym == Symptoms.FATIGUE ||
-                            $sym == Symptoms.INSOMNIA ||
-                            $sym == Symptoms.MOOD_CHANGES ||
-                            $sym == Symptoms.WEIGHT_GAIN ||
-                            $sym == Symptoms.HAIR_LOSS ||
-                            $sym == Symptoms.DRY_SKIN ||
-                            $sym == Symptoms.IRREGULAR_PERIODS)
-                        total++; ),
-                result( total )
-            )
-        eval($count.doubleValue() > 1)
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    $testType : BloodTestType() from $disease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    List<BloodTestType> requiredTests = Arrays.asList(BloodTestType.TSH, BloodTestType.T3, BloodTestType.T4, BloodTestType.ANTI_TPO, BloodTestType.ANTI_TG);
-    List<BloodTestAnalysis> bloodTests = $patient.getBloodTestAnalyses();
-    LocalDate today = LocalDate.now();
-    requiredTests.forEach(testType -> {
-        if (bloodTests.stream().noneMatch(b -> b.getType().equals(testType) && b.getDate().equals(today))) {
-            bloodTests.add(new BloodTestAnalysis(testType, $patient));
-        }
-    });
-    $patient.setBloodTestAnalyses(bloodTests);
+    $patient.addBloodTestAnalysis($testType);
 end;
 
 
 rule "Request blood tests for Graves disease"
+	agenda-group "blood tests"
 when
     $patient : Patient()
     $symptoms : List()
+    $disease : Disease(name == "Graves") from allDiseases
     $count : Number() from accumulate(
-                Symptoms($sym : this) from $symptoms,
-                init( double total = 0; ),
-                action(
-                    if ($sym == Symptoms.FATIGUE ||
-                        $sym == Symptoms.INSOMNIA ||
-                        $sym == Symptoms.WEIGHT_LOSS ||
-                        $sym == Symptoms.RAPID_HEART_RATE ||
-                        $sym == Symptoms.HAND_SHAKING ||
-                        $sym == Symptoms.HEAT_SENSITIVITY ||
-                        $sym == Symptoms.IRREGULAR_PERIODS)
-                        total++;
-                ),
-                result( total )
-            )
-     eval($count.doubleValue() > 1)
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    $testType : BloodTestType() from $disease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    List<BloodTestType> requiredTests = Arrays.asList(BloodTestType.TSH, BloodTestType.T3, BloodTestType.T4, BloodTestType.ANTI_TPO, BloodTestType.ANTI_TG);
-    List<BloodTestAnalysis> bloodTests = $patient.getBloodTestAnalyses();
-    LocalDate today = LocalDate.now();
-    requiredTests.forEach(testType -> {
-        if (bloodTests.stream().noneMatch(b -> b.getType().equals(testType) && b.getDate().equals(today))) {
-            bloodTests.add(new BloodTestAnalysis(testType, $patient));
-        }
-    });
-    $patient.setBloodTestAnalyses(bloodTests);
-
+    $patient.addBloodTestAnalysis($testType);
 end;
 
 rule "Request blood tests for Systemic Lupus Erythematosus (SLE)"
+	agenda-group "blood tests"
 when
     $patient : Patient()
     $symptoms : List()
+    $disease : Disease(name == "SLE") from allDiseases
     $count : Number() from accumulate(
-                Symptoms($sym : this) from $symptoms,
-                init( double total = 0; ),
-                action(
-                    if ($sym == Symptoms.FATIGUE ||
-                        $sym == Symptoms.SKIN_RASH ||
-                        $sym == Symptoms.JOINT_PAIN ||
-                        $sym == Symptoms.FEVER ||
-                        $sym == Symptoms.HEADACHE ||
-                        $sym == Symptoms.HAIR_LOSS)
-                        total++;
-                ),
-                result( total )
-            )
-        eval($count.doubleValue() > 1)
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    $testType : BloodTestType() from $disease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    List<BloodTestType> requiredTests = Arrays.asList(BloodTestType.ANA, BloodTestType.ANTI_DS_DNA, BloodTestType.ANTI_SM);
-    List<BloodTestAnalysis> bloodTests = $patient.getBloodTestAnalyses();
-    LocalDate today = LocalDate.now();
-    requiredTests.forEach(testType -> {
-        if (bloodTests.stream().noneMatch(b -> b.getType().equals(testType) && b.getDate().equals(today))) {
-            bloodTests.add(new BloodTestAnalysis(testType, $patient));
-        }
-    });
-    $patient.setBloodTestAnalyses(bloodTests);
+    $patient.addBloodTestAnalysis($testType);
 end;
 
+
 rule "Request blood tests for Rheumatoid Arthritis"
+	agenda-group "blood tests"
 when
     $patient : Patient()
     $symptoms : List()
+    $disease : Disease(name == "RA") from allDiseases
     $count : Number() from accumulate(
-                Symptoms($sym : this) from $symptoms,
-                init( double total = 0; ),
-                action(
-                    if ($sym == Symptoms.FATIGUE ||
-                        $sym == Symptoms.WEIGHT_LOSS ||
-                        $sym == Symptoms.JOINT_PAIN ||
-                        $sym == Symptoms.FEVER ||
-                        $sym == Symptoms.JOINT_SWELLING)
-                        total++;
-                ),
-                result( total )
-            )
-        eval($count.doubleValue() > 1)
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    $testType : BloodTestType() from $disease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    List<BloodTestType> requiredTests = Arrays.asList(BloodTestType.RF, BloodTestType.ANTI_CCP, BloodTestType.CRP, BloodTestType.ESR);
-    List<BloodTestAnalysis> bloodTests = $patient.getBloodTestAnalyses();
-    LocalDate today = LocalDate.now();
-    requiredTests.forEach(testType -> {
-        if (bloodTests.stream().noneMatch(b -> b.getType().equals(testType) && b.getDate().equals(today))) {
-            bloodTests.add(new BloodTestAnalysis(testType, $patient));
-        }
-    });
-    $patient.setBloodTestAnalyses(bloodTests);
+    $patient.addBloodTestAnalysis($testType);
 end;
+
 
 rule "Request blood tests for Type 1 Diabetes"
 when
     $patient : Patient()
     $symptoms : List()
-   $count : Number() from accumulate(
-               Symptoms($sym : this) from $symptoms,
-               init( double total = 0; ),
-               action(
-                   if ($sym == Symptoms.FATIGUE ||
-                       $sym == Symptoms.MOOD_CHANGES ||
-                       $sym == Symptoms.WEIGHT_LOSS ||
-                       $sym == Symptoms.THIRST ||
-                       $sym == Symptoms.FREQUENT_URINATION ||
-                       $sym == Symptoms.NAUSEA_VOMITING ||
-                       $sym == Symptoms.VISION_DISTURBANCE)
-                       total++;
-               ),
-               result( total )
-           )
-       eval($count.doubleValue() > 1)
+    $disease : Disease(name == "Diabetes Type 1") from allDiseases
+    $count : Number() from accumulate(
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    $testType : BloodTestType() from $disease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    List<BloodTestType> requiredTests = Arrays.asList(BloodTestType.GLUCOSE, BloodTestType.HBA1C, BloodTestType.C_PEPTIDE);
-    List<BloodTestAnalysis> bloodTests = $patient.getBloodTestAnalyses();
-    LocalDate today = LocalDate.now();
-    requiredTests.forEach(testType -> {
-        if (bloodTests.stream().noneMatch(b -> b.getType().equals(testType) && b.getDate().equals(today))) {
-            bloodTests.add(new BloodTestAnalysis(testType, $patient));
-        }
-    });
-    $patient.setBloodTestAnalyses(bloodTests);
+    $patient.addBloodTestAnalysis($testType);
 end;
+
