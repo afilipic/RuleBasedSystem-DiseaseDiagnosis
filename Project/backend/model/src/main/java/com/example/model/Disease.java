@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,14 @@ public class Disease {
     @ElementCollection
     @CollectionTable(name = "blood_tests",
             joinColumns = @JoinColumn(name = "disease_id"))
-    @MapKeyEnumerated(EnumType.STRING)
-    private Map<BloodTestType, BloodTestCriteria> bloodTests;
+    @Column(name = "bloodTests")
+    private List<BloodTestType> bloodTests;
+
+
+    public Disease(String name, String description){
+        this.name = name;
+        this.description = description;
+        this.symptoms = new ArrayList<>();
+        this.bloodTests = new ArrayList<>();
+    }
 }

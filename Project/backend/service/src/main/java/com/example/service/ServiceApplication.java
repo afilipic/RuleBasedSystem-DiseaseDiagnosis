@@ -16,10 +16,8 @@ public class ServiceApplication {
 	@Bean
 	public KieContainer kieContainer() {
 		KieServices ks = KieServices.Factory.get();
-		KieContainer kContainer = ks
-				.newKieContainer(ks.newReleaseId("com.example", "kjar", "0.0.1-SNAPSHOT"));
-		KieScanner kScanner = ks.newKieScanner(kContainer);
-		kScanner.start(1000);
+		KieContainer kContainer = ks.newKieClasspathContainer();
 		return kContainer;
 	}
+
 }

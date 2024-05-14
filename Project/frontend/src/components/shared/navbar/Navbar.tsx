@@ -63,9 +63,6 @@ export default function Navbar({
                   if (link.value === "Contact") {
                     handleContactClick();
                   }
-                  if (link.value === "Add Admin") {
-                    handleAddAdminClick();
-                  }
                   setIsMenuOpen(false);
                 }}
                 to={link.href}

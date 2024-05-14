@@ -1,3 +1,9 @@
-package backward;
+package rules.backward;
 
-import com.example.model.User
+
+rule "go"
+when
+    $s : String()
+then
+    System.out.println("aaaa" );
+end

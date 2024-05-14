@@ -1,1 +1,18 @@
-package cep;
+package rules.cep;
+
+
+rule "go cep" salience 10
+
+when
+    $s : String( )
+then
+    System.out.println($s );
+end
+
+rule "go cep2" salience 10
+
+when
+    $s : String( )
+then
+    System.out.println($s + "2" );
+end

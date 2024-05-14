@@ -1,10 +1,14 @@
 package com.example.service.service;
 
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
 import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
+import com.example.model.enums.Symptoms;
 import com.example.service.DTO.TokenDTO;
 import com.example.service.DTO.UserDTO;
+import com.example.service.repository.PatientRepository;
 import com.example.service.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,13 +30,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private UserRepository patientRepository;
+    private PatientRepository patientRepository;
     @Autowired
     private JWTService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private ResonerService resonerService;
 
 
     public User save(User user){return userRepository.save(user);}
@@ -87,6 +95,11 @@ public class UserService {
         patient.setFirstname(userDTO.getFirstname());
         patient.setLastname(userDTO.getLastname());
         patient.setTelephoneNumber(userDTO.getTelephoneNumber());
+        patient.setBirthDate(userDTO.getBirthDate());
+        patient.setGender(userDTO.getGender());
+        patient.setBloodType(userDTO.getBloodType());
+        patient.setHeight(userDTO.getHeight());
+        patient.setWeight(userDTO.getWeight());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         patient.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         patient.setRole(Role.PATIENT);

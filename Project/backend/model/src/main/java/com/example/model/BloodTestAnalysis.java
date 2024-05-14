@@ -1,6 +1,7 @@
 package com.example.model;
 
 import com.example.model.enums.BloodTestType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,9 @@ public class BloodTestAnalysis {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
     private BloodTestType type;
@@ -31,6 +34,17 @@ public class BloodTestAnalysis {
         this.patient = patient;
         this.status = "PENDING";
         this.date = LocalDate.now();
+    }
+
+    @Override
+    public String toString() {
+        return "BloodTestAnalysis{" +
+                "id=" + id +
+                ", type=" + type +
+                ", value=" + value +
+                ", status='" + status + '\'' +
+                ", date=" + date +
+                '}';
     }
 }
 

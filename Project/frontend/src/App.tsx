@@ -10,6 +10,7 @@ import { ThemeProvider } from 'styled-components';
 import { LoginUser } from './models/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { UserProvider } from './utils/UserContext/userContext';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,17 +30,21 @@ function App() {
   const role = determineRole(user);
   const filterMenuOptions = (userRole: string) => {
     switch (userRole) {
-      case "USER":
+      case "PATIENT":
         return menuOptions.filter((option) =>
-          option.role === "user" || option.role === "logged" || option.role === "all"
+          option.role === "patient" || option.role === "logged" || option.role === "all"
         );
       case "ADMIN":
         return menuOptions.filter((option) =>
           option.role === "admin" || option.role === "logged" || option.role === "all"
         );
-      case "SUPERADMIN":
+      case "DOCTOR":
         return menuOptions.filter((option) =>
-          option.role === "superadmin" || option.role === "logged" || option.role === "admin" || option.role === "all"
+          option.role === "doctor" || option.role === "logged" || option.role === "all"
+        );
+      case "TECHNICIAN":
+        return menuOptions.filter((option) =>
+          option.role === "technician" || option.role === "logged" || option.role === "all"
         );
       default:
         return menuOptions.filter((option) =>
@@ -51,6 +56,7 @@ function App() {
   const finalOptions = filterMenuOptions(role)
   
   return (
+    <UserProvider value={{ user, setUser }}>
     <div className="App">
        <ThemeProvider theme={theme}>
        <Router>
@@ -72,6 +78,7 @@ function App() {
       </ThemeProvider>
       
     </div>
+    </UserProvider>
   );
 }
 
