@@ -1,24 +1,21 @@
 // UserHomePage.tsx
 
 import React, { useState } from 'react';
-import MedicalTable from '../../components/shared/MedicalTable/MedicalTable';
+import MedicalTable from '../../components/MedicalTable/MedicalTable';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { Card, CardContainer, Container } from './DiagnosesPage.styled';
-import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch } from '../../components/shared/styled/SharedStyles.styled';
-import { Title } from '../DoctorHomePage/DoctorHomePage.styled';
+import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, TableContainer, TableTitle } from '../../components/shared/styled/SharedStyles.styled';
 
 const DiagnosesPage = () => {
     const data = [
         { ime: 'Ana', prezime: 'Marković', jmbg: '1234567890123', datumIzdavanja: '22.5.2000' },
         { ime: 'Marko', prezime: 'Petrović', jmbg: '9876543210987', datumIzdavanja: '15.10.1998' },
         { ime: 'Jovana', prezime: 'Nikolić', jmbg: '4561237890456', datumIzdavanja: '5.3.2005' },
-        // Dodajte više podataka po potrebi
     ];
     const [searchInput, setSearchInput] = useState('');
 
     return (
-        <Container>
-            <Title>Diagnoze pacijenata</Title>
+        <TableContainer>
+            <TableTitle>Diagnoze pacijenata</TableTitle>
             <SearchContainer>
             <StyledFontAwesomeIcon icon={faSearch} />
             <StyledInputSearch
@@ -31,7 +28,7 @@ const DiagnosesPage = () => {
             <MedicalTable data={data} searchInput={searchInput} onRowClick={function (row: { [key: string]: string; }): void {
                 throw new Error('Function not implemented.');
             }}/>
-        </Container>
+        </TableContainer>
     );
 };
 
