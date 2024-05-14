@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled, { keyframes } from "styled-components";
 
 export const Message = styled.p`
@@ -34,4 +35,29 @@ export const ModalCancelButton = styled(ModalConfirmButton)`
 export const ModalButtonContainer = styled.div`
   display: flex;
   justify-content: right;
+`;
+
+export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+  margin-left: 5px;
+  font-size: large;
+`;
+export const SearchContainer = styled.div`
+display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right:20px
+`;
+
+export const StyledInputSearch = styled.input`
+  width: 170px;
+  padding: 8px;
+  border: 2px solid  ${({ theme }) => theme.colors.secondColor};
+  border-radius: 10px;
+  font-size: ${({ theme }) => theme.fontSizes.standard};
+  margin: 5px;
+
+  &::placeholder, &::placeholder {
+    text-align: left;
+    font-size: 16px;
+  }
 `;

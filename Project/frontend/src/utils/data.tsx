@@ -44,14 +44,15 @@ export const icons = [
 export const navbarTitle = "MedicLab";
   
   export const menuOptions = [
-    { href: "", value: "Home", role: "guest" },
-    { href: "/", value: "Home", role: "logged" },
-    { href: "/medical-examination", value: "Medical Examination", role: "doctor" },
-    { href: "/patient-history", value: "Shared real estates", role: "patient" },
+    { href: "", value: "Početna", role: "guest" },
+    { href: "/", value: "Početna", role: "logged" },
+    { href: "/medical-examination", value: "Medicinski pregled", role: "all" },
+    { href: "/doctor-home-page", value: "Pacijenti", role: "all" },
+    { href: "/diagnoses-page", value: "Diagnoze", role: "all" },
     { href: "/admin-home-page", value: "Requests", role: "admin" },
-    { href: "/energy-consumption", value: "Energy Consumption", role: "admin" },
+    { href: "/medical-tech-page", value: "Analize", role: "all" },  
     { href: "#", value: "Add Admin", role: "superadmin" },
     { href: "/login", value: "Sign In/Sign up", role: "guest" },
     { href: "/login", value: "Log Out", role: "logged" },
-    { href: "#", value: "Contact", role: "all" },
+    { href: "#", value: "Kontakt", role: "guest" },
   ];
