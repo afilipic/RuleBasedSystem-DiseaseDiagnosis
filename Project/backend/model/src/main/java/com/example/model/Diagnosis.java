@@ -16,7 +16,7 @@ public class Diagnosis {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column
     private LocalDate date;
 
     @ManyToOne

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -36,9 +37,14 @@ public class Patient extends User{
     }
 
     public void addBloodTestAnalysis(BloodTestType type){
-        BloodTestAnalysis bloodTestAnalysis = new BloodTestAnalysis(type, this);
+        boolean exists = this.bloodTestAnalyses.stream()
+                .anyMatch(bloodTestAnalysis -> bloodTestAnalysis.getType() == type && bloodTestAnalysis.getDate().equals(LocalDate.now()));
 
-        this.bloodTestAnalyses.add(bloodTestAnalysis);
+        // Ako ne postoji, dodajemo novi BloodTestAnalysis
+        if (!exists) {
+            BloodTestAnalysis bloodTestAnalysis = new BloodTestAnalysis(type, this);
+            this.bloodTestAnalyses.add(bloodTestAnalysis);
+        }
     }
 
     @Override

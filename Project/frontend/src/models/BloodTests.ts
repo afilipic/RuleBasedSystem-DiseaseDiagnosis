@@ -39,12 +39,16 @@ export enum AnalysisParameters {
   ANTI_TPO = "Anti-TPO",
   ANTI_TG = "Anti-Tg",
   ANA = "ANA",
-  ANTI_DSDNA = "Anti-dsDNA",
+  ANTI_DS_DNA = "Anti-dsDNA",
   ANTI_SM = "Anti-Sm",
   GLUCOSE = "Glukoza",
   HBA1C = "HbA1c",
   C_PEPTIDE = "C-peptid",
-  INSULIN = "Insulin"
+  INSULIN = "Insulin",
+  RF = "RF",
+  ANTI_CCP = "Anti-CCP",
+  CRP = "CRP",
+  ESR = "ESR"
 }
 
 

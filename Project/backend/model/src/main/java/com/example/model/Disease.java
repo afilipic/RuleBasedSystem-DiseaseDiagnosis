@@ -24,7 +24,9 @@ public class Disease {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column
     private String name;
+    @Column
     private String description;
 
     @ElementCollection(fetch = FetchType.EAGER)

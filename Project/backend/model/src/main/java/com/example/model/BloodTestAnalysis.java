@@ -24,16 +24,22 @@ public class BloodTestAnalysis {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @Column
     private BloodTestType type;
+    @Column
     private Double value;
+    @Column
     private String status;
+    @Column
     private LocalDate date;
 
+    @JsonIgnore
     public BloodTestAnalysis(BloodTestType type, Patient patient) {
         this.type = type;
         this.patient = patient;
         this.status = "PENDING";
         this.date = LocalDate.now();
+        this.value = 0.0;
     }
 
     @Override
