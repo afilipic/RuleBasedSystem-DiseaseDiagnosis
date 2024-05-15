@@ -158,85 +158,7 @@ const MedicalExamPage: React.FC = () => {
     <>
       <Container>
 
-        <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
-          <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
-          <StepIndicatorContainer>
-            <StepCircle>
-              {step + 1}
-            </StepCircle>
-            <TitleContainer className='TitleN'>
-              <FormTitle>Simptomi</FormTitle>
-            </TitleContainer>
-          </StepIndicatorContainer>
-          <Content>
-            <MainContent>
-              <div>
-                {symptomsList.map((symptom, index) => (
-                  <CardContainer key={index} onClick={() => handleClick(symptom)} isClicked={selectedSymptoms.includes(symptom)}>
-                    <div>
-                      {selectedSymptoms.includes(symptom) && <SymptomIcon><FaCheck /></SymptomIcon>}
-                      <SymptomTitle>{symptom}</SymptomTitle>
-                    </div>
-                  </CardContainer>
-                ))}
-              </div>
-            </MainContent>
-            <ButtonContent>
-              <ButtonWrapper>
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <Label>Sledeci korak</Label>
-                <Button onClick={nextStep}>
-                  <span>&#8594;</span>
-                </Button>
-              </ButtonWrapper>
-            </ButtonContent>
-          </Content>
-        </Fieldset>
-
-        <Fieldset className="fieldset" style={{ display: step === 1 ? 'block' : 'none' }}>
-          <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
-          <StepIndicatorContainer>
-            <StepCircle>
-              {step + 1}
-            </StepCircle>
-            <TitleContainer className='TitleN'>
-              <FormTitle>Analize krvi</FormTitle>
-            </TitleContainer>
-          </StepIndicatorContainer>
-          <Content>
-            <MainContent>
-              <APContent columns={columns}>
-                {analysisParametersList.map((analysisParam, index) => (
-                  <CardContainer2 key={index} onClick={() => handleClickAnalysisParam(analysisParam)} isClicked={selectedAnalysisParam.includes(analysisParam)}>
-                    <div>
-                      <Circle>
-                        {selectedAnalysisParam.includes(analysisParam) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
-                      </Circle>
-                      <SymptomTitle>{analysisParam}</SymptomTitle>
-                    </div>
-                  </CardContainer2>
-                ))}
-              </APContent>
-            </MainContent>
-            <ButtonContent>
-              <ButtonWrapper>
-                <Button onClick={prevStep}>
-                  <span>&#8592;</span>
-                </Button>
-                <Label>Prethodni korak</Label>
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <Label>Sledeci korak</Label>
-                <Button onClick={nextStep}>
-                  <span>&#8594;</span>
-                </Button>
-              </ButtonWrapper>
-            </ButtonContent>
-          </Content>
-        </Fieldset>
-
-        <Fieldset className="fieldset" style={{ display: step === 2 ? 'block' : 'none' }}>
+      <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
           <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
           <StepIndicatorContainer>
             <StepCircle>
@@ -270,6 +192,88 @@ const MedicalExamPage: React.FC = () => {
                   </PatientHistoryList>
                 </Card>
               </MainContentA>
+            </MainContent>
+            <ButtonContent>
+              <ButtonWrapper>
+                <Button onClick={prevStep}>
+                  <span>&#8592;</span>
+                </Button>
+                <Label>Prethodni korak</Label>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <Label>Sledeci korak</Label>
+                <Button onClick={nextStep}>
+                  <span>&#8594;</span>
+                </Button>
+              </ButtonWrapper>
+            </ButtonContent>
+          </Content>
+        </Fieldset>
+
+        <Fieldset className="fieldset" style={{ display: step === 1 ? 'block' : 'none' }}>
+          <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
+          <StepIndicatorContainer>
+            <StepCircle>
+              {step + 1}
+            </StepCircle>
+            <TitleContainer className='TitleN'>
+              <FormTitle>Simptomi</FormTitle>
+            </TitleContainer>
+          </StepIndicatorContainer>
+          <Content>
+            <MainContent>
+              <div>
+                {symptomsList.map((symptom, index) => (
+                  <CardContainer key={index} onClick={() => handleClick(symptom)} isClicked={selectedSymptoms.includes(symptom)}>
+                    <div>
+                      {selectedSymptoms.includes(symptom) && <SymptomIcon><FaCheck /></SymptomIcon>}
+                      <SymptomTitle>{symptom}</SymptomTitle>
+                    </div>
+                  </CardContainer>
+                ))}
+              </div>
+            </MainContent>
+            <ButtonContent>
+            <ButtonWrapper>
+                <Button onClick={prevStep}>
+                  <span>&#8592;</span>
+                </Button>
+                <Label>Prethodni korak</Label>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <Label>Sledeci korak</Label>
+                <Button onClick={nextStep}>
+                  <span>&#8594;</span>
+                </Button>
+              </ButtonWrapper>
+            </ButtonContent>
+          </Content>
+        </Fieldset>
+
+        <Fieldset className="fieldset" style={{ display: step === 2 ? 'block' : 'none' }}>
+          <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
+          <StepIndicatorContainer>
+            <StepCircle>
+              {step + 1}
+            </StepCircle>
+            <TitleContainer className='TitleN'>
+              <FormTitle>Analize krvi</FormTitle>
+            </TitleContainer>
+          </StepIndicatorContainer>
+          <Content>
+            <MainContent>
+              <APContent columns={columns}>
+                {analysisParametersList.map((analysisParam, index) => (
+                  <CardContainer2 key={index} onClick={() => handleClickAnalysisParam(analysisParam)} isClicked={selectedAnalysisParam.includes(analysisParam)}>
+                    <div>
+                      <Circle>
+                        {selectedAnalysisParam.includes(analysisParam) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
+                      </Circle>
+                      <SymptomTitle>{analysisParam}</SymptomTitle>
+                    </div>
+                  </CardContainer2>
+                ))}
+              </APContent>
             </MainContent>
             <ButtonContent>
               <ButtonWrapper>

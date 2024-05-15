@@ -68,7 +68,6 @@ margin: 50px auto;
 justify-content: center; /* Centriranje horizontalno */
 align-items: center;
 `;
-
 export const TableTitle = styled.h2`
 font-size: 28px;
 color: #2C3E50;
@@ -76,4 +75,14 @@ margin-bottom: 8px;
 font-weight: 600;
 display: flex;
 align-items: center;
+`;
+
+export const MainCardContainer = styled.div`
+  width: 70%;
+  margin: 50px auto;
+  text-align: center;
+  position: relative;
+  display: flex;
+  justify-content: center; /* Centriranje horizontalno */
+  align-items: center;
 `;

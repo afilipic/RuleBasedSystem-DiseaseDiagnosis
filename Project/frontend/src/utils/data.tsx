@@ -45,7 +45,6 @@ export const navbarTitle = "MedicLab";
   
 export const menuOptions = [
     { href: "", value: "Početna", role: "all" },
-    { href: "/medical-examination", value: "Medicinski pregled", role: "doctor" },
     { href: "/doctor-home-page", value: "Pacijenti", role: "doctor" },
     { href: "/diagnoses-page", value: "Dijagnoze", role: "doctor" },
     { href: "/admin-home-page", value: "Dodaj korisnika", role: "admin" },

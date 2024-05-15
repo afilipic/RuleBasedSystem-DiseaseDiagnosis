@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, ButtonContent, ButtonWrapper, Container, Content, Fieldset, FormTitle, Label, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomTitle, TitleContainer } from '../MedicalExamPage/MedicalExamPage.styled';
+import { Button, ButtonContent, ButtonWrapper, Content, Label, SymptomTitle } from '../MedicalExamPage/MedicalExamPage.styled';
 import Modal from '../../components/shared/modal/Modal';
-import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton, TableTitle,SearchContainer, StyledFontAwesomeIcon, StyledInputSearch  } from '../../components/shared/styled/SharedStyles.styled';
+import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton, TableTitle, SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, MainCardContainer, TableContainer } from '../../components/shared/styled/SharedStyles.styled';
 import { showToast } from '../../components/shared/toast/CustomToast';
-import { InputField, CardContainer, MainContent, APContent, Container2 } from './MedicalTechHomePage.styled';
+import { InputField, CardContainer, MainContent, APContent } from './MedicalTechHomePage.styled';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { PatientDTO } from '../../models/User';
+import StepCard from '../../components/StepCard/StepCard';
 
 
 const analysisParametersList = [
@@ -112,9 +113,40 @@ const MedicalTechHomePage: React.FC = () => {
     }
   };
 
+  const content = (
+    <Content>
+      <MainContent>
+        <APContent columns={columns}>
+          {analysisParametersList.map((analysisParam, index) => (
+            <CardContainer key={index} >
+              <div>
+                <SymptomTitle>{analysisParam}</SymptomTitle>
+              </div>
+              <InputField
+                type="number"
+                placeholder="Vrednost"
+                // Dodajte ref za svako input polje
+                ref={(input) => (inputRefs.current[index] = input)}
+              />
+            </CardContainer>
+          ))}
+        </APContent>
+      </MainContent>
+      <ButtonContent>
+        <ButtonWrapper>
+        </ButtonWrapper>
+        <ButtonWrapper>
+          <Label>Sledeci korak</Label>
+          <Button onClick={analysisConfirmation}>
+            <span>&#8594;</span>
+          </Button>
+        </ButtonWrapper>
+      </ButtonContent>
+    </Content>
+  );
   return (
     <>
-      <Container2 style={{ display: selectedRow ? 'none' : 'block' }}>
+      <TableContainer style={{ display: selectedRow ? 'none' : 'block' }}>
         <TableTitle>Laboratorijska diagnostika</TableTitle>
         <SearchContainer>
           <StyledFontAwesomeIcon icon={faSearch} />
@@ -125,10 +157,22 @@ const MedicalTechHomePage: React.FC = () => {
             onChange={(e) => setSearchInput(e.target.value)}
           />
         </SearchContainer>
-        <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
-      </Container2>
+        {data.length != 0 && (
+                <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
+            ) }      
+      </TableContainer>
 
-      <Container style={{ display: selectedRow ? 'flex' : 'none' }}>
+      <MainCardContainer style={{ display: selectedRow ? 'flex' : 'none' }}>
+        <StepCard
+          step={step}
+          title="Laboratorijska diagnostika"
+          previous={previous}
+          toPercent={toPercent}
+          content={content}
+        />
+      </MainCardContainer>
+
+      {/* <Container style={{ display: selectedRow ? 'flex' : 'none' }}>
         <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
           <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
           <StepIndicatorContainer>
@@ -170,7 +214,7 @@ const MedicalTechHomePage: React.FC = () => {
           </Content>
         </Fieldset>
 
-      </Container>
+      </Container> */}
       <Modal isVisible={isModalVisible} onClose={handleFormCancel}>
         <div>
           <Message>Da li ste sigurni da želite potvrditi analizu?</Message>
