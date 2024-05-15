@@ -9,6 +9,7 @@ import com.example.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,10 +28,16 @@ public class DoctorService {
 
     public List<BloodTestAnalysis> saveBloodTestAnalysis(String patientUsername,List<BloodTestAnalysis> tests) {
         Patient patient = patientRepository.findOneByUsername(patientUsername).get();
+        List<BloodTestAnalysis> newTests = new ArrayList<>();
+
         for (BloodTestAnalysis bloodTestAnalysis : tests) {
-            bloodTestAnalysis.setPatient(patient);
+            boolean exists = bloodTestAnalysisRepository.existsByPatientAndTypeAndDate(patient, bloodTestAnalysis.getType(), bloodTestAnalysis.getDate());
+            if (!exists) {
+                bloodTestAnalysis.setPatient(patient);
+                newTests.add(bloodTestAnalysis);
+            }
         }
-        return bloodTestAnalysisRepository.saveAll(tests);
+        return bloodTestAnalysisRepository.saveAll(newTests);
     }
 
 }

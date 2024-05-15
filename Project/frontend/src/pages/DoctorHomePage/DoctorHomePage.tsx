@@ -22,11 +22,10 @@ const DoctorHomePage = () => {
     const [data, setData] = useState<PatientDTO[]>([]);
     const [searchInput, setSearchInput] = useState('');
     const [selectedRow, setSelectedRow] = useState<any | null>(null);
+    const navigate = useNavigate();
 
     const firstCardHistory = patientHistory.slice(0, 4);
     const secondCardHistory = patientHistory.slice(4);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         UserService.getAllPatients().then(response => {
@@ -41,6 +40,7 @@ const DoctorHomePage = () => {
     const handleClickRow = (item: PatientDTO) => {
         setSelectedRow(item)
         console.log(item)
+        navigate("/medical-examination", { state: { patient: item } });
     };
 
     const prevStep = () => {

@@ -12,9 +12,8 @@ export type MedicalTableProps = {
     onRowClick: (row: any) => void;
 };
 
-export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTableProps) {
+export default function MedicalTable({ data, searchInput, onRowClick }: MedicalTableProps) {
     const [sortedData, setSortedData] = useState<PatientDTO[]>(data);
-    console.log(sortedData);
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -57,7 +56,7 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
     const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
     const currentItems: PatientDTO[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
-    
+
 
     const highlightText = (text: string, search: string) => {
         if (!search.trim()) {
@@ -78,32 +77,45 @@ export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTa
     return (
         <TableWrapper>
             <ScrollableContainer>
-                    <StyledTable>
-                        <thead>
-                            <tr>
-                                {Object.keys(data[0]).map((key, index) => (
-                                    <th key={index} onClick={() => onSortChange(key)}>{key} {renderSortArrow(key)}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.length > 0 ? (
-                                currentItems.map((item, index) => (
-                                    <tr key={index} onClick={() => handleClickRow(item)}>
-                                        {Object.values(item).map((value, index) => (
+                <StyledTable>
+                    <thead>
+                        <tr>
+                            {data.length > 0 && Object.keys(data[0]).map((key, index) => {
+                                if (Array.isArray((data[0] as any)[key])) {
+                                    return null; // Ignoriši listu
+                                }
+                                return (
+                                    <th key={index} onClick={() => onSortChange(key)}>
+                                        {key} {renderSortArrow(key)}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.length > 0 ? (
+                            currentItems.map((item, index) => (
+                                <tr key={index} onClick={() => handleClickRow(item)}>
+                                    {Object.entries(item).map(([key, value], index) => {
+                                        if (Array.isArray(value)) {
+                                            return null; // Ignoriši listu
+                                        }
+                                        return (
                                             <td key={index}>{highlightText(value, searchInput)}</td>
-                                        ))}
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={Object.keys(data[0]).length}><h2>No data</h2></td>
+                                        );
+                                    })}
                                 </tr>
-                            )}
-                        </tbody>
-                    </StyledTable>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={Object.keys(data[0]).length}><h2>No data</h2></td>
+                            </tr>
+                        )}
+                    </tbody>
+
+                </StyledTable>
             </ScrollableContainer>
-            
+
         </TableWrapper>
     )
 }
