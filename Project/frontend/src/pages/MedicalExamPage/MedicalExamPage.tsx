@@ -21,6 +21,8 @@ const MedicalExamPage: React.FC = () => {
   const patient: PatientDTO = location.state.patient;
 
   const patientHistory = [
+    { key: "Ime", value: patient.firstname },
+    { key: "Prezime", value: patient.lastname },
     { key: "Datum rođenja", value: patient.birthDate },
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
@@ -51,8 +53,8 @@ const MedicalExamPage: React.FC = () => {
   const columns = recomendedTests.length < 6 ? 1 : recomendedTests.length < 11 ? 2 : 3;
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  const firstCardHistory = patientHistory.slice(0, 4);
-  const secondCardHistory = patientHistory.slice(4);
+  const firstCardHistory = patientHistory.slice(0, 6);
+  const secondCardHistory = patientHistory.slice(6);
 
   useEffect(() => {
   }, [selectedAnalysisParam]);
