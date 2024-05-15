@@ -37,7 +37,9 @@ const DoctorHomePage = () => {
                 onChange={(e) => setSearchInput(e.target.value)}
             />
             </SearchContainer>
-            <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />            
+            {data.length != 0 && (
+                <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
+            ) }            
         </TableContainer>        
         
         </>

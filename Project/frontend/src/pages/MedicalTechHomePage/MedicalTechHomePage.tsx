@@ -6,6 +6,7 @@ import { showToast } from '../../components/shared/toast/CustomToast';
 import { InputField, CardContainer, MainContent, APContent, Container2 } from './MedicalTechHomePage.styled';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { PatientDTO } from '../../models/User';
 
 
 const analysisParametersList = [
@@ -56,11 +57,7 @@ const MedicalTechHomePage: React.FC = () => {
   const secondCardHistory = patientHistory.slice(4);
 
 
-  const data = [
-    { ime: 'Ana', prezime: 'Marković', jmbg: '1234567890123', doktor: 'Jovan Savic' },
-    { ime: 'Marko', prezime: 'Petrović', jmbg: '9876543210987', doktor: 'Jovan Savic' },
-    { ime: 'Jovana', prezime: 'Nikolić', jmbg: '4561237890456', doktor: 'Mina Jovic' },
-  ];
+  const [data, setData] = useState<PatientDTO[]>([]);
 
 
 
