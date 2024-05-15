@@ -4,55 +4,12 @@ import { FaCheck } from 'react-icons/fa';
 import Modal from '../../components/shared/modal/Modal';
 import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton } from '../../components/shared/styled/SharedStyles.styled';
 import { showToast } from '../../components/shared/toast/CustomToast';
+import { useLocation } from "react-router-dom";
+import { PatientDTO } from '../../models/User';
+import { BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
+import ResonerService from '../../services/ResonerService/ResonerService';
+import { Item } from 'semantic-ui-react';
 
-const symptomsList = [
-  "Umor",
-  "Žeđ",
-  "Nesanica",
-  "Suva koža",
-  "Tremor ruku",
-  "Groznica",
-  "Glavobolja",
-  "Opadaje kose",
-  "Ubrzan rad srca",
-  "Osip na koži",
-  "Učestalo mokrenje",
-  "Neredovni ciklusi",
-  "Mučnina, povraćanje",
-  "Poremećaj vida",
-  "Bolovi u zglobovima",
-  "Otekline zglobova",
-  "Promjene raspoloženja",
-  "Povećanje tjelesne težine",
-  "Gubitak tjelesne težine",
-  "Osjetljivost na toplotu",
-  "Promjene u raspoloženju"
-
-];
-
-const analysisParametersList = [
-  "TSH",
-  "T3",
-  "T4",
-  "Anti-TPO",
-  "Anti-Tg",
-  "ANA",
-  "Anti-dsDNA",
-  "Anti-Sm",
-  "Glukoza",
-  "HbA1c",
-  "C-peptid",
-  "Insulin "
-];
-
-const patientHistory = [
-  { key: "Datum rođenja", value: "01.01.1990." },
-  { key: "Visina", value: "180 cm" },
-  { key: "Težina", value: "80 kg" },
-  { key: "Krvna grupa", value: "A+" },
-  { key: "Alergije", value: "Prašina, polen" },
-  { key: "Prethodne bolesti", value: "Upala pluća (2015), Grip (2018)" },
-];
 
 const possibleDiseases = [
   "Hashimoto Tireoiditis",
@@ -60,20 +17,38 @@ const possibleDiseases = [
 ];
 
 const MedicalExamPage: React.FC = () => {
+  const location = useLocation();
+  const patient: PatientDTO = location.state.patient;
+
+  const patientHistory = [
+    { key: "Datum rođenja", value: patient.birthDate },
+    { key: "Visina", value: patient.height + " cm" },
+    { key: "Težina", value: patient.weight + " kg" },
+    { key: "Krvna grupa", value: patient.bloodType },
+    { key: "Prethodne bolesti", value: patient.diagnoses.join(", ") },
+    // Dodajte ostale informacije koje želite da prikažete
+  ];
+
   const [step, setStep] = useState(0);
   const [percent, setPercent] = useState(0);
   const [toPercent, setToPercent] = useState(0);
 
-  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<Symptoms[]>([]);
+  const [recomendedTests, setRecommendedTests] = useState<BloodTestResponse[]>([]);
+
+
   const [selectedAnalysisParam, setSelectedAnalysisParam] = useState<string[]>([]);
+  const [selectedTests, setSelectedTests] = useState<BloodTestResponse[]>([]);
+
   const [selectedPossibleDisease, setSelectedPossibleDisease] = useState<string[]>([]);
+
 
   const [previous, setPrevious] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [isClickedAnalysisParam, setIsClickedAnalysisParam] = useState(false);
   const [isClickedPossibleDisease, setIsClickedPossibleDisease] = useState(false);
 
-  const columns = analysisParametersList.length < 6 ? 1 : analysisParametersList.length < 11 ? 2 : 3;
+  const columns = recomendedTests.length < 6 ? 1 : recomendedTests.length < 11 ? 2 : 3;
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const firstCardHistory = patientHistory.slice(0, 4);
@@ -82,14 +57,17 @@ const MedicalExamPage: React.FC = () => {
   useEffect(() => {
   }, [selectedAnalysisParam]);
 
-  const handleClick = (symptom: string) => {
-    setIsClicked(!isClicked);
-    if (!selectedSymptoms.includes(symptom)) {
-      setSelectedSymptoms([...selectedSymptoms, symptom]);
-    } else {
-      setSelectedSymptoms(selectedSymptoms.filter(item => item !== symptom));
-    }
+  const handleClick = (symptom: Symptoms) => {
+    setSelectedSymptoms(prevSelectedSymptoms => {
+      if (prevSelectedSymptoms.includes(symptom)) {
+        return prevSelectedSymptoms.filter(item => item !== symptom);
+      } else {
+        return [...prevSelectedSymptoms, symptom];
+      }
+    });
   };
+
+
   const handleFormCancel = () => {
     setIsModalVisible(false);
   }
@@ -98,13 +76,16 @@ const MedicalExamPage: React.FC = () => {
     setIsModalVisible(false);
   }
 
-  const handleClickAnalysisParam = (analysisParam: string) => {
+  const handleClickAnalysisParam = (test: BloodTestResponse) => {
     setIsClickedAnalysisParam(!isClicked);
-    if (!selectedAnalysisParam.includes(analysisParam)) {
-      setSelectedAnalysisParam([...selectedAnalysisParam, analysisParam]);
+    if (!selectedAnalysisParam.includes(test.type)) {
+      setSelectedAnalysisParam([...selectedAnalysisParam, test.type]);
+      setSelectedTests([...selectedTests, test])
     } else {
-      setSelectedAnalysisParam(selectedAnalysisParam.filter(item => item !== analysisParam));
-    }
+      setSelectedAnalysisParam(selectedAnalysisParam.filter(item => item !== test.type));
+      setSelectedTests(selectedTests.filter(item => item !== test))
+    }      
+
   };
 
   const handleClickPossibleDisease = (possibleDiseases: string) => {
@@ -120,18 +101,50 @@ const MedicalExamPage: React.FC = () => {
     setStep((prevStep) => prevStep < 3 ? prevStep + 1 : prevStep);
     setToPercent(percent + 25.00)
     setPrevious(false);
+  };
+
+  const nextStepGetTests = () => {
+    setPercent((step + 1) * 25.00);
+    setStep((prevStep) => prevStep < 3 ? prevStep + 1 : prevStep);
+    setToPercent(percent + 25.00)
+    setPrevious(false);
+
+    let request : BloodTestRequest = {
+      patient: patient.username,
+      symptoms: selectedSymptoms
+    }
+    ResonerService.getTests(request).then(response => {
+      setRecommendedTests(response.data)
+    }).catch(error => {
+        console.error("Error fetching test recommendation: ", error);
+    });
 
   };
+
+
   const decisionMaking = () => {
-    if (step === 2) {
-      if (selectedSymptoms.length > 0 && selectedAnalysisParam.length > 0) {
-        setIsModalVisible(true);
-      } else {
-        showToast("Niste popunili potrebna polja!");
-      }
+    // if (step === 2) {
+    //   if (selectedSymptoms.length > 0 && selectedAnalysisParam.length > 0) {
+    //     setIsModalVisible(true);
+    //   } else {
+    //     showToast("Niste popunili potrebna polja!");
+    //   }
+    // }
+    // console.log("Odabrani simptomi:", selectedSymptoms);
+    // console.log("Odabrane analize:", selectedAnalysisParam);
+
+
+    let request : SaveBloodTestRequest = {
+      patient: patient.username,
+      tests: selectedTests
     }
-    console.log("Odabrani simptomi:", selectedSymptoms);
-    console.log("Odabrane analize:", selectedAnalysisParam);
+    console.log(request)
+    ResonerService.saveTests(request).then(response => {
+      console.log(response.data)
+    }).catch(error => {
+        console.error("Error fetching test recommendation: ", error);
+    });
+
   };
   const diagnosisMaking = () => {
     nextStep();
@@ -154,11 +167,14 @@ const MedicalExamPage: React.FC = () => {
     setPrevious(true);
   };
 
+
+
+
   return (
     <>
       <Container>
 
-      <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
+        <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>
           <ProgressBarr percent={(step + 1) * 25.00} previous={previous} toPercent={toPercent} />
           <StepIndicatorContainer>
             <StepCircle>
@@ -223,18 +239,19 @@ const MedicalExamPage: React.FC = () => {
           <Content>
             <MainContent>
               <div>
-                {symptomsList.map((symptom, index) => (
-                  <CardContainer key={index} onClick={() => handleClick(symptom)} isClicked={selectedSymptoms.includes(symptom)}>
+                {Object.entries(Symptoms).map(([symptomKey, symptomValue], index)  => (
+                  <CardContainer key={index} onClick={() => handleClick(symptomKey as Symptoms)} isClicked={selectedSymptoms.includes(symptomKey as Symptoms)}>
                     <div>
-                      {selectedSymptoms.includes(symptom) && <SymptomIcon><FaCheck /></SymptomIcon>}
-                      <SymptomTitle>{symptom}</SymptomTitle>
+                      {selectedSymptoms.includes(symptomKey as Symptoms) && <SymptomIcon><FaCheck /></SymptomIcon>}
+                      <SymptomTitle>{symptomValue}</SymptomTitle>
                     </div>
                   </CardContainer>
                 ))}
               </div>
+
             </MainContent>
             <ButtonContent>
-            <ButtonWrapper>
+              <ButtonWrapper>
                 <Button onClick={prevStep}>
                   <span>&#8592;</span>
                 </Button>
@@ -242,7 +259,7 @@ const MedicalExamPage: React.FC = () => {
               </ButtonWrapper>
               <ButtonWrapper>
                 <Label>Sledeci korak</Label>
-                <Button onClick={nextStep}>
+                <Button onClick={nextStepGetTests}>
                   <span>&#8594;</span>
                 </Button>
               </ButtonWrapper>
@@ -263,13 +280,13 @@ const MedicalExamPage: React.FC = () => {
           <Content>
             <MainContent>
               <APContent columns={columns}>
-                {analysisParametersList.map((analysisParam, index) => (
-                  <CardContainer2 key={index} onClick={() => handleClickAnalysisParam(analysisParam)} isClicked={selectedAnalysisParam.includes(analysisParam)}>
+                {recomendedTests.map((test, index) => (
+                  <CardContainer2 key={index} onClick={() => handleClickAnalysisParam(test)} isClicked={selectedAnalysisParam.includes(test.type)}>
                     <div>
                       <Circle>
-                        {selectedAnalysisParam.includes(analysisParam) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
+                        {selectedAnalysisParam.includes(test.type) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
                       </Circle>
-                      <SymptomTitle>{analysisParam}</SymptomTitle>
+                      <SymptomTitle>{test.type}</SymptomTitle>
                     </div>
                   </CardContainer2>
                 ))}

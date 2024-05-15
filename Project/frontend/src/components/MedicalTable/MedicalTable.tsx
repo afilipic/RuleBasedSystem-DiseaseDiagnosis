@@ -14,7 +14,6 @@ export type MedicalTableProps = {
 
 export default function MedicalTable({ data, searchInput,onRowClick }: MedicalTableProps) {
     const [sortedData, setSortedData] = useState<PatientDTO[]>(data);
-    console.log(sortedData);
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);

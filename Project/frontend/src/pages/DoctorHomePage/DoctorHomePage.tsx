@@ -5,6 +5,7 @@ import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, TableContain
 import UserService from '../../services/UserService/UserService';
 import { PatientDTO } from '../../models/User';
 import { Button, ButtonContent, ButtonWrapper, Card, Content, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList } from '../MedicalExamPage/MedicalExamPage.styled';
+import { useNavigate } from "react-router-dom";
 
 
 const patientHistory = [
@@ -19,6 +20,7 @@ const DoctorHomePage = () => {
     const [data, setData] = useState<PatientDTO[]>([]);
     const [searchInput, setSearchInput] = useState('');
     const [selectedRow, setSelectedRow] = useState<any | null>(null);
+    const navigate = useNavigate();
 
     const firstCardHistory = patientHistory.slice(0, 4);
     const secondCardHistory = patientHistory.slice(4);
@@ -36,6 +38,7 @@ const DoctorHomePage = () => {
     const handleClickRow = (item: PatientDTO) => {
         setSelectedRow(item)
         console.log(item)
+        navigate("/medical-examination", { state: { patient: item } });
     };
 
     const prevStep = () => {

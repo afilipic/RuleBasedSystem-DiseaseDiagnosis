@@ -37,6 +37,7 @@ public class Patient extends User{
 
     public void addBloodTestAnalysis(BloodTestType type){
         BloodTestAnalysis bloodTestAnalysis = new BloodTestAnalysis(type, this);
+
         this.bloodTestAnalyses.add(bloodTestAnalysis);
     }
 
