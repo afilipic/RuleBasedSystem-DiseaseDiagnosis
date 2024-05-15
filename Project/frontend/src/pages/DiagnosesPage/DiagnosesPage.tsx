@@ -25,9 +25,9 @@ const DiagnosesPage = () => {
                 onChange={(e) => setSearchInput(e.target.value)}
             />
             </SearchContainer>
-            <MedicalTable data={data} searchInput={searchInput} onRowClick={function (row: { [key: string]: string; }): void {
+            {/* <MedicalTable data={data} searchInput={searchInput} onRowClick={function (row: { [key: string]: string; }): void {
                 throw new Error('Function not implemented.');
-            }}/>
+            }}/>*/}
         </TableContainer>
     );
 };

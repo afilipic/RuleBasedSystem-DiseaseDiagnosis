@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, TableContainer, TableTitle } from '../../components/shared/styled/SharedStyles.styled';
+import UserService from '../../services/UserService/UserService';
+import { PatientDTO } from '../../models/User';
 
 const DoctorHomePage = () => {
-    const data = [
-        { ime: 'Ana', prezime: 'Marković', jmbg: '1234567890123' },
-        { ime: 'Marko', prezime: 'Petrović', jmbg: '9876543210987'},
-        { ime: 'Jovana', prezime: 'Nikolić', jmbg: '4561237890456' },
-    ];
+    const [data, setData] = useState<PatientDTO[]>([]);
     const [searchInput, setSearchInput] = useState('');
     const [selectedRow, setSelectedRow] = useState<any | null>(null);
 
-    const handleClickRow = (item: any) => {
+    useEffect(() => {
+        UserService.getAllPatients().then(response => {
+            console.log(response.data)
+            setData(response.data);
+        }).catch(error => {
+            console.error("Error fetching real estates: ", error);
+        });
+    }, [data.length]);
+
+
+    const handleClickRow = (item: PatientDTO) => {
         setSelectedRow(item)
         console.log(item)
     }; 
