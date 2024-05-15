@@ -149,6 +149,8 @@ const MedicalTechHomePage: React.FC = () => {
       <TableContainer style={{ display: selectedRow ? 'none' : 'block' }}>
         <TableTitle>Laboratorijska diagnostika</TableTitle>
         <SearchContainer>
+          <div></div>
+          <div>
           <StyledFontAwesomeIcon icon={faSearch} />
           <StyledInputSearch
             type="text"
@@ -156,6 +158,7 @@ const MedicalTechHomePage: React.FC = () => {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
+          </div>  
         </SearchContainer>
         {data.length != 0 && (
                 <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
@@ -171,6 +174,7 @@ const MedicalTechHomePage: React.FC = () => {
           content={content}
         />
       </MainCardContainer>
+
 
       {/* <Container style={{ display: selectedRow ? 'flex' : 'none' }}>
         <Fieldset className="fieldset" style={{ display: step === 0 ? 'block' : 'none' }}>

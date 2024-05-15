@@ -1,10 +1,13 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, TableContainer, TableTitle } from '../../components/shared/styled/SharedStyles.styled';
 import UserService from '../../services/UserService/UserService';
 import { PatientDTO } from '../../models/User';
 import { Button, ButtonContent, ButtonWrapper, Card, Content, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList } from '../MedicalExamPage/MedicalExamPage.styled';
+import { CustomButton } from '../HomePage/HomePage.styled';
+import { StyledRoundButton } from './DoctorHomePage.styled';
+import { useNavigate } from 'react-router-dom';
 
 
 const patientHistory = [
@@ -14,7 +17,7 @@ const patientHistory = [
     { key: "Krvna grupa", value: "A+" },
     { key: "Alergije", value: "Prašina, polen" },
     { key: "Prethodne bolesti", value: "Upala pluća (2015), Grip (2018)" },
-  ];
+];
 const DoctorHomePage = () => {
     const [data, setData] = useState<PatientDTO[]>([]);
     const [searchInput, setSearchInput] = useState('');
@@ -22,6 +25,8 @@ const DoctorHomePage = () => {
 
     const firstCardHistory = patientHistory.slice(0, 4);
     const secondCardHistory = patientHistory.slice(4);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         UserService.getAllPatients().then(response => {
@@ -40,73 +45,83 @@ const DoctorHomePage = () => {
 
     const prevStep = () => {
         setSelectedRow(null)
-      };
+    };
 
     const medicalExam = () => {
         setSelectedRow(null)
-      };
+    };
 
     const content = (
         <Content>
             <MainContent>
-            <MainContentA>
-                <HistoryLabel>Informacije o pacijentu:</HistoryLabel>
-                <Card>
-                  <PatientHistoryList>
-                    {firstCardHistory.map((item, index) => (
-                      <PatientHistoryItem key={index}>
-                        <strong>{item.key}:</strong> {item.value}
-                      </PatientHistoryItem>
-                    ))}
-                  </PatientHistoryList>
-                </Card>
-                <HistoryLabel>Istorija bolesti pacijenta:</HistoryLabel>
-                <Card>
-                  <PatientHistoryList>
-                    {secondCardHistory.map((item, index) => (
-                      <PatientHistoryItem key={index}>
-                        <strong>{item.key}:</strong> {item.value}
-                      </PatientHistoryItem>
-                    ))}
-                  </PatientHistoryList>
-                </Card>
-              </MainContentA>
+                <MainContentA>
+                    <HistoryLabel>Informacije o pacijentu:</HistoryLabel>
+                    <Card>
+                        <PatientHistoryList>
+                            {firstCardHistory.map((item, index) => (
+                                <PatientHistoryItem key={index}>
+                                    <strong>{item.key}:</strong> {item.value}
+                                </PatientHistoryItem>
+                            ))}
+                        </PatientHistoryList>
+                    </Card>
+                    <HistoryLabel>Istorija bolesti pacijenta:</HistoryLabel>
+                    <Card>
+                        <PatientHistoryList>
+                            {secondCardHistory.map((item, index) => (
+                                <PatientHistoryItem key={index}>
+                                    <strong>{item.key}:</strong> {item.value}
+                                </PatientHistoryItem>
+                            ))}
+                        </PatientHistoryList>
+                    </Card>
+                </MainContentA>
             </MainContent>
             <ButtonContent>
-              <ButtonWrapper>
-                <Button onClick={prevStep}>
-                  <span>&#8592;</span>
-                </Button>
-                <Label>Prethodni korak</Label>
-              </ButtonWrapper>
-              <ButtonWrapper>
-                <Label>Sledeci korak</Label>
-                <Button onClick={medicalExam}>
-                  <span>&#8594;</span>
-                </Button>
-              </ButtonWrapper>
+                <ButtonWrapper>
+                    <Button onClick={prevStep}>
+                        <span>&#8592;</span>
+                    </Button>
+                    <Label>Prethodni korak</Label>
+                </ButtonWrapper>
+                <ButtonWrapper>
+                    <Label>Sledeci korak</Label>
+                    <Button onClick={medicalExam}>
+                        <span>&#8594;</span>
+                    </Button>
+                </ButtonWrapper>
             </ButtonContent>
         </Content>
     );
 
+    const handleAddPatient = () => {
+        navigate("/registration");
+    }
+
     return (
         <>
-        <TableContainer>
-            <TableTitle>Pacijenti</TableTitle>
-            <SearchContainer>
-            <StyledFontAwesomeIcon icon={faSearch} />
-            <StyledInputSearch
-                type="text"
-                placeholder="Search actions"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-            />
-            </SearchContainer>
-            {data.length != 0 && (
-                <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
-            ) }            
-        </TableContainer>        
-        
+            <TableContainer>
+                <TableTitle>Pacijenti</TableTitle>
+                <SearchContainer>
+                    <StyledRoundButton onClick={handleAddPatient}>
+                        +
+                    </StyledRoundButton>
+                    <div>
+                    <StyledFontAwesomeIcon icon={faSearch} />
+                    <StyledInputSearch
+                        type="text"
+                        placeholder="Search actions"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                    />
+                    </div>
+                </SearchContainer>
+                {data.length != 0 && (
+                    <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} />
+                )}
+            </TableContainer>
+
+
         </>
 
     );

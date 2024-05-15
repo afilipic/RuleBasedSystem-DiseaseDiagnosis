@@ -85,6 +85,8 @@ const DiagnosesPage = () => {
             <TableContainer style={{ display: selectedRow ? 'none' : 'block' }}>
                 <TableTitle>Diagnoze pacijenata</TableTitle>
                 <SearchContainer>
+                    <div></div>
+                    <div>
                     <StyledFontAwesomeIcon icon={faSearch} />
                     <StyledInputSearch
                         type="text"
@@ -92,6 +94,7 @@ const DiagnosesPage = () => {
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                     />
+                    </div>
                 </SearchContainer>
                 {/* <MedicalTable data={data} searchInput={searchInput} onRowClick={handleClickRow} /> */}
             </TableContainer>

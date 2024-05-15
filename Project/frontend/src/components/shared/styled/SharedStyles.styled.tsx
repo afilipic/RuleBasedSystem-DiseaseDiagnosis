@@ -44,8 +44,9 @@ export const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 export const SearchContainer = styled.div`
 display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin-right:20px
+  justify-content: space-between; /* Raspodela prostora između elemenata */
+  margin-right: 20px;
+  width: 100%;
 `;
 
 export const StyledInputSearch = styled.input`

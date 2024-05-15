@@ -58,11 +58,12 @@ export const Form = styled.form`
 export const Title = styled.h1`
   font-weight: bold;
   margin: 0;
+  margin-bottom:10px;
 `;
 
 export const Input = styled.input`
   background-color: #eee;
-  border: 1px solid ${({ theme }) => theme.colors.main};
+  border: 1px solid ${({ theme }) => theme.colors.lightblue};
   padding: 12px 15px;
   margin: 8px 0;
   width: 110%;
@@ -71,7 +72,25 @@ export const Input = styled.input`
     border: 1px solid red;
   }
 `;
-
+export const RegButton = styled.button`
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.main};
+  background-color: ${({ theme }) => theme.colors.secondColor};
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top:10px;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 80ms ease-in;
+  &:active {
+    transform: scale(0.95);
+  }
+  &:focus {
+    outline: none;
+  }
+`;
 export const Button = styled.button`
   border-radius: 20px;
   border: 1px solid ${({ theme }) => theme.colors.main};
