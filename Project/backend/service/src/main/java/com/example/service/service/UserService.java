@@ -1,14 +1,11 @@
 package com.example.service.service;
 
-import com.example.model.BloodTestAnalysis;
-import com.example.model.Disease;
 import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
-import com.example.model.enums.Symptoms;
-import com.example.service.DTO.PatientDTO;
-import com.example.service.DTO.TokenDTO;
-import com.example.service.DTO.UserDTO;
+import com.example.model.DTO.PatientDTO;
+import com.example.model.DTO.TokenDTO;
+import com.example.model.DTO.UserDTO;
 import com.example.service.repository.PatientRepository;
 import com.example.service.repository.UserRepository;
 import jakarta.mail.MessagingException;

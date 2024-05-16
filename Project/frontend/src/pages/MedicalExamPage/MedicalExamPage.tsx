@@ -6,9 +6,8 @@ import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton } 
 import { showToast } from '../../components/shared/toast/CustomToast';
 import { useLocation } from "react-router-dom";
 import { PatientDTO } from '../../models/User';
-import { BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
+import { AnalysisParameters, BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
 import ResonerService from '../../services/ResonerService/ResonerService';
-import { Item } from 'semantic-ui-react';
 
 
 const possibleDiseases = [
@@ -286,7 +285,7 @@ const MedicalExamPage: React.FC = () => {
                       <Circle>
                         {selectedAnalysisParam.includes(test.type) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
                       </Circle>
-                      <SymptomTitle>{test.type}</SymptomTitle>
+                      <SymptomTitle>{test.type as AnalysisParameters}</SymptomTitle>
                     </div>
                   </CardContainer2>
                 ))}

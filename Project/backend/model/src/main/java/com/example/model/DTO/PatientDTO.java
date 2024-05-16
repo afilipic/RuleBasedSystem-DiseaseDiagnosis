@@ -1,4 +1,4 @@
-package com.example.service.DTO;
+package com.example.model.DTO;
 
 import com.example.model.BloodTestAnalysis;
 import com.example.model.Diagnosis;

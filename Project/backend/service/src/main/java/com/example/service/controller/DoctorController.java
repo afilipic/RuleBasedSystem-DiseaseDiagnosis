@@ -1,7 +1,7 @@
 package com.example.service.controller;
 
 import com.example.model.BloodTestAnalysis;
-import com.example.service.DTO.BloodTestDTO;
+import com.example.model.DTO.BloodTestDTO;
 import com.example.service.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class DoctorController {
     public ResponseEntity getBloodTests(@RequestBody BloodTestDTO bloodTestDTO){
 
         try{
-            List<BloodTestAnalysis> tests = doctorService.getBloodTestAnalysis(bloodTestDTO.getPatient(), bloodTestDTO.getSymptoms());
+            List<BloodTestAnalysis> tests = doctorService.getBloodTestAnalysis(bloodTestDTO);
             System.out.println(tests);
             return new ResponseEntity<>(tests, HttpStatus.CREATED);
         }

@@ -3,6 +3,7 @@ package com.example.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -22,9 +23,11 @@ public class Diagnosis {
     @ManyToOne
     private Patient patient;
 
+    @Getter
     @ManyToOne
     private Disease disease;
 
     @ManyToOne
     private User doctor;
+
 }

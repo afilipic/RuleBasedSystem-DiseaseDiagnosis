@@ -1,8 +1,6 @@
 package com.example.service.controller;
 
-import com.example.model.Patient;
-import com.example.service.DTO.PatientDTO;
-import com.example.service.DTO.UserDTO;
+import com.example.model.DTO.PatientDTO;
 import com.example.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
