@@ -1,16 +1,17 @@
 package com.example.service.service;
 
-import com.example.model.BloodTestAnalysis;
-import com.example.model.Disease;
-import com.example.model.Patient;
+import com.example.model.*;
 import com.example.model.DTO.BloodTestDTO;
+import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
+import com.example.service.repository.PatientRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ResonerService {
@@ -19,6 +20,10 @@ public class ResonerService {
     private KieContainer kieContainer;
     @Autowired
     private DiseaseRepository diseaseRepository;
+    @Autowired
+    PatientRepository patientRepository;
+    @Autowired
+    BloodTestAnalysisRepository bloodTestAnalysisRepository;
 
     private void run(KieSession kieSession) {
         kieSession.fireAllRules();
@@ -35,14 +40,23 @@ public class ResonerService {
 
         kieSession.insert(patient);
         kieSession.insert(bloodTestDTO);
-        System.out.println(bloodTestDTO);
         run(kieSession);
 
+        patientRepository.save(patient);
         return bloodTestDTO.getTests();
-
     }
 
 
+
+    public EvaluationResult diagnosisTestRequest(Patient patient) {
+        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
+        kieSession.getAgenda().getAgendaGroup("diagnosis tests").setFocus();
+        kieSession.insert(patient);
+        EvaluationResult evaluationResult = new EvaluationResult(patient);
+        kieSession.insert(evaluationResult);
+        run(kieSession);
+        return evaluationResult;
+    }
 
 
 }

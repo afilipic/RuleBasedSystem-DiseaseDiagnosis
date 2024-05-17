@@ -1,6 +1,8 @@
 package com.example.service.service;
 
 import com.example.model.BloodTestAnalysis;
+import com.example.model.Diagnosis;
+import com.example.model.EvaluationResult;
 import com.example.model.Patient;
 import com.example.model.DTO.BloodTestDTO;
 import com.example.service.repository.BloodTestAnalysisRepository;
@@ -10,9 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class DoctorService {
+public class BloodTestsService {
     @Autowired
     ResonerService resonerService;
     @Autowired
@@ -37,6 +40,15 @@ public class DoctorService {
             }
         }
         return bloodTestAnalysisRepository.saveAll(newTests);
+    }
+
+    public List<BloodTestAnalysis> getAllPendingTests() {
+        return bloodTestAnalysisRepository.findBloodTestAnalysesByStatus("PENDING");
+    }
+
+    public EvaluationResult checkTest(String patientUsername){
+        Patient patient = patientRepository.findOneByUsername(patientUsername).get();
+        return resonerService.diagnosisTestRequest(patient);
     }
 
 }
