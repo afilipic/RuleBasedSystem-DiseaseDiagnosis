@@ -1,9 +1,28 @@
 package rules.backward;
+import com.example.model.BackwardModel
+import com.example.model.enums.BackwardType
 
+global String symptomGlobal;
 
 rule "go"
 when
     $s : String()
 then
     System.out.println("aaaa" );
+end
+
+
+
+query findDisease(String symptom, String disease)
+    BackwardModel(symptom, disease; )
+    or
+    (BackwardModel(symptom, z; ) and findDisease(z, disease; ))
+end
+rule "confirmRheumatoidArthritis"
+when
+    $model: BackwardModel($symptom: symptom != symptomGlobal, $disease: disease, backwardType == BackwardType.DISEASE)
+    not BackwardModel(symptom == "genetika", disease == $disease)
+    findDisease("genetika", $disease; )
+then
+    System.out.println($disease);
 end

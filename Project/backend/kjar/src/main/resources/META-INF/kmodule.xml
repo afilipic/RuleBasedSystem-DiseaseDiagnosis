@@ -2,4 +2,7 @@
     <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.forward">
         <ksession name="myKieSession"/>
     </kbase>
+    <kbase name="backwardRules" eventProcessingMode="stream" packages="backward">
+        <ksession name="backwardRulesKsession"/>
+    </kbase>
 </kmodule>
