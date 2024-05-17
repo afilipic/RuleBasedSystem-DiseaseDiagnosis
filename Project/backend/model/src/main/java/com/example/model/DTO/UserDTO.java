@@ -1,4 +1,4 @@
-package com.example.service.DTO;
+package com.example.model.DTO;
 
 import com.example.model.enums.Role;
 import lombok.AllArgsConstructor;

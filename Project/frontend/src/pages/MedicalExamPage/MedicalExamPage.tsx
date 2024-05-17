@@ -4,20 +4,16 @@ import { FaCheck } from 'react-icons/fa';
 import Modal from '../../components/shared/modal/Modal';
 import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton } from '../../components/shared/styled/SharedStyles.styled';
 import { showToast } from '../../components/shared/toast/CustomToast';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PatientDTO } from '../../models/User';
-import { BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
+import { AnalysisParameters, BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
 import ResonerService from '../../services/ResonerService/ResonerService';
-import { Item } from 'semantic-ui-react';
 
 
-const possibleDiseases = [
-  "Hashimoto Tireoiditis",
-  "Reumatoidni artritis"
-];
 
 const MedicalExamPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const patient: PatientDTO = location.state.patient;
 
   const patientHistory = [
@@ -27,7 +23,7 @@ const MedicalExamPage: React.FC = () => {
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
     { key: "Krvna grupa", value: patient.bloodType },
-    { key: "Prethodne bolesti", value: patient.diagnoses.join(", ") },
+    { key: "Prethodne bolesti", value: patient.diagnoses.map(diagnosis => diagnosis.disease.description).join(', ') },
     // Dodajte ostale informacije koje želite da prikažete
   ];
 
@@ -42,7 +38,7 @@ const MedicalExamPage: React.FC = () => {
   const [selectedAnalysisParam, setSelectedAnalysisParam] = useState<string[]>([]);
   const [selectedTests, setSelectedTests] = useState<BloodTestResponse[]>([]);
 
-  const [selectedPossibleDisease, setSelectedPossibleDisease] = useState<string[]>([]);
+  const [patientTests, setPatientTests] = useState<BloodTestResponse[]>(patient.bloodTestAnalyses);
 
 
   const [previous, setPrevious] = useState(false);
@@ -57,7 +53,7 @@ const MedicalExamPage: React.FC = () => {
   const secondCardHistory = patientHistory.slice(6);
 
   useEffect(() => {
-  }, [selectedAnalysisParam]);
+  }, [patientTests]);
 
   const handleClick = (symptom: Symptoms) => {
     setSelectedSymptoms(prevSelectedSymptoms => {
@@ -76,6 +72,7 @@ const MedicalExamPage: React.FC = () => {
 
   const handleModalCancelButton = () => {
     setIsModalVisible(false);
+    prevStep()
   }
 
   const handleClickAnalysisParam = (test: BloodTestResponse) => {
@@ -86,18 +83,23 @@ const MedicalExamPage: React.FC = () => {
     } else {
       setSelectedAnalysisParam(selectedAnalysisParam.filter(item => item !== test.type));
       setSelectedTests(selectedTests.filter(item => item !== test))
-    }      
-
-  };
-
-  const handleClickPossibleDisease = (possibleDiseases: string) => {
-    setIsClickedPossibleDisease(!isClicked);
-    if (!selectedPossibleDisease.includes(possibleDiseases)) {
-      setSelectedPossibleDisease([...selectedPossibleDisease, possibleDiseases]);
-    } else {
-      setSelectedPossibleDisease(selectedPossibleDisease.filter(item => item !== possibleDiseases));
     }
+
   };
+
+
+
+  const backToPatients = () => {
+    navigate("/doctor-home-page");
+  };
+
+  const prevStep = () => {
+    setPercent((step - 1) * 25.00);
+    setStep((prevStep) => prevStep > 0 ? prevStep - 1 : prevStep);
+    setToPercent((percent + 25.00))
+    setPrevious(true);
+  };
+
   const nextStep = () => {
     setPercent((step + 1) * 25.00);
     setStep((prevStep) => prevStep < 3 ? prevStep + 1 : prevStep);
@@ -105,68 +107,55 @@ const MedicalExamPage: React.FC = () => {
     setPrevious(false);
   };
 
-  const nextStepGetTests = () => {
-    setPercent((step + 1) * 25.00);
-    setStep((prevStep) => prevStep < 3 ? prevStep + 1 : prevStep);
-    setToPercent(percent + 25.00)
-    setPrevious(false);
 
-    let request : BloodTestRequest = {
+
+  const nextStepGetTests = () => {
+    if (step === 1) {
+      if (selectedSymptoms.length == 0) {
+        showToast("Odaberite bar jedan simptom!");
+        return
+      }
+    }
+
+    let request: BloodTestRequest = {
       patient: patient.username,
       symptoms: selectedSymptoms
     }
     ResonerService.getTests(request).then(response => {
       setRecommendedTests(response.data)
+      nextStep()
+
     }).catch(error => {
-        console.error("Error fetching test recommendation: ", error);
+      console.error("Error fetching test recommendation: ", error);
     });
 
   };
 
 
   const decisionMaking = () => {
-    // if (step === 2) {
-    //   if (selectedSymptoms.length > 0 && selectedAnalysisParam.length > 0) {
-    //     setIsModalVisible(true);
-    //   } else {
-    //     showToast("Niste popunili potrebna polja!");
-    //   }
-    // }
-    // console.log("Odabrani simptomi:", selectedSymptoms);
-    // console.log("Odabrane analize:", selectedAnalysisParam);
+    if (step === 2) {
+      if (selectedAnalysisParam.length == 0) {
+        setIsModalVisible(true);
+      }
+    }
 
-
-    let request : SaveBloodTestRequest = {
+    let request: SaveBloodTestRequest = {
       patient: patient.username,
       tests: selectedTests
     }
-    console.log(request)
     ResonerService.saveTests(request).then(response => {
-      console.log(response.data)
+      setPatientTests([...patientTests, ...response.data])
+      nextStep()
     }).catch(error => {
-        console.error("Error fetching test recommendation: ", error);
+      console.error("Error fetching test recommendation: ", error);
     });
 
   };
-  const diagnosisMaking = () => {
+
+
+  const decisionMakingModal = () => {
     nextStep();
     setIsModalVisible(false);
-
-  };
-  const diagnosiDecision = () => {
-    if (selectedPossibleDisease.length == 1) {
-      showToast("Uspjesno ste potvrdili diagnozu!");
-    } else {
-      showToast("Izaberite jednu diagnozu!");
-    }
-    console.log("Odabrana diagnoza:", selectedPossibleDisease);
-
-  };
-  const prevStep = () => {
-    setPercent((step - 1) * 25.00);
-    setStep((prevStep) => prevStep > 0 ? prevStep - 1 : prevStep);
-    setToPercent((percent + 25.00))
-    setPrevious(true);
   };
 
 
@@ -213,7 +202,7 @@ const MedicalExamPage: React.FC = () => {
             </MainContent>
             <ButtonContent>
               <ButtonWrapper>
-                <Button onClick={prevStep}>
+                <Button onClick={backToPatients}>
                   <span>&#8592;</span>
                 </Button>
                 <Label>Prethodni korak</Label>
@@ -241,7 +230,7 @@ const MedicalExamPage: React.FC = () => {
           <Content>
             <MainContent>
               <div>
-                {Object.entries(Symptoms).map(([symptomKey, symptomValue], index)  => (
+                {Object.entries(Symptoms).map(([symptomKey, symptomValue], index) => (
                   <CardContainer key={index} onClick={() => handleClick(symptomKey as Symptoms)} isClicked={selectedSymptoms.includes(symptomKey as Symptoms)}>
                     <div>
                       {selectedSymptoms.includes(symptomKey as Symptoms) && <SymptomIcon><FaCheck /></SymptomIcon>}
@@ -288,7 +277,7 @@ const MedicalExamPage: React.FC = () => {
                       <Circle>
                         {selectedAnalysisParam.includes(test.type) && <SymptomIcon2><FaCheck /></SymptomIcon2>}
                       </Circle>
-                      <SymptomTitle>{test.type}</SymptomTitle>
+                      <SymptomTitle>{test.type as AnalysisParameters}</SymptomTitle>
                     </div>
                   </CardContainer2>
                 ))}
@@ -323,11 +312,13 @@ const MedicalExamPage: React.FC = () => {
           </StepIndicatorContainer>
           <Content>
             <MainContent>
-              <HistoryLabel>Moguće bolesti:</HistoryLabel>
+              <HistoryLabel>Zakazani testovi:</HistoryLabel>
               <div style={{ marginTop: '20px' }}>
-                {possibleDiseases.map((disease, index) => (
-                  <DiseaseCard key={index} onClick={() => handleClickPossibleDisease(disease)} isClicked={selectedPossibleDisease.includes(disease)}>
-                    <SymptomTitle>{disease}</SymptomTitle>
+                {patientTests.filter(test => test.status === 'PENDING').map((test, index) => (
+                  <DiseaseCard key={index} isClicked={false}>
+                    <SymptomTitle>{test.type}</SymptomTitle>
+                    <p>Status: {test.status}</p>
+                    <p>Datum: {test.date.toString()}</p>
                   </DiseaseCard>
                 ))}
               </div>
@@ -336,8 +327,8 @@ const MedicalExamPage: React.FC = () => {
               <ButtonWrapper>
               </ButtonWrapper>
               <ButtonWrapper>
-                <Label>Zakljuci diagnozu</Label>
-                <Button onClick={diagnosiDecision}>
+                <Label>Završi pregled</Label>
+                <Button onClick={backToPatients}>
                   <span>&#8594;</span>
                 </Button>
               </ButtonWrapper>
@@ -348,9 +339,9 @@ const MedicalExamPage: React.FC = () => {
       </Container>
       <Modal isVisible={isModalVisible} onClose={handleFormCancel}>
         <div>
-          <Message>Da li ste sigurni da želite potvrditi diagnozu?</Message>
+          <Message>Niste odabrali krvne analize. Da li ste sigurni da želite da završite pregled?</Message>
           <ModalButtonContainer>
-            <ModalConfirmButton onClick={diagnosisMaking}>Da</ModalConfirmButton>
+            <ModalConfirmButton onClick={decisionMakingModal}>Da</ModalConfirmButton>
             <ModalCancelButton onClick={handleModalCancelButton}>Ne</ModalCancelButton>
           </ModalButtonContainer>
         </div>

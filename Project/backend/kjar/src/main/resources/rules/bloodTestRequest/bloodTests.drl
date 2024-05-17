@@ -4,100 +4,194 @@ import com.example.model.Patient;
 import com.example.model.enums.BloodTestType;
 import com.example.model.BloodTestAnalysis;
 import com.example.model.Disease;
+import com.example.model.Diagnosis;
 import com.example.model.enums.Symptoms;
+import com.example.model.PossibleDisease;
+import com.example.model.DTO.BloodTestDTO;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
+
 
 global java.util.List allDiseases;
 
 
-rule "Request blood tests for Hashimoto disease"
+//nadji da li ima moguca bolest
+rule "Find possible diseases"
 	agenda-group "blood tests"
 when
     $patient : Patient()
-    $symptoms : List()
-    $disease : Disease(name == "Hashimoto") from allDiseases
+    $testsRequest : BloodTestDTO(patient == $patient.username, tests == [])
+    $disease : Disease() from allDiseases
     $count : Number() from accumulate(
-        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $testsRequest.symptoms,
         count($symptom)
     )
     eval($count.doubleValue() >= 1)
-    $testType : BloodTestType() from $disease.getBloodTests()
-    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+    not (PossibleDisease(patientId == $patient.id, possibleDisease == $disease))
 then
-    $patient.addBloodTestAnalysis($testType);
+    PossibleDisease newPossibleDisease = new PossibleDisease($patient.id, $disease);
+    insert(newPossibleDisease);
 end;
 
+//proveri da li pacijent vec ima tu bolest, ako nema zahtevaj testove za tu bolest, ako ima, proveri dalje
+rule "Patient has diagnosis for possible disease"
+    agenda-group "blood tests"
+when
+    $patient : Patient()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == false, requireTests == false)
+    Diagnosis(disease.id == $possibleDisease.possibleDisease.id) from $patient.getDiagnoses()
+then
+    modify($possibleDisease) {
+        setHasDisease(true)
+    }
+end;
 
-rule "Request blood tests for Graves disease"
+rule "Patient does not have diagnosis for possible disease"
 	agenda-group "blood tests"
 when
     $patient : Patient()
-    $symptoms : List()
-    $disease : Disease(name == "Graves") from allDiseases
-    $count : Number() from accumulate(
-        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
-        count($symptom)
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == false, requireTests == false)
+    not (
+       Diagnosis(disease.id == $possibleDisease.possibleDisease.id) from $patient.getDiagnoses()
     )
-    eval($count.doubleValue() >= 1)
-    $testType : BloodTestType() from $disease.getBloodTests()
-    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
 then
-    $patient.addBloodTestAnalysis($testType);
+    modify($possibleDisease) {
+        setRequireTests(true)
+    }
 end;
 
-rule "Request blood tests for Systemic Lupus Erythematosus (SLE)"
+//ako ima proveri neku bolest, proveri datum poslenjeg testa za tu bolest, ako je pre nedelju dana trazi ponovo
+rule "Patient has diagnosis for possible disease but has old tests"
 	agenda-group "blood tests"
 when
     $patient : Patient()
-    $symptoms : List()
-    $disease : Disease(name == "SLE") from allDiseases
-    $count : Number() from accumulate(
-        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
-        count($symptom)
-    )
-    eval($count.doubleValue() >= 1)
-    $testType : BloodTestType() from $disease.getBloodTests()
-    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
-then
-    $patient.addBloodTestAnalysis($testType);
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == true, requireTests == false)
+    $testType : BloodTestType() from $possibleDisease.possibleDisease.getBloodTests()
+    $lastTest : BloodTestAnalysis(type == $testType) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($lastTest.getDate(), LocalDate.now()) > 7)
+ then
+    modify($possibleDisease) {
+        setRequireTests(true)
+    }
 end;
 
-
-rule "Request blood tests for Rheumatoid Arthritis"
+//za bolesti gde su testovi required, nadji koji su to testovi
+rule "Get required blood tests for disease"
 	agenda-group "blood tests"
 when
     $patient : Patient()
-    $symptoms : List()
-    $disease : Disease(name == "RA") from allDiseases
-    $count : Number() from accumulate(
-        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
-        count($symptom)
-    )
-    eval($count.doubleValue() >= 1)
-    $testType : BloodTestType() from $disease.getBloodTests()
+    $testsRequest : BloodTestDTO()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, requireTests == true)
+    $testType : BloodTestType() from $possibleDisease.possibleDisease.getBloodTests()
     not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+    not(BloodTestAnalysis(type == $testType) from $testsRequest.tests)
 then
-    $patient.addBloodTestAnalysis($testType);
+    $testsRequest.addTest(new BloodTestAnalysis($testType, $patient));
 end;
 
 
-rule "Request blood tests for Type 1 Diabetes"
-when
-    $patient : Patient()
-    $symptoms : List()
-    $disease : Disease(name == "Diabetes Type 1") from allDiseases
-    $count : Number() from accumulate(
-        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
-        count($symptom)
-    )
-    eval($count.doubleValue() >= 1)
-    $testType : BloodTestType() from $disease.getBloodTests()
-    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
-then
-    $patient.addBloodTestAnalysis($testType);
-end;
-
+//rule "Request blood tests for diseases"
+//	agenda-group "blood tests"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease() from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//rule "Request blood tests for Hashimoto diseases"
+//	agenda-group "blood tests"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease(name == "Hashimoto") from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//rule "Request blood tests for Graves disease"
+//	agenda-group "blood tests"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease(name == "Graves") from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//
+//rule "Request blood tests for Systemic Lupus Erythematosus (SLE)"
+//	agenda-group "blood tests"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease(name == "SLE") from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//
+//
+//rule "Request blood tests for Rheumatoid Arthritis"
+//	agenda-group "blood tests"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease(name == "RA") from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//
+//
+//rule "Request blood tests for Type 1 Diabetes"
+//when
+//    $patient : Patient()
+//    $symptoms : List()
+//    $disease : Disease(name == "Diabetes Type 1") from allDiseases
+//    $count : Number() from accumulate(
+//        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $symptoms,
+//        count($symptom)
+//    )
+//    eval($count.doubleValue() >= 1)
+//    $testType : BloodTestType() from $disease.getBloodTests()
+//    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+//then
+//    $patient.addBloodTestAnalysis($testType);
+//end;
+//

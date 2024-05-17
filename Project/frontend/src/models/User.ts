@@ -1,5 +1,6 @@
 import exp from "constants";
 import Role from "./enums/Role";
+import { AnalysisParameters, BloodTestResponse, Symptoms } from "./BloodTests";
 
 export interface User {
   id: number;
@@ -31,7 +32,7 @@ export interface ChangePassword{
 
 export interface PatientDTO{
   birthDate: string;
-  bloodTestAnalyses: BloodTestAnalysis[];
+  bloodTestAnalyses: BloodTestResponse[];
   bloodType: string;
   diagnoses: Diagnosis[];
   firstname: string;
@@ -47,6 +48,18 @@ interface BloodTestAnalysis {
   // Define properties for BloodTestAnalysis here
 }
 
-interface Diagnosis {
-  // Define properties for Diagnosis here
+export interface Diagnosis {
+  id: number;
+  patient: PatientDTO;
+  doctor : User;
+  disease : Disease;
+  date : Date;
+}
+
+export interface Disease{
+  id: number;
+  name: string;
+  description: string;
+  symptoms: Symptoms[];
+  bloodTests: AnalysisParameters[];
 }
