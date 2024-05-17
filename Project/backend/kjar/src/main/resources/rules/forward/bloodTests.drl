@@ -1,4 +1,4 @@
-package rules.bloodTestRequest;
+package rules.forward;
 
 import com.example.model.Patient;
 import com.example.model.enums.BloodTestType;
