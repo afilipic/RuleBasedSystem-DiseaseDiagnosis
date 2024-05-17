@@ -34,6 +34,7 @@ when
     not (PossibleDisease(patientId == $patient.id, possibleDisease == $disease))
 then
     PossibleDisease newPossibleDisease = new PossibleDisease($patient.id, $disease);
+    $patient.addPossibleDisease($disease);
     insert(newPossibleDisease);
 end;
 

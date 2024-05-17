@@ -9,12 +9,12 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "patients")
 @Data
 public class Patient extends User{
-
 
     @Column
     private LocalDate birthDate;
@@ -31,6 +31,10 @@ public class Patient extends User{
     private List<BloodTestAnalysis> bloodTestAnalyses;
 
     @JsonIgnore
+    @ManyToMany()
+    private Set<Disease> possibleDiseases;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "patient")
     private List<Diagnosis> diagnoses;
 
@@ -38,15 +42,12 @@ public class Patient extends User{
         this.setRole(Role.PATIENT);
     }
 
-    public void addBloodTestAnalysis(BloodTestType type){
-        boolean exists = this.bloodTestAnalyses.stream()
-                .anyMatch(bloodTestAnalysis -> bloodTestAnalysis.getType() == type && bloodTestAnalysis.getDate().equals(LocalDate.now()));
+    public void addPossibleDisease(Disease disease){
+        possibleDiseases.add(disease);
+    }
 
-        // Ako ne postoji, dodajemo novi BloodTestAnalysis
-        if (!exists) {
-            BloodTestAnalysis bloodTestAnalysis = new BloodTestAnalysis(type, this);
-            this.bloodTestAnalyses.add(bloodTestAnalysis);
-        }
+    public void removePossibleDisease(Disease disease){
+        possibleDiseases.remove(disease);
     }
 
     @Override

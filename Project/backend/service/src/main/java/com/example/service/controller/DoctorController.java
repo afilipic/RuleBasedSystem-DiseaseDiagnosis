@@ -2,7 +2,8 @@ package com.example.service.controller;
 
 import com.example.model.BloodTestAnalysis;
 import com.example.model.DTO.BloodTestDTO;
-import com.example.service.service.DoctorService;
+import com.example.model.EvaluationResult;
+import com.example.service.service.BloodTestsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,23 +18,21 @@ import java.util.List;
 public class DoctorController {
 
     @Autowired
-    DoctorService doctorService;
+    BloodTestsService bloodTestsService;
 
     @PostMapping(
             value = "/getBloodTest",
             consumes = "application/json")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     public ResponseEntity getBloodTests(@RequestBody BloodTestDTO bloodTestDTO){
-
         try{
-            List<BloodTestAnalysis> tests = doctorService.getBloodTestAnalysis(bloodTestDTO);
+            List<BloodTestAnalysis> tests = bloodTestsService.getBloodTestAnalysis(bloodTestDTO);
             System.out.println(tests);
             return new ResponseEntity<>(tests, HttpStatus.CREATED);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PostMapping(
@@ -41,17 +40,28 @@ public class DoctorController {
             consumes = "application/json")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     public ResponseEntity saveBloodTests(@RequestBody BloodTestDTO bloodTestDTO){
-
         try{
-            List<BloodTestAnalysis> tests = doctorService.saveBloodTestAnalysis(bloodTestDTO.getPatient(),bloodTestDTO.getTests());
+            List<BloodTestAnalysis> tests = bloodTestsService.saveBloodTestAnalysis(bloodTestDTO.getPatient(),bloodTestDTO.getTests());
             return new ResponseEntity<>(tests, HttpStatus.CREATED);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
 
+    @PostMapping(
+            value = "/evaluateTests",
+            consumes = "application/json")
+    @PreAuthorize("hasAnyAuthority('DOCTOR')")
+    public ResponseEntity evaluateTests(@RequestBody BloodTestDTO bloodTestDTO){
+        try{
+            EvaluationResult evaluationResult = bloodTestsService.checkTest(bloodTestDTO.getPatient());
+            return new ResponseEntity<>(evaluationResult, HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
