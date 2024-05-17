@@ -27,7 +27,6 @@ const DoctorHomePage = () => {
 
     useEffect(() => {
         UserService.getAllPatients().then(response => {
-            console.log(response.data)
             setData(response.data);
         }).catch(error => {
             console.error("Error fetching real estates: ", error);
@@ -37,7 +36,6 @@ const DoctorHomePage = () => {
 
     const handleClickRow = (item: PatientDTO) => {
         setSelectedRow(item)
-        console.log(item)
         navigate("/medical-examination", { state: { patient: item } });
     };
 

@@ -2,6 +2,7 @@ package com.example.model;
 
 import com.example.model.enums.BloodTestType;
 import com.example.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class Patient extends User{
     @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
     private List<BloodTestAnalysis> bloodTestAnalyses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "patient")
     private List<Diagnosis> diagnoses;
 

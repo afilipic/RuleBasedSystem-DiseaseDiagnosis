@@ -16,4 +16,11 @@ public class BloodTestDTO {
     private String patient;
     private List<Symptoms> symptoms;
     private List<BloodTestAnalysis> tests = new ArrayList<>();
+
+
+    public void addTest(BloodTestAnalysis test) {
+        if (!tests.contains(test)) {
+            tests.add(test);
+        }
+    }
 }

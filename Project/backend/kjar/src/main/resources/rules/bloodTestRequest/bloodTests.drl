@@ -90,7 +90,7 @@ when
     not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
     not(BloodTestAnalysis(type == $testType) from $testsRequest.tests)
 then
-    $testsRequest.getTests().add(new BloodTestAnalysis($testType, $patient));
+    $testsRequest.addTest(new BloodTestAnalysis($testType, $patient));
 end;
 
 

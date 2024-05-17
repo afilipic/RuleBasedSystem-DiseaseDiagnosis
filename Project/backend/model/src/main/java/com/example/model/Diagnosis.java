@@ -20,7 +20,7 @@ public class Diagnosis {
     @Column
     private LocalDate date;
 
-    @ManyToOne
+    @ManyToOne()
     private Patient patient;
 
     @Getter
