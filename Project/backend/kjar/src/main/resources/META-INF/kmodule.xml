@@ -1,5 +1,5 @@
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
-    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.bloodTestRequest">
+    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.forward">
         <ksession name="myKieSession"/>
     </kbase>
 </kmodule>

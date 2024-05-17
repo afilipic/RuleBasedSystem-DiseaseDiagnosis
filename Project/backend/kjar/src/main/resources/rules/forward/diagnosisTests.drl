@@ -1,0 +1,29 @@
+package rules.forward;
+
+import com.example.model.Patient;
+import com.example.model.enums.BloodTestType;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
+import com.example.model.Diagnosis;
+import com.example.model.enums.Symptoms;
+import com.example.model.PossibleDisease;
+import com.example.model.DTO.BloodTestDTO;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
+
+
+global java.util.List allDiseases;
+
+
+//nadji da li ima moguca bolest
+rule "Find possible diseases"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+then
+    System.out.println("AAA");
+end;
