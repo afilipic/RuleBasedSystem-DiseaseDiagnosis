@@ -2,6 +2,7 @@ package com.example.service.service;
 
 import com.example.model.*;
 import com.example.model.DTO.BloodTestDTO;
+import com.example.model.enums.BackwardType;
 import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
 import com.example.service.repository.PatientRepository;
@@ -10,6 +11,8 @@ import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,6 +59,47 @@ public class ResonerService {
         kieSession.insert(evaluationResult);
         run(kieSession);
         return evaluationResult;
+    }
+
+    public void backwardTest(){
+        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
+        kieSession.getAgenda().getAgendaGroup("backward tests").setFocus();
+        List<String> symptoms = new ArrayList<>();
+
+//        symptoms.add("genetika");
+//        symptoms.add("stres");
+        symptoms.add("alkohol");
+        symptoms.add("oftalmopatija");
+
+        kieSession.insert(symptoms);
+
+        Set<String> diseases = new HashSet<>();
+        kieSession.insert(diseases);
+
+        kieSession.insert(new BackwardModel("genetika", "stres", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel("genetika", "oftalmopatija", BackwardType.FACTOR));
+
+        kieSession.insert(new BackwardModel("stres", "problem sa bubrezima", BackwardType.SYMPTOM));
+        kieSession.insert(new BackwardModel("stres", "druge autoimune bolesti", BackwardType.SYMPTOM));
+
+        kieSession.insert(new BackwardModel("problem sa bubrezima", "sistemski eritemski lupus", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel("problem sa bubrezima", "reumatoidni artritis", BackwardType.DISEASE));
+
+        kieSession.insert(new BackwardModel("druge autoimune bolesti", "zenski pol", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel("druge autoimune bolesti", "alkohol", BackwardType.FACTOR));
+
+        kieSession.insert(new BackwardModel("zenski pol", "Hasimoto tireoiditis", BackwardType.DISEASE));
+
+        kieSession.insert(new BackwardModel("alkohol", "cigarete", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel("cigarete", "manja kilaza", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel("manja kilaza", "diabetes tipa 1", BackwardType.DISEASE));
+
+        kieSession.insert(new BackwardModel("oftalmopatija", "starost", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel("starost", "Gravesova bolest", BackwardType.DISEASE));
+
+
+        run(kieSession);
+        System.out.println(diseases);
     }
 
 

@@ -2,27 +2,27 @@ package rules.backward;
 import com.example.model.BackwardModel
 import com.example.model.enums.BackwardType
 
+import java.util.List;
+import java.util.Set;
+
+
 global String symptomGlobal;
-
-rule "go"
-when
-    $s : String()
-then
-    System.out.println("aaaa" );
-end
-
-
 
 query findDisease(String symptom, String disease)
     BackwardModel(symptom, disease; )
     or
     (BackwardModel(symptom, z; ) and findDisease(z, disease; ))
 end
+
 rule "confirmRheumatoidArthritis"
+    agenda-group "backward tests"
 when
-    $model: BackwardModel($symptom: symptom != symptomGlobal, $disease: disease, backwardType == BackwardType.DISEASE)
-    not BackwardModel(symptom == "genetika", disease == $disease)
-    findDisease("genetika", $disease; )
+    $symptoms: List()
+    $sym : String() from $symptoms
+    $diseases : Set()
+    $model: BackwardModel($symptom: symptom != $sym, $disease: disease, backwardType == BackwardType.DISEASE)
+    not BackwardModel(symptom == $sym, disease == $disease)
+    findDisease($sym, $disease; )
 then
-    System.out.println($disease);
+    $diseases.add($disease);
 end

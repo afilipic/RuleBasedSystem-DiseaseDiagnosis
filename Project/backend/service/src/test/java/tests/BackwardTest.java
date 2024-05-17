@@ -7,21 +7,35 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class BackwardTest {
 
     @Test
     public void testBackward() throws InterruptedException {
         KieSession ksession = prepare();
 
-        ksession.fireAllRules();
+
     }
 
     private KieSession prepare(){
         KieServices ks = KieServices.Factory.get();
         KieContainer kContainer = ks.getKieClasspathContainer();
         KieSession ksession = kContainer.newKieSession("backwardRulesKsession");
+        List<String> symptoms = new ArrayList<>();
 
-        ksession.setGlobal("symptomGlobal", "genetika");
+//        symptoms.add("genetika");
+//        symptoms.add("stres");
+        symptoms.add("alkohol");
+        symptoms.add("oftalmopatija");
+
+        ksession.insert(symptoms);
+
+        Set<String> diseases = new HashSet<>();
+        ksession.insert(diseases);
 
         ksession.insert(new BackwardModel("genetika", "stres", BackwardType.FACTOR));
         ksession.insert(new BackwardModel("genetika", "oftalmopatija", BackwardType.FACTOR));
@@ -44,7 +58,8 @@ public class BackwardTest {
         ksession.insert(new BackwardModel("oftalmopatija", "starost", BackwardType.FACTOR));
         ksession.insert(new BackwardModel("starost", "Gravesova bolest", BackwardType.DISEASE));
 
-
+        ksession.fireAllRules();
+        System.out.println(diseases);
         return ksession;
     }
 }
