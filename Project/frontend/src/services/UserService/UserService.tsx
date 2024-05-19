@@ -1,4 +1,4 @@
-import { ChangePassword, NewUser } from "../../models/User";
+import { ChangePassword, NewUser, UserDTO } from "../../models/User";
 import customAxios from "../AxiosInterceptor/AxiosInterceptor";
 
 class UserService {
@@ -6,6 +6,9 @@ class UserService {
     return customAxios.post(`/user/register`, userData);
   }
   registerAdmin(userData: NewUser) {
+    return customAxios.post(`/user/registerPatient`, userData);
+  }
+  registerPatient(userData: UserDTO) {
     return customAxios.post(`/user/registerPatient`, userData);
   }
   login(userData: { username: string; password: string }) {

@@ -37,3 +37,4 @@ export const DoubleInput = styled.input`
     border: 1px solid red;
   }
 `;
+

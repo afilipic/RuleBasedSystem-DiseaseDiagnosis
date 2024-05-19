@@ -13,13 +13,14 @@ import {
     Title,
     Wrapper,
 } from "../LoginPage/LoginPage.styled";
-import { NewUser } from "../../models/User";
+import { NewUser, UserDTO } from "../../models/User";
 import UserService from "../../services/UserService/UserService";
 import useUser from "../../utils/UserContext/useUser";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../../components/shared/toast/CustomToast";
 import { getNext } from "../../utils/functions/getNextPage";
 import { DoubleInput, Input, InputGroup, Select } from "./RegistrationPage.styled";
+import Role from "../../models/enums/Role";
 
 export interface Props {
     signinIn?: boolean;
@@ -28,40 +29,171 @@ export interface Props {
 const RegistrationPage = () => {
     const [signInPanel, setSignInPanel] = useState(true);
 
-    const [loginUser, setLoginUser] = useState({
+    const navigate = useNavigate();
+    const [userDTO, setUserDTO] = useState<UserDTO>({
         username: "",
+        firstname: "",
+        lastname: "",
+        telephoneNumber: "",
         password: "",
+        birthDate: new Date(),
+        gender: "",
+        height: 0,
+        weight: 0,
+        bloodType: "",
+        role: Role.PATIENT,
+        verified: false,
     });
 
-    const { user, setUser } = useUser();
-    const navigate = useNavigate();
+    const [isEmailValid, setIsEmailValid] = useState(true);
+    const [isPasswordValid, setPasswordValid] = useState(true);
+    const [isWeightValid, setIsWeightValid] = useState(true); // Dodatno stanje za praćenje ispravnosti unosa za težinu
+    const [isHeightValid, setIsHeightValid] = useState(true);
+    const [isFirstNameValid, setFirstNameValid] = useState(true);
+    const [isLastNameValid, setLastNameValid] = useState(true);
+    const [isGenderValid, setGenderValid] = useState(true);
+    const [isBloodTypeValid, setBloodTypeValid] = useState(true);
+    const [isBirthDateValid, setBirthDateValid] = useState(true);
+    const [isTelephoneNumberValid, setTelephoneNumberValid] = useState(true);
 
-    const handleLoginInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setLoginUser((prevState) => ({
+        if (name === "firstname") {
+            if (value.length > 30) 
+                setFirstNameValid(false);
+            else {
+                setFirstNameValid(true);
+            }
+        }     
+        if (name === "lastname") {
+            if (value.length > 30) 
+                setLastNameValid(true);
+            else {
+                setLastNameValid(true);
+            }
+        }    
+        if (name === "username") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            setIsEmailValid(emailRegex.test(value));
+            
+        }
+        if (name === "telephoneNumber") {
+            if (value.length > 12) 
+                setTelephoneNumberValid(false);
+            else {
+                setTelephoneNumberValid(true);
+            }
+        }
+        if (name === "weight") {
+            const weight = parseFloat(value);
+            if(weight >= 3 && weight <= 200)
+                setIsWeightValid(true); 
+            else {
+                setIsWeightValid(false);
+            }
+        }
+
+        if (name === "height") {
+            const height = parseFloat(value);
+            if(height >= 60 && height <= 230)
+                setIsHeightValid(true);
+            else {
+                setIsHeightValid(false);
+            }
+        }
+        if (name === "password") {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            setPasswordValid(passwordRegex.test(value));
+        }
+        if (name === "birthDate") {
+            const selectedDate = new Date(value);
+            const today = new Date();
+            if (selectedDate.getDate() === today.getDate() && 
+                selectedDate.getMonth() === today.getMonth() && 
+                selectedDate.getFullYear() === today.getFullYear()) {
+                setBirthDateValid(false);
+            } else {
+                setBirthDateValid(true);
+            }
+        }
+
+
+        setUserDTO(prevState => ({
             ...prevState,
-            [name]: value,
+            [name]: name === "birthDate" ? new Date(value) : value,
         }));
     };
 
-
-    const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleRegister = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        UserService.login(loginUser)
-            .then((response: any) => {
-                localStorage.setItem("user", JSON.stringify(response.data));
-                setUser(response.data);
-                showToast("Login Successful!");
-                navigate(getNext(response.data.role))
-
+        if (!validateInputs()) {
+            return;
+        }
+        console.log(userDTO);
+        UserService.registerPatient(userDTO)
+            .then(response => {
+                showToast("Registracija uspešna!");
+                navigate("/doctor-home-page");
             })
-            .catch((error: any) => {
-                console.error("Error logging in:", error);
-                showToast(error.response.data);
+            .catch(error => {
+                console.error("Error registering:", error);
+                showToast("Error");
             });
+        
+       
     };
 
-
+    const validateInputs = () => {
+        let isValid = true;
+    
+        if (!userDTO.username || !userDTO.firstname || !userDTO.lastname || !userDTO.password || !userDTO.telephoneNumber || !userDTO.birthDate || !userDTO.gender || !userDTO.height || !userDTO.weight || !userDTO.bloodType) {
+            showToast("Popuni sva polja");
+            isValid = false;
+            setFirstNameValid(false);
+            setLastNameValid(false);
+            setIsEmailValid(false);
+            setPasswordValid(false);
+            setTelephoneNumberValid(false);
+            setIsHeightValid(false);
+            setIsWeightValid(false);
+            setGenderValid(false);
+            setBirthDateValid(false);
+            setBloodTypeValid(false);
+                    
+        } else {
+            if (!isFirstNameValid ) {
+                showToast("Ime nije validno.");
+                isValid = false;
+            }
+            if (!isLastNameValid) {
+                showToast("Prezime nije validno");
+                isValid = false;
+            } 
+            if (!isEmailValid) {
+                showToast("Email adresa nije validna.");
+                isValid = false;
+            }
+            if (!isPasswordValid) {
+                showToast("Sifra nije validna.");
+                isValid = false;
+            }
+            if (!isTelephoneNumberValid) {
+                showToast("Telefon nije validan.");
+                isValid = false;
+            }
+            if (!isWeightValid) {
+                showToast("Težina mora biti između 3 i 200.");
+                isValid = false;
+            }
+            if (!isHeightValid) {
+                showToast("Visina mora biti između 60 i 230.");
+                isValid = false;
+            }
+        }
+    
+        return isValid;
+    };
+    
     return (
         <div>
             <Wrapper>
@@ -72,51 +204,59 @@ const RegistrationPage = () => {
                             <Input
                                 type="text"
                                 placeholder="Ime"
-                                name="ime"
-                                value={loginUser.password}
-                                onChange={handleLoginInputChange}
+                                name="firstname"
+                                value={userDTO.firstname}
+                                onChange={handleInputChange}
+                                className={isFirstNameValid ? "" : "invalidInput"}
                             />
                             <Input
                                 type="text"
                                 placeholder="Prezime"
-                                name="prezime"
-                                value={loginUser.password}
-                                onChange={handleLoginInputChange}
+                                name="lastname"
+                                value={userDTO.lastname}
+                                onChange={handleInputChange}
+                                className={isLastNameValid ? "" : "invalidInput"}
                             />
                             <Input
                                 type="email"
                                 placeholder="Email"
                                 name="username"
-                                value={loginUser.username}
-                                onChange={handleLoginInputChange}
+                                value={userDTO.username}
+                                onChange={handleInputChange}
+                                className={isEmailValid ? "" : "invalidInput"}
                             />
-                            <Input
-                                type="password"
-                                placeholder="Password"
-                                name="password"
-                                value={loginUser.password}
-                                onChange={handleLoginInputChange}
-                            />
+                                <Input
+                                    type="password"
+                                    placeholder="Password"
+                                    name="password"
+                                    value={userDTO.password}
+                                    onChange={handleInputChange}
+                                    className={isPasswordValid ? "" : "invalidInput"}
+                                />
                             <InputGroup>
                             <DoubleInput
                                 type="text"
                                 placeholder="Telefon"
-                                name="telefon"
-                                value={loginUser.password}
-                                onChange={handleLoginInputChange}
+                                name="telephoneNumber"
+                                value={userDTO.telephoneNumber}
+                                onChange={handleInputChange}
+                                className={isTelephoneNumberValid ? "" : "invalidInput"}
                             />
                             <DoubleInput
                                 type="date"
                                 placeholder="Datum rodjenja"
-                                name="datRodj"
-                                value={loginUser.username}
-                                onChange={handleLoginInputChange}
+                                name="birthDate"
+                                value={userDTO.birthDate.toISOString().split("T")[0]}
+                                onChange={handleInputChange}
+                                className={isBirthDateValid ? "" : "invalidInput"}
                             />
                             </InputGroup>
                             <InputGroup>
                                 <Select
-                                    name="pol"
-                                    value={loginUser.username}
+                                    name="gender"
+                                    value={userDTO.gender}
+                                    onChange={handleInputChange}
+                                    className={isGenderValid ? "" : "invalidInput"}
                                 >
                                     <option value="">Izaberite pol</option>
                                     <option value="musko">Muško</option>
@@ -124,9 +264,10 @@ const RegistrationPage = () => {
                                 </Select>
 
                                 <Select
-                                    name="krvnaGrupa"
-                                    value={loginUser.username}
-                                    
+                                    name="bloodType"
+                                    value={userDTO.bloodType}
+                                    onChange={handleInputChange}
+                                    className={isBloodTypeValid ? "" : "invalidInput"}
                                 >
                                     <option value="">Izaberite krvnu grupu</option>
                                     <option value="A+">A+</option>
@@ -143,19 +284,21 @@ const RegistrationPage = () => {
                                 <DoubleInput
                                     type="number"
                                     placeholder="Visina (cm)"
-                                    name="visina"
-                                    value={loginUser.username}
-                                    onChange={handleLoginInputChange}
+                                    name="height"
+                                    value={userDTO.height}
+                                    onChange={handleInputChange}
+                                    className={isHeightValid ? "" : "invalidInput"}
                                 />
                                 <DoubleInput
                                     type="number"
                                     placeholder="Težina (kg)"
-                                    name="tezina"
-                                    value={loginUser.username}
-                                    onChange={handleLoginInputChange}
+                                    name="weight"
+                                    value={userDTO.weight}
+                                    onChange={handleInputChange}
+                                    className={isWeightValid ? "" : "invalidInput"}
                                 />
                             </InputGroup>                            
-                            <RegButton onClick={handleSignIn}>Registruj</RegButton>
+                            <RegButton onClick={handleRegister}>Registruj</RegButton>
                         </Form>
                     </SignInContainer>
 

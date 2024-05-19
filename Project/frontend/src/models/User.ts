@@ -63,3 +63,18 @@ export interface Disease{
   symptoms: Symptoms[];
   bloodTests: AnalysisParameters[];
 }
+
+export interface UserDTO {
+  username: string;
+  firstname: string;
+  lastname: string;
+  telephoneNumber: string;
+  password: string;
+  birthDate: Date;
+  gender: string;
+  height: number;
+  weight: number;
+  bloodType: string;
+  role: Role;
+  verified?: boolean;
+}
