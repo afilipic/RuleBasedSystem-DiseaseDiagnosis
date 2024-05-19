@@ -32,6 +32,11 @@ export interface SaveBloodTestRequest {
   tests: BloodTestResponse[];
 }
 
+export interface SaveDiagnosis {
+  patient: string;
+  diagnosisName: string;
+}
+
 export enum AnalysisParameters {
   TSH = "TSH",
   T3 = "T3",

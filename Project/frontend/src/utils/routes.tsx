@@ -7,6 +7,7 @@ import MedicalTechHomePage from "../pages/MedicalTechHomePage/MedicalTechHomePag
 import DoctorHomePage from "../pages/DoctorHomePage/DoctorHomePage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import RegistrationPage from "../pages/RegistrationPage/RegistrationPage";
+import MedicalDiagnosisPage from "../pages/MedicalDiagnosisPage/MedicalDiagnosisPage";
 
 
 export default function MyRoutes() {
@@ -14,9 +15,13 @@ export default function MyRoutes() {
     <Routes>
       <Route path="" element={<HomePage />} />
       <Route path="login" element={<LoginPage />} />
-      <Route path="medical-examination" element={<MedicalExapPage />} />
+
       <Route path="doctor-home-page" element={<DoctorHomePage />} />
+      <Route path="medical-examination" element={<MedicalExapPage />} />
+
       <Route path="diagnoses-page" element={<DiagnosesPage />} />
+      <Route path="medical-diagnosis" element={<MedicalDiagnosisPage />} />
+
       <Route path="medical-tech-page" element={<MedicalTechHomePage />} />
       <Route path="registration" element={<RegistrationPage />} />
     </Routes>

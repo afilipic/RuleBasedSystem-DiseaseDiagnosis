@@ -35,16 +35,14 @@ end
 
 rule "Create alarm event for possible Hypoglycemia"
 when
-    $patient : Patient()
-    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value < 54) from $patient.getBloodTestAnalyses()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value < 54, $patient : patient)
 then
     insert(new AlarmEvent($patient, "Hipoglikemija"));
 end
 
 rule "Create alarm event for possible Hyperglycemia"
 when
-    $patient : Patient()
-    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 140 && value <= 250) from $patient.getBloodTestAnalyses()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 140 && value <= 250, $patient : patient)
 then
     insert(new AlarmEvent($patient, "Hiperglikemija"));
 end
@@ -52,17 +50,15 @@ end
 
 rule "Create alarm event for possible Ketoacidosis - glucose"
 when
-    $patient : Patient()
-    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 250) from $patient.getBloodTestAnalyses()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 250, $patient : patient)
 then
     insert(new CheckOther(true, $patient));
 end
 
 rule "Create alarm event for possible Ketoacidosis - insulin"
 when
-    $check : CheckOther(check == true)
-    $patient : Patient(id == $check.patient.getId())
-    BloodTestAnalysis(type == BloodTestType.INSULIN, status == "DONE", value < 6) from $patient.getBloodTestAnalyses()
+    $check : CheckOther(check == true, $patient : patient)
+    BloodTestAnalysis(type == BloodTestType.INSULIN, status == "DONE", value < 6, patient == $patient)
 then
     insert(new AlarmEvent($patient, "Dijabeticka ketoacidoza"));
     delete($check);

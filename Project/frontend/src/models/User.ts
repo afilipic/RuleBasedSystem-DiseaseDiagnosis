@@ -78,3 +78,7 @@ export interface UserDTO {
   role: Role;
   verified?: boolean;
 }
+export interface EvaluationResult{
+  patient: number;
+  evaluation: Map<String, number>;
+}
