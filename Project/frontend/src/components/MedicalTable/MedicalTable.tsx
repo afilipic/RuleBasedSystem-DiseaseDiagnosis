@@ -59,12 +59,13 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
 
 
     const highlightText = (text: string, search: string) => {
+        text = text.toString()
         if (!search.trim()) {
             return text;
         }
 
         const regex = new RegExp(`(${search})`, 'gi');
-        const parts = text.split(regex);
+        const parts  = text.split(regex);
 
         return parts.map((part, index) =>
             regex.test(part) ? <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span> : part

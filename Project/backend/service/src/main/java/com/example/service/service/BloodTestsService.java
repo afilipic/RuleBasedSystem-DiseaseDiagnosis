@@ -1,17 +1,18 @@
 package com.example.service.service;
 
-import com.example.model.BloodTestAnalysis;
-import com.example.model.Diagnosis;
-import com.example.model.EvaluationResult;
-import com.example.model.Patient;
+import com.example.model.*;
+import com.example.model.DTO.SaveDiagnosisDTO;
 import com.example.model.DTO.BloodTestDTO;
-import com.example.service.repository.BloodTestAnalysisRepository;
-import com.example.service.repository.PatientRepository;
+import com.example.service.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BloodTestsService {
@@ -21,6 +22,12 @@ public class BloodTestsService {
     PatientRepository patientRepository;
     @Autowired
     BloodTestAnalysisRepository bloodTestAnalysisRepository;
+    @Autowired
+    private DiseaseRepository diseaseRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DiagnosisRepository diagnosisRepository;
 
     public List<BloodTestAnalysis> getBloodTestAnalysis(BloodTestDTO bloodTestDTO) {
         Patient patient = patientRepository.findOneByUsername(bloodTestDTO.getPatient()).get();
@@ -51,10 +58,8 @@ public class BloodTestsService {
             bloodTestAnalysis.setPatient(patient);
             newTests.add(bloodTestAnalysis);
         }
-        List<BloodTestAnalysis> bloodTestAnalysisList = bloodTestAnalysisRepository.saveAll(newTests);
-        System.out.println(patient.getBloodTestAnalyses());
-        this.resonerService.cepTest(patient, newTests);
-        return bloodTestAnalysisList;
+        this.resonerService.cepTest(newTests);
+        return bloodTestAnalysisRepository.saveAll(newTests);
     }
 
     public List<BloodTestAnalysis> getAllPendingTests() {
@@ -65,5 +70,27 @@ public class BloodTestsService {
         Patient patient = patientRepository.findOneByUsername(patientUsername).get();
         return resonerService.diagnosisTestRequest(patient);
     }
+
+    public Diagnosis saveDiagnosis(SaveDiagnosisDTO saveDiagnosisDTO){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User doctor = userRepository.findOneByUsername(username).get();
+
+        Patient patient = patientRepository.findOneByUsername(saveDiagnosisDTO.getPatient()).get();
+        Disease disease = diseaseRepository.findOneByName(saveDiagnosisDTO.getDiagnosisName()).get();
+
+        patient.getPossibleDiseases().remove(disease);
+        patientRepository.save(patient);
+
+        Diagnosis newDiagnosis = new Diagnosis();
+        newDiagnosis.setPatient(patient);
+        newDiagnosis.setDate(LocalDate.now());
+        newDiagnosis.setDisease(disease);
+        newDiagnosis.setDoctor(doctor);
+
+        return diagnosisRepository.save(newDiagnosis);
+    }
+
+
 
 }

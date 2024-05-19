@@ -2,6 +2,8 @@ package com.example.service.controller;
 
 import com.example.model.BloodTestAnalysis;
 import com.example.model.DTO.BloodTestDTO;
+import com.example.model.DTO.SaveDiagnosisDTO;
+import com.example.model.Diagnosis;
 import com.example.model.EvaluationResult;
 import com.example.service.service.BloodTestsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,6 @@ public class DoctorController {
     public ResponseEntity getBloodTests(@RequestBody BloodTestDTO bloodTestDTO){
         try{
             List<BloodTestAnalysis> tests = bloodTestsService.getBloodTestAnalysis(bloodTestDTO);
-            System.out.println(tests);
             return new ResponseEntity<>(tests, HttpStatus.CREATED);
         }
         catch (Exception e){
@@ -58,6 +59,21 @@ public class DoctorController {
         try{
             EvaluationResult evaluationResult = bloodTestsService.checkTest(bloodTestDTO.getPatient());
             return new ResponseEntity<>(evaluationResult, HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(
+            value = "/saveDiagnosis",
+            consumes = "application/json")
+    @PreAuthorize("hasAnyAuthority('DOCTOR')")
+    public ResponseEntity saveDiagnosis(@RequestBody SaveDiagnosisDTO saveDiagnosisDTO){
+        try{
+            System.out.println(saveDiagnosisDTO);
+            Diagnosis diagnosis = bloodTestsService.saveDiagnosis(saveDiagnosisDTO);
+            return new ResponseEntity<>(diagnosis, HttpStatus.CREATED);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

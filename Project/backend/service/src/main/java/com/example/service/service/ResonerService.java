@@ -54,11 +54,14 @@ public class ResonerService {
 
 
 
-    public void cepTest(Patient patient, List<BloodTestAnalysis> tests) {
+    public void cepTest(List<BloodTestAnalysis> tests) {
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
-        kieSession.insert(patient);
+        for (BloodTestAnalysis bloodTestAnalysis : tests) {
+            kieSession.insert(bloodTestAnalysis);
+        }
         run(kieSession);
     }
+
     public EvaluationResult diagnosisTestRequest(Patient patient) {
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
         kieSession.getAgenda().getAgendaGroup("diagnosis tests").setFocus();

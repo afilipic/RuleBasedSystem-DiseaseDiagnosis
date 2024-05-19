@@ -63,3 +63,8 @@ export interface Disease{
   symptoms: Symptoms[];
   bloodTests: AnalysisParameters[];
 }
+
+export interface EvaluationResult{
+  patient: number;
+  evaluation: Map<String, number>;
+}
