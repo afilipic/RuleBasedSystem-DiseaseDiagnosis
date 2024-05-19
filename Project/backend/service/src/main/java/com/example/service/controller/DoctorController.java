@@ -1,6 +1,7 @@
 package com.example.service.controller;
 
 import com.example.model.BloodTestAnalysis;
+import com.example.model.DTO.AnamnesisDTO;
 import com.example.model.DTO.BloodTestDTO;
 import com.example.model.DTO.SaveDiagnosisDTO;
 import com.example.model.Diagnosis;
@@ -13,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(value="*")
 @RestController
@@ -74,6 +76,21 @@ public class DoctorController {
             System.out.println(saveDiagnosisDTO);
             Diagnosis diagnosis = bloodTestsService.saveDiagnosis(saveDiagnosisDTO);
             return new ResponseEntity<>(diagnosis, HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(
+            value = "/evaluateAnamnesis",
+            consumes = "application/json")
+    @PreAuthorize("hasAnyAuthority('DOCTOR')")
+    public ResponseEntity evaluateAnamnesis(@RequestBody AnamnesisDTO anamnesisDTO){
+        try{
+            System.out.println(anamnesisDTO);
+            Set<String> diagnoses = bloodTestsService.checkBackwardsTest(anamnesisDTO);
+            return new ResponseEntity<>(diagnoses, HttpStatus.CREATED);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

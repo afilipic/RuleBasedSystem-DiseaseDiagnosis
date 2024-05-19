@@ -1,6 +1,7 @@
 package com.example.service.service;
 
 import com.example.model.*;
+import com.example.model.DTO.AnamnesisDTO;
 import com.example.model.DTO.BloodTestDTO;
 import com.example.model.enums.BackwardType;
 import com.example.model.enums.Symptoms;
@@ -72,15 +73,15 @@ public class ResonerService {
         return evaluationResult;
     }
 
-    public void backwardTest(){
+    public Set<String> backwardTest(AnamnesisDTO anamnesisDTO){
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
         kieSession.getAgenda().getAgendaGroup("backward tests").setFocus();
-        List<String> symptoms = new ArrayList<>();
+        List<String> symptoms = anamnesisDTO.getSymptoms();
 
 //        symptoms.add("genetika");
 //        symptoms.add("stres");
-        symptoms.add("alkohol");
-        symptoms.add("oftalmopatija");
+//        symptoms.add("alkohol");
+//        symptoms.add("oftalmopatija");
 
         kieSession.insert(symptoms);
 
@@ -110,7 +111,7 @@ public class ResonerService {
 
 
         run(kieSession);
-        System.out.println(diseases);
+        return diseases;
     }
 
 

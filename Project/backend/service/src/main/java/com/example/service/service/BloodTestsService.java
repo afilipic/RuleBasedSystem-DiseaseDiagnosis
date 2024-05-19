@@ -1,6 +1,7 @@
 package com.example.service.service;
 
 import com.example.model.*;
+import com.example.model.DTO.AnamnesisDTO;
 import com.example.model.DTO.SaveDiagnosisDTO;
 import com.example.model.DTO.BloodTestDTO;
 import com.example.service.repository.*;
@@ -69,6 +70,10 @@ public class BloodTestsService {
     public EvaluationResult checkTest(String patientUsername){
         Patient patient = patientRepository.findOneByUsername(patientUsername).get();
         return resonerService.diagnosisTestRequest(patient);
+    }
+
+    public Set<String> checkBackwardsTest(AnamnesisDTO anamnesisDTO){
+        return resonerService.backwardTest(anamnesisDTO);
     }
 
     public Diagnosis saveDiagnosis(SaveDiagnosisDTO saveDiagnosisDTO){
