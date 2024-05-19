@@ -3,6 +3,7 @@ package com.example.service.service;
 import com.example.model.*;
 import com.example.model.DTO.BloodTestDTO;
 import com.example.model.enums.BackwardType;
+import com.example.model.enums.Symptoms;
 import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
 import com.example.service.repository.PatientRepository;
@@ -42,6 +43,8 @@ public class ResonerService {
         kieSession.getAgenda().getAgendaGroup("blood tests").setFocus();
 
         kieSession.insert(patient);
+        kieSession.insert(bloodTestDTO.getSymptoms());
+
         kieSession.insert(bloodTestDTO);
         run(kieSession);
 
@@ -51,6 +54,11 @@ public class ResonerService {
 
 
 
+    public void cepTest(Patient patient, List<BloodTestAnalysis> tests) {
+        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
+        kieSession.insert(patient);
+        run(kieSession);
+    }
     public EvaluationResult diagnosisTestRequest(Patient patient) {
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
         kieSession.getAgenda().getAgendaGroup("diagnosis tests").setFocus();
@@ -101,6 +109,8 @@ public class ResonerService {
         run(kieSession);
         System.out.println(diseases);
     }
+
+
 
 
 }

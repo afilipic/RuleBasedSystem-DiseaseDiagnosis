@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BloodTestsService {
@@ -40,6 +39,22 @@ public class BloodTestsService {
             }
         }
         return bloodTestAnalysisRepository.saveAll(newTests);
+    }
+
+    public List<BloodTestAnalysis> saveBloodTestResult(BloodTestDTO testDTO) {
+        Patient patient = patientRepository.findOneByUsername(testDTO.getPatient()).get();
+
+        List<BloodTestAnalysis> newTests = new ArrayList<>();
+
+        for (BloodTestAnalysis bloodTestAnalysis : testDTO.getTests()) {
+            bloodTestAnalysis.setStatus("DONE");
+            bloodTestAnalysis.setPatient(patient);
+            newTests.add(bloodTestAnalysis);
+        }
+        List<BloodTestAnalysis> bloodTestAnalysisList = bloodTestAnalysisRepository.saveAll(newTests);
+        System.out.println(patient.getBloodTestAnalyses());
+        this.resonerService.cepTest(patient, newTests);
+        return bloodTestAnalysisList;
     }
 
     public List<BloodTestAnalysis> getAllPendingTests() {
