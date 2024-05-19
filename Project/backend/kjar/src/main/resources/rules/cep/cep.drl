@@ -1,50 +1,79 @@
 package rules.cep;
 import com.example.model.Patient;
+import com.example.model.Diagnosis;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
 import com.example.model.enums.Symptoms;
+import com.example.model.enums.BloodTestType;
 import java.util.List;
-
-rule "go cep" salience 10
-	agenda-group "cep tests"
-
-when
-    $s : String( )
-then
-    System.out.println($s );
-end
-
-rule "go cep2" salience 10
-
-when
-    $s : String( )
-then
-    System.out.println($s + "2" );
-end
 
 declare AlarmEvent
     @role( event )
     patient : Patient
+    name : String
 end
 
-//rule "Create alarm event for possible Thyroid Storm in Graves' disease"
-//	agenda-group "cep tests"
-//when
-//    $patient : Patient()
-//    $symptoms : List()
-//    eval(
-//        $symptoms.contains(Symptoms.FEVER) &&
-//        $symptoms.contains(Symptoms.ELEVATED_BODY_TEMPERATURE) &&
-//        $patient.getDiagnoses()==("Graves disease")
-//    )
-//then
-//    insert(new AlarmEvent($patient));
-//end
-//
-//rule "Send emergency alert when alarm event is detected"
-//	agenda-group "cep tests"
-//
-//when
-//    $alarmEvent : AlarmEvent()
-//    not AlarmEvent(patient != $alarmEvent.patient) over window:time(5s)
-//then
-//    System.out.println("Alarm: Tiroidna kriza kod pacijenta " + $alarmEvent.getPatient());
-//end
+declare CheckOther
+    @role( event )
+    check : Boolean
+    patient : Patient
+end
+
+rule "Create alarm event for possible Thyroid Storm in Graves' disease"
+when
+    $patient : Patient()
+    $symptoms : List()
+    $diagnosis : Diagnosis() from $patient.getDiagnoses()
+    Disease(name == "Graves") from $diagnosis.getDisease()
+    eval(
+        $symptoms.contains(Symptoms.FEVER) &&
+        $symptoms.contains(Symptoms.ELEVATED_BODY_TEMPERATURE)
+    )
+then
+    insert(new AlarmEvent($patient, "Tiroidna kriza"));
+end
+
+rule "Create alarm event for possible Hypoglycemia"
+when
+    $patient : Patient()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value < 54) from $patient.getBloodTestAnalyses()
+then
+    insert(new AlarmEvent($patient, "Hipoglikemija"));
+end
+
+rule "Create alarm event for possible Hyperglycemia"
+when
+    $patient : Patient()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 140 && value <= 250) from $patient.getBloodTestAnalyses()
+then
+    insert(new AlarmEvent($patient, "Hiperglikemija"));
+end
+
+
+rule "Create alarm event for possible Ketoacidosis - glucose"
+when
+    $patient : Patient()
+    BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 250) from $patient.getBloodTestAnalyses()
+then
+    insert(new CheckOther(true, $patient));
+end
+
+rule "Create alarm event for possible Ketoacidosis - insulin"
+when
+    $check : CheckOther(check == true)
+    $patient : Patient(id == $check.patient.getId())
+    BloodTestAnalysis(type == BloodTestType.INSULIN, status == "DONE", value < 6) from $patient.getBloodTestAnalyses()
+then
+    insert(new AlarmEvent($patient, "Dijabeticka ketoacidoza"));
+    delete($check);
+end
+
+
+
+rule "Send emergency alert when alarm event is detected"
+when
+    $alarmEvent : AlarmEvent()
+    not AlarmEvent(patient != $alarmEvent.patient) over window:time(5s)
+then
+    System.out.println("Alarm: " + $alarmEvent.getName() + " kod pacijenta " + $alarmEvent.getPatient().getFirstname() + " " + $alarmEvent.getPatient().getLastname());
+end

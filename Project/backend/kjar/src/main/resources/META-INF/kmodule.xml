@@ -1,5 +1,5 @@
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
-    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.forward">
+    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.forward" eventProcessingMode="stream">
         <ksession name="myKieSession"/>
     </kbase>
     <kbase name="backwardRules" eventProcessingMode="stream" packages="backward">
