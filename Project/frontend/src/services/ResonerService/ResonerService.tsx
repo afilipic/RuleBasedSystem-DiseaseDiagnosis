@@ -9,6 +9,10 @@ class ResonerService {
   saveTests(saveBloodTests: SaveBloodTestRequest) {
     return customAxios.post(`/doctor/saveBloodTests`, saveBloodTests);
   }
+  saveTestResults(saveBloodTests: SaveBloodTestRequest) {
+    return customAxios.post(`/technician/saveBloodTestResult`, saveBloodTests);
+  }
+
 
   evaluateTests(evaluateRequest: SaveBloodTestRequest) {
     return customAxios.post(`/doctor/evaluateTests`, evaluateRequest);
