@@ -15,10 +15,8 @@ import {
 } from "../LoginPage/LoginPage.styled";
 import { NewUser, UserDTO } from "../../models/User";
 import UserService from "../../services/UserService/UserService";
-import useUser from "../../utils/UserContext/useUser";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../../components/shared/toast/CustomToast";
-import { getNext } from "../../utils/functions/getNextPage";
 import { DoubleInput, Input, InputGroup, Select } from "./RegistrationPage.styled";
 import Role from "../../models/enums/Role";
 
@@ -47,7 +45,7 @@ const RegistrationPage = () => {
 
     const [isEmailValid, setIsEmailValid] = useState(true);
     const [isPasswordValid, setPasswordValid] = useState(true);
-    const [isWeightValid, setIsWeightValid] = useState(true); // Dodatno stanje za praćenje ispravnosti unosa za težinu
+    const [isWeightValid, setIsWeightValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
     const [isFirstNameValid, setFirstNameValid] = useState(true);
     const [isLastNameValid, setLastNameValid] = useState(true);
@@ -56,67 +54,15 @@ const RegistrationPage = () => {
     const [isBirthDateValid, setBirthDateValid] = useState(true);
     const [isTelephoneNumberValid, setTelephoneNumberValid] = useState(true);
 
+    type ValidationRules = {
+        [key in keyof UserDTO]?: (value: string) => void;
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        if (name === "firstname") {
-            if (value.length > 30) 
-                setFirstNameValid(false);
-            else {
-                setFirstNameValid(true);
-            }
-        }     
-        if (name === "lastname") {
-            if (value.length > 30) 
-                setLastNameValid(true);
-            else {
-                setLastNameValid(true);
-            }
-        }    
-        if (name === "username") {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            setIsEmailValid(emailRegex.test(value));
-            
+        if (validationRules[name as keyof UserDTO]) {
+            validationRules[name as keyof UserDTO]!(value);
         }
-        if (name === "telephoneNumber") {
-            if (value.length > 12) 
-                setTelephoneNumberValid(false);
-            else {
-                setTelephoneNumberValid(true);
-            }
-        }
-        if (name === "weight") {
-            const weight = parseFloat(value);
-            if(weight >= 3 && weight <= 200)
-                setIsWeightValid(true); 
-            else {
-                setIsWeightValid(false);
-            }
-        }
-
-        if (name === "height") {
-            const height = parseFloat(value);
-            if(height >= 60 && height <= 230)
-                setIsHeightValid(true);
-            else {
-                setIsHeightValid(false);
-            }
-        }
-        if (name === "password") {
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            setPasswordValid(passwordRegex.test(value));
-        }
-        if (name === "birthDate") {
-            const selectedDate = new Date(value);
-            const today = new Date();
-            if (selectedDate.getDate() === today.getDate() && 
-                selectedDate.getMonth() === today.getMonth() && 
-                selectedDate.getFullYear() === today.getFullYear()) {
-                setBirthDateValid(false);
-            } else {
-                setBirthDateValid(true);
-            }
-        }
-
 
         setUserDTO(prevState => ({
             ...prevState,
@@ -137,38 +83,38 @@ const RegistrationPage = () => {
             })
             .catch(error => {
                 console.error("Error registering:", error);
-                showToast("Error");
+                showToast("Došlo je do greške, probajte ponovo!");
             });
-        
-       
+
+
     };
 
     const validateInputs = () => {
         let isValid = true;
-    
+
         if (!userDTO.username || !userDTO.firstname || !userDTO.lastname || !userDTO.password || !userDTO.telephoneNumber || !userDTO.birthDate || !userDTO.gender || !userDTO.height || !userDTO.weight || !userDTO.bloodType) {
             showToast("Popuni sva polja");
             isValid = false;
-            setFirstNameValid(false);
-            setLastNameValid(false);
-            setIsEmailValid(false);
-            setPasswordValid(false);
-            setTelephoneNumberValid(false);
-            setIsHeightValid(false);
-            setIsWeightValid(false);
-            setGenderValid(false);
-            setBirthDateValid(false);
-            setBloodTypeValid(false);
-                    
+            setFirstNameValid(!!userDTO.firstname);
+            setLastNameValid(!!userDTO.lastname);
+            setIsEmailValid(!!userDTO.username);
+            setPasswordValid(!!userDTO.password);
+            setTelephoneNumberValid(!!userDTO.telephoneNumber);
+            setIsHeightValid(!!userDTO.height);
+            setIsWeightValid(!!userDTO.weight);
+            setGenderValid(!!userDTO.gender);
+            setBirthDateValid(!!userDTO.birthDate && !isBirthDateValid);
+            setBloodTypeValid(!!userDTO.bloodType);
+
         } else {
-            if (!isFirstNameValid ) {
+            if (!isFirstNameValid) {
                 showToast("Ime nije validno.");
                 isValid = false;
             }
             if (!isLastNameValid) {
                 showToast("Prezime nije validno");
                 isValid = false;
-            } 
+            }
             if (!isEmailValid) {
                 showToast("Email adresa nije validna.");
                 isValid = false;
@@ -190,10 +136,39 @@ const RegistrationPage = () => {
                 isValid = false;
             }
         }
-    
+
         return isValid;
     };
-    
+
+    const validationRules: ValidationRules = {
+        firstname: (value: string) => setFirstNameValid(value.length <= 30),
+        lastname: (value: string) => setLastNameValid(value.length <= 30),
+        username: (value: string) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            setIsEmailValid(emailRegex.test(value));
+        },
+        telephoneNumber: (value: string) => setTelephoneNumberValid(value.length <= 12),
+        weight: (value: string) => {
+            const weight = parseFloat(value);
+            setIsWeightValid(weight >= 3 && weight <= 200);
+        },
+        height: (value: string) => {
+            const height = parseFloat(value);
+            setIsHeightValid(height >= 60 && height <= 230);
+        },
+        password: (value: string) => {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            setPasswordValid(passwordRegex.test(value));
+        },
+        birthDate: (value: string) => {
+            const selectedDate = new Date(value);
+            const today = new Date();
+            setBirthDateValid(selectedDate < today);
+        },
+        gender: (value: string) => setGenderValid(value !== ""),
+        bloodType: (value: string) => setBloodTypeValid(value !== ""),
+    };
+
     return (
         <div>
             <Wrapper>
@@ -225,31 +200,31 @@ const RegistrationPage = () => {
                                 onChange={handleInputChange}
                                 className={isEmailValid ? "" : "invalidInput"}
                             />
-                                <Input
-                                    type="password"
-                                    placeholder="Password"
-                                    name="password"
-                                    value={userDTO.password}
-                                    onChange={handleInputChange}
-                                    className={isPasswordValid ? "" : "invalidInput"}
-                                />
+                            <Input
+                                type="password"
+                                placeholder="Password"
+                                name="password"
+                                value={userDTO.password}
+                                onChange={handleInputChange}
+                                className={isPasswordValid ? "" : "invalidInput"}
+                            />
                             <InputGroup>
-                            <DoubleInput
-                                type="text"
-                                placeholder="Telefon"
-                                name="telephoneNumber"
-                                value={userDTO.telephoneNumber}
-                                onChange={handleInputChange}
-                                className={isTelephoneNumberValid ? "" : "invalidInput"}
-                            />
-                            <DoubleInput
-                                type="date"
-                                placeholder="Datum rodjenja"
-                                name="birthDate"
-                                value={userDTO.birthDate.toISOString().split("T")[0]}
-                                onChange={handleInputChange}
-                                className={isBirthDateValid ? "" : "invalidInput"}
-                            />
+                                <DoubleInput
+                                    type="text"
+                                    placeholder="Telefon"
+                                    name="telephoneNumber"
+                                    value={userDTO.telephoneNumber}
+                                    onChange={handleInputChange}
+                                    className={isTelephoneNumberValid ? "" : "invalidInput"}
+                                />
+                                <DoubleInput
+                                    type="date"
+                                    placeholder="Datum rodjenja"
+                                    name="birthDate"
+                                    value={userDTO.birthDate.toISOString().split("T")[0]}
+                                    onChange={handleInputChange}
+                                    className={isBirthDateValid ? "" : "invalidInput"}
+                                />
                             </InputGroup>
                             <InputGroup>
                                 <Select
@@ -297,7 +272,7 @@ const RegistrationPage = () => {
                                     onChange={handleInputChange}
                                     className={isWeightValid ? "" : "invalidInput"}
                                 />
-                            </InputGroup>                            
+                            </InputGroup>
                             <RegButton onClick={handleRegister}>Registruj</RegButton>
                         </Form>
                     </SignInContainer>

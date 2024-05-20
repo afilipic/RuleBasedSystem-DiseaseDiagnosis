@@ -12,6 +12,9 @@ export const Select = styled.select`
   margin: 8px 0;
   width: calc(51% - 10px); /* Polovina širine InputGroup, oduzmi 10 piksela za razmak */
   border-radius: 7px;
+  &.invalidInput {
+    border: 1px solid red;
+  }
 `;
 
 export const Input = styled.input`
