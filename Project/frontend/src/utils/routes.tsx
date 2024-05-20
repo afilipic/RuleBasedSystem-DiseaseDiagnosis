@@ -8,6 +8,7 @@ import DoctorHomePage from "../pages/DoctorHomePage/DoctorHomePage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import RegistrationPage from "../pages/RegistrationPage/RegistrationPage";
 import MedicalDiagnosisPage from "../pages/MedicalDiagnosisPage/MedicalDiagnosisPage";
+import MedicalAnalysesPage from "../pages/MedicalAnalysesPage/MedicalAnalysesPage";
 
 
 export default function MyRoutes() {
@@ -23,6 +24,8 @@ export default function MyRoutes() {
       <Route path="medical-diagnosis" element={<MedicalDiagnosisPage />} />
 
       <Route path="medical-tech-page" element={<MedicalTechHomePage />} />
+      <Route path="patient-analyses" element={<MedicalAnalysesPage />} />
+
       <Route path="registration" element={<RegistrationPage />} />
     </Routes>
   );

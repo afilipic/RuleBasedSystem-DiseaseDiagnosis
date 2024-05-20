@@ -1,21 +1,22 @@
 // MedicalTable.tsx
 
 import React, { useEffect, useState } from 'react';
-import { ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
+import { ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTableTests.styled";
 import { PatientDTO } from '../../models/User';
 import { BloodTestResponse } from '../../models/BloodTests';
 import { Input } from '../../pages/LoginPage/LoginPage.styled';
 
 
 
-export type MedicalTableProps = {
-    data: PatientDTO[];
+export type MedicalTableTestsProps = {
+    data: BloodTestResponse[];
     searchInput: string;
     onRowClick: (row: any) => void;
+    handleValueChange?: (item: BloodTestResponse, value: string) => void;
 };
 
-export default function MedicalTable({ data, searchInput, onRowClick }: MedicalTableProps) {
-    const [sortedData, setSortedData] = useState<PatientDTO[]>(data);
+export default function MedicalTableTests({ data, searchInput, onRowClick, handleValueChange }: MedicalTableTestsProps) {
+    const [sortedData, setSortedData] = useState<BloodTestResponse[]>(data);
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -38,6 +39,7 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
         //         valueB.localeCompare(valueA);
         // });
         // setSortedData(newSortedData);
+        setSortedData(data);
     }, [data, sortField, sortOrder]);
 
     const onSortChange = (field: string) => {
@@ -56,7 +58,7 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
     const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
     const indexOfLastItem: number = currentPage * itemsPerPage;
     const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
-    const currentItems: PatientDTO[] | BloodTestResponse[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems: BloodTestResponse[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
 
 
@@ -102,6 +104,18 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
                                     {Object.entries(item).map(([key, value], index) => {
                                         if (Array.isArray(value) || key == "id") {
                                             return null; // Ignoriši listu
+                                        }
+                                        if (key === "value") {
+                                    
+                                            return (
+                                                <td key={index}>
+                                                    <Input
+                                                        type="number"
+                                                        value={value}
+                                                        onChange={(e) => handleValueChange!((item as BloodTestResponse), e.target.value)}
+                                                    />
+                                                </td>
+                                            );
                                         }
                                         return (
                                             <td key={index}>{highlightText(value, searchInput)}</td>
