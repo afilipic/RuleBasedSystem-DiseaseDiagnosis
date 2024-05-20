@@ -9,6 +9,7 @@ import { PatientDTO } from '../../models/User';
 import { AnalysisParameters, BloodTestRequest, BloodTestResponse, SaveBloodTestRequest, Symptoms } from '../../models/BloodTests';
 import ResonerService from '../../services/ResonerService/ResonerService';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
+import MedicalTableTests from '../../components/MedicalTableTests/MedicalTableTests';
 
 
 
@@ -130,7 +131,7 @@ const MedicalAnalysesPage: React.FC = () => {
             <MainContent>
             {patientTests.filter(test => test.status === 'PENDING').length != 0 && (
 
-              <MedicalTable data={patientTests.filter(test => test.status === 'PENDING')} searchInput={searchInput} onRowClick={handleClickRow} handleValueChange={handleValueChange} />
+              <MedicalTableTests data={patientTests.filter(test => test.status === 'PENDING')} searchInput={searchInput} onRowClick={handleClickRow} handleValueChange={handleValueChange} />
             )}
             </MainContent>
             <ButtonContent>
