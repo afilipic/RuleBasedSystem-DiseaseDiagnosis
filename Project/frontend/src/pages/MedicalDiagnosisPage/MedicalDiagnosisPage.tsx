@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { APContent, Button, ButtonContent, ButtonWrapper, Card, CardContainer, CardContainer2, Circle, Container, Content, DiseaseCard, Fieldset, FormTitle, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomIcon2, SymptomTitle, TitleContainer } from './MedicalDiagnosisPage.styled';
+import { APContent, AnamnesisButton, Button, ButtonContent, ButtonWrapper, Card, CardContainer, CardContainer2, Circle, Container, Content, DiseaseCard, Fieldset, FormTitle, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList, ProgressBar, ProgressBarr, StepCircle, StepIndicatorContainer, SymptomIcon, SymptomIcon2, SymptomTitle, TitleContainer } from './MedicalDiagnosisPage.styled';
 import { FaCheck } from 'react-icons/fa';
 import Modal from '../../components/shared/modal/Modal';
 import { Message, ModalButtonContainer, ModalCancelButton, ModalConfirmButton } from '../../components/shared/styled/SharedStyles.styled';
@@ -23,8 +23,8 @@ const MedicalDiagnosisPage: React.FC = () => {
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
     { key: "Krvna grupa", value: patient.bloodType },
-    { key: "Prethodne bolesti", value:  patient.diagnoses.length > 0 ?  patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
-    { key: "Potencijalne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', '): "Ne postoje"  },
+    { key: "Prethodne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
+    { key: "Potencijalne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
 
     // Dodajte ostale informacije koje želite da prikažete
   ];
@@ -33,6 +33,7 @@ const MedicalDiagnosisPage: React.FC = () => {
   const [percent, setPercent] = useState(0);
   const [toPercent, setToPercent] = useState(0);
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult>();
+  const [anamnesisResult, setAnamnesisResult] = useState<String[]>();
 
   const [selectedPossibleDisease, setSelectedPossibleDisease] = useState<string>();
   const [isClickedPossibleDisease, setIsClickedPossibleDisease] = useState(false);
@@ -100,6 +101,17 @@ const MedicalDiagnosisPage: React.FC = () => {
   };
 
 
+  const evaluateAnamnesis = () => {
+    var evaluateAnamnesis: any = {
+      patient: patient.username,
+    }
+    ResonerService.evaluateAnamnesis(evaluateAnamnesis).then(response => {
+      setAnamnesisResult(response.data)
+    }).catch(error => {
+      console.error("Error fetching test recommendation: ", error);
+    });
+  };
+
 
   const decisionMaking = () => {
     if (step === 2) {
@@ -115,11 +127,10 @@ const MedicalDiagnosisPage: React.FC = () => {
   const decisionMakingModal = () => {
     setIsModalVisible(false);
 
-    var diagnosis : SaveDiagnosis = {
+    var diagnosis: SaveDiagnosis = {
       patient: patient.username,
       diagnosisName: selectedPossibleDisease!
     }
-    console.log(diagnosis)
     ResonerService.setDiagnoses(diagnosis).then(response => {
       backToPatients();
     }).catch(error => {
@@ -241,11 +252,24 @@ const MedicalDiagnosisPage: React.FC = () => {
 
               <div style={{ marginTop: '20px' }}>
                 {Object.entries(evaluationResult?.evaluation || {}).sort((a, b) => b[1] - a[1]).map((disease, index) => (
-                  <DiseaseCard key={index} onClick={() => handleClickPossibleDisease(disease[0])} isClicked={selectedPossibleDisease == (disease[0])}>
+                  <DiseaseCard  isAnamnesis={anamnesisResult?.includes(disease[0])}
+
+                      key={index} onClick={() => handleClickPossibleDisease(disease[0])} isClicked={selectedPossibleDisease == (disease[0])}>
                     <SymptomTitle>{disease[0]} - {disease[1]}%</SymptomTitle>
                   </DiseaseCard>
                 ))}
               </div>
+              <div>
+                {anamnesisResult && (
+                  <div>
+                    {anamnesisResult.map((test, index) => (
+                      <p>{test}</p>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+
 
             </MainContent>
             <ButtonContent>
@@ -254,6 +278,10 @@ const MedicalDiagnosisPage: React.FC = () => {
                   <span>&#8592;</span>
                 </Button>
                 <Label>Prethodni korak</Label>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <AnamnesisButton onClick={evaluateAnamnesis}>ANAMNZEZA
+                </AnamnesisButton>
               </ButtonWrapper>
               <ButtonWrapper>
                 <Label>Potvrdi dijagnozu</Label>

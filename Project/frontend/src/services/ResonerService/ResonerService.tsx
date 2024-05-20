@@ -18,6 +18,10 @@ class ResonerService {
     return customAxios.post(`/doctor/evaluateTests`, evaluateRequest);
   }
 
+  evaluateAnamnesis(evaluateRequest: any) {
+    return customAxios.post(`/doctor/evaluateAnamnesis`, evaluateRequest);
+  }
+
   setDiagnoses(saveDiagnosis: SaveDiagnosis) {
     return customAxios.post(`/doctor/saveDiagnosis`, saveDiagnosis);
   }

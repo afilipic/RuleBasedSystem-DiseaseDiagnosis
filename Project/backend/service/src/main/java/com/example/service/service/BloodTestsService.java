@@ -72,8 +72,9 @@ public class BloodTestsService {
         return resonerService.diagnosisTestRequest(patient);
     }
 
-    public Set<String> checkBackwardsTest(AnamnesisDTO anamnesisDTO){
-        return resonerService.backwardTest(anamnesisDTO);
+    public Set<String> checkBackwardsTest(String patientUsername){
+        Patient patient = patientRepository.findOneByUsername(patientUsername).get();
+        return resonerService.backwardTest(patient);
     }
 
     public Diagnosis saveDiagnosis(SaveDiagnosisDTO saveDiagnosisDTO){

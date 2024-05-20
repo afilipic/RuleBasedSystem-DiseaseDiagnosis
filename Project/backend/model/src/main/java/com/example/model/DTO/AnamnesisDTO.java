@@ -1,5 +1,6 @@
 package com.example.model.DTO;
 
+import com.example.model.enums.Anamnesis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class AnamnesisDTO {
     private String patient;
-    private List<String> symptoms;
+    private List<Anamnesis> symptoms;
 }

@@ -6,6 +6,7 @@ import com.example.model.DTO.BloodTestDTO;
 import com.example.model.DTO.SaveDiagnosisDTO;
 import com.example.model.Diagnosis;
 import com.example.model.EvaluationResult;
+import com.example.model.Patient;
 import com.example.service.service.BloodTestsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -86,10 +88,9 @@ public class DoctorController {
             value = "/evaluateAnamnesis",
             consumes = "application/json")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
-    public ResponseEntity evaluateAnamnesis(@RequestBody AnamnesisDTO anamnesisDTO){
+    public ResponseEntity evaluateAnamnesis(@RequestBody HashMap<String, String> patient){
         try{
-            System.out.println(anamnesisDTO);
-            Set<String> diagnoses = bloodTestsService.checkBackwardsTest(anamnesisDTO);
+            Set<String> diagnoses = bloodTestsService.checkBackwardsTest(patient.get("patient"));
             return new ResponseEntity<>(diagnoses, HttpStatus.CREATED);
         }
         catch (Exception e){
