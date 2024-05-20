@@ -20,6 +20,7 @@ const DoctorHomePage = () => {
     useEffect(() => {
         UserService.getAllPatients().then(response => {
             setData(response.data);
+            console.log(response.data);
         }).catch(error => {
             console.error("Error fetching real estates: ", error);
         });

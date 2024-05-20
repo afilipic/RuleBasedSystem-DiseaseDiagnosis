@@ -72,8 +72,8 @@ export interface UserDTO {
   password: string;
   birthDate: Date;
   gender: string;
-  height: number;
-  weight: number;
+  height: number | null;
+  weight: number | null;
   bloodType: string;
   role: Role;
   verified?: boolean;
