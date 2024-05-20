@@ -189,6 +189,7 @@ gap: 1px; /* Razmak između stavki */
 `;
 interface CardContainerProps {
   isClicked: boolean;
+  isAnamnesis? : boolean
 }
 
 export const CardContainer = styled.div<CardContainerProps>`
@@ -284,6 +285,21 @@ export const Button = styled.button`
   font-weight:700;
 `;
 
+export const AnamnesisButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.lightblue};
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 15px;
+  margin: 0 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size:15px;
+  font-weight:700;
+`;
+
 export const Label = styled.span`
   margin: 0 5px;
 `;
@@ -327,8 +343,8 @@ export const PatientHistoryItem = styled.li`
 `;
 
 export const DiseaseCard = styled.div<CardContainerProps>`
-  background-color: ${(props) => (props.isClicked ? '#0fbaa7' : '#ffffff')};
-  border: 1px solid ${({ theme }) => theme.colors.lightblue};
+background-color: ${(props) => (props.isClicked ? '#0fbaa7' : (props.isAnamnesis ? 'lightblue' : '#ffffff'))};
+border: 1px solid ${({ theme }) => theme.colors.lightblue};
   border-radius: 20px;
   padding: 16px;
   margin: 0 auto; /* Centriranje */

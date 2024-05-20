@@ -3,6 +3,7 @@ package com.example.service.service;
 import com.example.model.*;
 import com.example.model.DTO.AnamnesisDTO;
 import com.example.model.DTO.BloodTestDTO;
+import com.example.model.enums.Anamnesis;
 import com.example.model.enums.BackwardType;
 import com.example.model.enums.Symptoms;
 import com.example.service.repository.BloodTestAnalysisRepository;
@@ -73,41 +74,39 @@ public class ResonerService {
         return evaluationResult;
     }
 
-    public Set<String> backwardTest(AnamnesisDTO anamnesisDTO){
+    public Set<String> backwardTest(Patient patient){
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
         kieSession.getAgenda().getAgendaGroup("backward tests").setFocus();
-        List<String> symptoms = anamnesisDTO.getSymptoms();
-
-//        symptoms.add("genetika");
-//        symptoms.add("stres");
-//        symptoms.add("alkohol");
-//        symptoms.add("oftalmopatija");
+        List<String> symptoms = new ArrayList<>();
+        for (Anamnesis anamnesis : patient.getAnamneses()) {
+            symptoms.add(anamnesis.toString());
+        }
 
         kieSession.insert(symptoms);
 
         Set<String> diseases = new HashSet<>();
         kieSession.insert(diseases);
 
-        kieSession.insert(new BackwardModel("genetika", "stres", BackwardType.FACTOR));
-        kieSession.insert(new BackwardModel("genetika", "oftalmopatija", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.GENETICS.name(), Anamnesis.STRESS.name(), BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.GENETICS.name(), Anamnesis.OPHTHALMOPATHY.name(), BackwardType.FACTOR));
 
-        kieSession.insert(new BackwardModel("stres", "problem sa bubrezima", BackwardType.SYMPTOM));
-        kieSession.insert(new BackwardModel("stres", "druge autoimune bolesti", BackwardType.SYMPTOM));
+        kieSession.insert(new BackwardModel(Anamnesis.STRESS.name(), Anamnesis.KIDNEY_PROBLEM.name(), BackwardType.SYMPTOM));
+        kieSession.insert(new BackwardModel(Anamnesis.STRESS.name(), Anamnesis.OTHER_AUTOIMMUNE_DISEASES.name(), BackwardType.SYMPTOM));
 
-        kieSession.insert(new BackwardModel("problem sa bubrezima", "sistemski eritemski lupus", BackwardType.DISEASE));
-        kieSession.insert(new BackwardModel("problem sa bubrezima", "reumatoidni artritis", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel(Anamnesis.KIDNEY_PROBLEM.name(), "SLE", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel(Anamnesis.KIDNEY_PROBLEM.name(), "RA", BackwardType.DISEASE));
 
-        kieSession.insert(new BackwardModel("druge autoimune bolesti", "zenski pol", BackwardType.FACTOR));
-        kieSession.insert(new BackwardModel("druge autoimune bolesti", "alkohol", BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.OTHER_AUTOIMMUNE_DISEASES.name(), Anamnesis.FEMALE_GENDER.name(), BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.OTHER_AUTOIMMUNE_DISEASES.name(), Anamnesis.ALCOHOL.name(), BackwardType.FACTOR));
 
-        kieSession.insert(new BackwardModel("zenski pol", "Hasimoto tireoiditis", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel(Anamnesis.FEMALE_GENDER.name(), "Hashimoto", BackwardType.DISEASE));
 
-        kieSession.insert(new BackwardModel("alkohol", "cigarete", BackwardType.FACTOR));
-        kieSession.insert(new BackwardModel("cigarete", "manja kilaza", BackwardType.FACTOR));
-        kieSession.insert(new BackwardModel("manja kilaza", "diabetes tipa 1", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel(Anamnesis.ALCOHOL.name(), Anamnesis.CIGARETTES.name(), BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.CIGARETTES.name(), Anamnesis.LOWER_WEIGHT.name(), BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.LOWER_WEIGHT.name(), "Type 1 Diabetes", BackwardType.DISEASE));
 
-        kieSession.insert(new BackwardModel("oftalmopatija", "starost", BackwardType.FACTOR));
-        kieSession.insert(new BackwardModel("starost", "Gravesova bolest", BackwardType.DISEASE));
+        kieSession.insert(new BackwardModel(Anamnesis.OPHTHALMOPATHY.name(), Anamnesis.AGE.name(), BackwardType.FACTOR));
+        kieSession.insert(new BackwardModel(Anamnesis.AGE.name(), "Graves", BackwardType.DISEASE));
 
 
         run(kieSession);

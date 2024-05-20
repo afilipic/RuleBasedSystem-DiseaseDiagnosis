@@ -1,10 +1,13 @@
 package com.example.model;
 
+import com.example.model.enums.Anamnesis;
 import com.example.model.enums.BloodTestType;
 import com.example.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -33,6 +36,14 @@ public class Patient extends User{
     @JsonIgnore
     @ManyToMany()
     private Set<Disease> possibleDiseases;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "anamneses",
+            joinColumns = @JoinColumn(name = "patient_id"))
+    @Column(name = "anamnesis")
+    private List<Anamnesis> anamneses;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "patient")
