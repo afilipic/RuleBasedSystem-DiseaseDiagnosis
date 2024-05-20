@@ -34,6 +34,7 @@ const DiagnosesPage = () => {
         <TableContainer>
             <TableTitle>Pacijenti</TableTitle>
             <SearchContainer>
+                <div></div>
                 <div>
                 <StyledFontAwesomeIcon icon={faSearch} />
                 <StyledInputSearch

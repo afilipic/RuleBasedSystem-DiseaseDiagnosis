@@ -27,7 +27,11 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage: number = 5;
-    // const [clickedRow, setClickedRow] = useState< any | null>(null);
+
+    const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
+    const indexOfLastItem: number = currentPage * itemsPerPage;
+    const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
+    const currentItems: PatientDTO[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     useEffect(() => {
         let newFilteredData = data;
@@ -74,11 +78,6 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
         }
         return null;
     };
-
-    const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
-    const indexOfLastItem: number = currentPage * itemsPerPage;
-    const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
-    const currentItems: PatientDTO[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     const highlightText = (text: string, search: string) => {
         text = text.toString()
