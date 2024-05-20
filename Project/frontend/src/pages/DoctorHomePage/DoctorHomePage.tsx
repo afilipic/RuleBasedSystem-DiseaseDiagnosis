@@ -6,8 +6,9 @@ import UserService from '../../services/UserService/UserService';
 import { PatientDTO } from '../../models/User';
 import { Button, ButtonContent, ButtonWrapper, Card, Content, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList } from '../MedicalExamPage/MedicalExamPage.styled';
 import { CustomButton } from '../HomePage/HomePage.styled';
-import { StyledRoundButton } from './DoctorHomePage.styled';
+import { ButtonIcon, ButtonText, StyledRoundButton } from './DoctorHomePage.styled';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const DoctorHomePage = () => {
@@ -42,15 +43,19 @@ const DoctorHomePage = () => {
                 <TableTitle>Pacijenti</TableTitle>
                 <SearchContainer>
                     <StyledRoundButton onClick={handleAddPatient}>
-                        +
+                        <ButtonIcon>
+                            <FontAwesomeIcon icon={faPlus} />
+                        </ButtonIcon>
+                        <ButtonText className="button-text">Dodaj pacijenta</ButtonText>
                     </StyledRoundButton>
+
                     <div>
-                    <StyledFontAwesomeIcon icon={faSearch} />
-                    <StyledInputSearch
-                        type="text"
-                        placeholder="Search actions"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
+                        <StyledFontAwesomeIcon icon={faSearch} />
+                        <StyledInputSearch
+                            type="text"
+                            placeholder="Search actions"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                         />
                     </div>
                 </SearchContainer>

@@ -23,7 +23,8 @@ const MedicalExamPage: React.FC = () => {
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
     { key: "Krvna grupa", value: patient.bloodType },
-    { key: "Prethodne bolesti", value: patient.diagnoses.map(diagnosis => diagnosis.disease.description).join(', ') },
+    { key: "Prethodne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
+  
     // Dodajte ostale informacije koje želite da prikažete
   ];
 
@@ -53,6 +54,7 @@ const MedicalExamPage: React.FC = () => {
   const secondCardHistory = patientHistory.slice(6);
 
   useEffect(() => {
+    console.log(patient.diagnoses);
   }, [patientTests]);
 
   const handleClick = (symptom: Symptoms) => {
