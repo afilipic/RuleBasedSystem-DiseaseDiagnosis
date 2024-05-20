@@ -9,7 +9,7 @@ export const StyledRoundButton = styled.button`
   height: 40px;
   padding: 5px;
   font-size: 20px;
-  margin-left: 20px;
+  margin-left: 15px;
   margin-right: 10px;
   cursor: pointer;
   position: relative;
