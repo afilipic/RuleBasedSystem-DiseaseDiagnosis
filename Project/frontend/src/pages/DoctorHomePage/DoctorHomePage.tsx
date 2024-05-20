@@ -6,8 +6,9 @@ import UserService from '../../services/UserService/UserService';
 import { PatientDTO } from '../../models/User';
 import { Button, ButtonContent, ButtonWrapper, Card, Content, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList } from '../MedicalExamPage/MedicalExamPage.styled';
 import { CustomButton } from '../HomePage/HomePage.styled';
-import { StyledRoundButton } from './DoctorHomePage.styled';
+import { ButtonIcon, ButtonText, StyledRoundButton } from './DoctorHomePage.styled';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const DoctorHomePage = () => {
@@ -20,6 +21,7 @@ const DoctorHomePage = () => {
     useEffect(() => {
         UserService.getAllPatients().then(response => {
             setData(response.data);
+            console.log(response.data);
         }).catch(error => {
             console.error("Error fetching real estates: ", error);
         });
@@ -38,18 +40,22 @@ const DoctorHomePage = () => {
     return (
         <>
             <TableContainer>
-                <TableTitle>Pacijenti</TableTitle>
+                <TableTitle>Pregled</TableTitle>
                 <SearchContainer>
                     <StyledRoundButton onClick={handleAddPatient}>
-                        +
+                        <ButtonIcon>
+                            <FontAwesomeIcon icon={faPlus} />
+                        </ButtonIcon>
+                        <ButtonText className="button-text">Dodaj pacijenta</ButtonText>
                     </StyledRoundButton>
+
                     <div>
-                    <StyledFontAwesomeIcon icon={faSearch} />
-                    <StyledInputSearch
-                        type="text"
-                        placeholder="Search actions"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
+                        <StyledFontAwesomeIcon icon={faSearch} />
+                        <StyledInputSearch
+                            type="text"
+                            placeholder="Search actions"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                         />
                     </div>
                 </SearchContainer>

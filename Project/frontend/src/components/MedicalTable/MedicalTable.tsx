@@ -1,66 +1,83 @@
 // MedicalTable.tsx
 
 import React, { useEffect, useState } from 'react';
-import { ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
+import { PaginationButton, ScrollableContainer, StyledTable, StyledTableRow, TableWrapper } from "./MedicalTable.styled";
 import { PatientDTO } from '../../models/User';
-import { BloodTestResponse } from '../../models/BloodTests';
-import { Input } from '../../pages/LoginPage/LoginPage.styled';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 
 
 export type MedicalTableProps = {
-    data: PatientDTO[] | BloodTestResponse[];
+    data: PatientDTO[] ;
     searchInput: string;
     onRowClick: (row: any) => void;
-    handleValueChange?: (item: BloodTestResponse, value: string) => void;
 };
 
-export default function MedicalTable({ data, searchInput, onRowClick, handleValueChange }: MedicalTableProps) {
-    const [sortedData, setSortedData] = useState<PatientDTO[]| BloodTestResponse[]>(data);
-    const [sortField, setSortField] = useState<string>('timestamp');
+type PaginationButtonProps = {
+    onClick: () => void;
+    disabled: boolean;
+    children: React.ReactNode;
+};
+
+export default function MedicalTable({ data, searchInput, onRowClick }: MedicalTableProps) {
+    const [sortedData, setSortedData] = useState<PatientDTO[]>(data);
+    const [filteredData, setFilteredData] = useState<PatientDTO[]>(data);
+    const [sortField, setSortField] = useState<keyof PatientDTO>('username');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const itemsPerPage: number = 10;
-    // const [clickedRow, setClickedRow] = useState< any | null>(null);
+    const itemsPerPage: number = 5;
+
+    const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
+    const indexOfLastItem: number = currentPage * itemsPerPage;
+    const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
+    const currentItems: PatientDTO[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     useEffect(() => {
-        // const newSortedData = [...data].sort((a, b) => {
-        //     let valueA = a[sortField];
-        //     let valueB = b[sortField];
-        //     // console.log("a:", a); // Provjerite vrijednost objekta a
-        //     // console.log("b:", b);
-        //     if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-        //     if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-        //     if (typeof valueA === 'undefined' || typeof valueB === 'undefined') {
-        //         return 0; // Ako nisu definirane, vratite neutralnu vrijednost
-        //     }
-        //     return sortOrder === 'asc' ?
-        //         valueA.localeCompare(valueB) :
-        //         valueB.localeCompare(valueA);
-        // });
-        // setSortedData(newSortedData);
-        setSortedData(data);
-    }, [data, sortField, sortOrder]);
+        let newFilteredData = data;
+        if (searchInput.trim()) {
+            const searchLower = searchInput.toLowerCase();
+            newFilteredData = data.filter(item =>
+                Object.values(item).some(value =>
+                    value?.toString().toLowerCase().includes(searchLower)
+                )
+            );
+        }
+        setFilteredData(newFilteredData);
+    }, [data, searchInput]);
 
-    const onSortChange = (field: string) => {
+    useEffect(() => {
+        const newSortedData = [...filteredData].sort((a, b) => {
+            let valueA = a[sortField];
+            let valueB = b[sortField];
+
+            if (typeof valueA === 'string' && typeof valueB === 'string') {
+                return sortOrder === 'asc'
+                    ? valueA.localeCompare(valueB)
+                    : valueB.localeCompare(valueA);
+            }
+
+            if (typeof valueA === 'number' && typeof valueB === 'number') {
+                return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+            }
+
+            return 0; // Za nepoznate tipove, vratiti neutralnu vrednost
+        });
+        setSortedData(newSortedData);
+    }, [filteredData, sortField, sortOrder]);
+
+    const onSortChange = (field: keyof PatientDTO) => {
         const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortField(field);
         setSortOrder(order);
     };
 
-    const renderSortArrow = (field: string) => {
+    const renderSortArrow = (field: keyof PatientDTO) => {
         if (sortField === field) {
             return sortOrder === 'asc' ? '↑' : '↓';
         }
         return null;
     };
-
-    const totalNumberOfPages: number = Math.ceil(sortedData.length / itemsPerPage);
-    const indexOfLastItem: number = currentPage * itemsPerPage;
-    const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
-    const currentItems: PatientDTO[] | BloodTestResponse[] = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-
-
 
     const highlightText = (text: string, search: string) => {
         text = text.toString()
@@ -69,7 +86,7 @@ export default function MedicalTable({ data, searchInput, onRowClick, handleValu
         }
 
         const regex = new RegExp(`(${search})`, 'gi');
-        const parts  = text.split(regex);
+        const parts = text.split(regex);
 
         return parts.map((part, index) =>
             regex.test(part) ? <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span> : part
@@ -77,6 +94,18 @@ export default function MedicalTable({ data, searchInput, onRowClick, handleValu
     };
     const handleClickRow = (item: any) => {
         onRowClick(item);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalNumberOfPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
     };
 
     return (
@@ -90,8 +119,8 @@ export default function MedicalTable({ data, searchInput, onRowClick, handleValu
                                     return null; // Ignoriši listu
                                 }
                                 return (
-                                    <th key={index} onClick={() => onSortChange(key)}>
-                                        {key} {renderSortArrow(key)}
+                                    <th key={index} onClick={() => onSortChange(key as keyof PatientDTO)}>
+                                        {key} {renderSortArrow(key as keyof PatientDTO)}
                                     </th>
                                 );
                             })}
@@ -104,18 +133,6 @@ export default function MedicalTable({ data, searchInput, onRowClick, handleValu
                                     {Object.entries(item).map(([key, value], index) => {
                                         if (Array.isArray(value) || key == "id") {
                                             return null; // Ignoriši listu
-                                        }
-                                        if (key === "value" && (item as BloodTestResponse)) {
-                                    
-                                            return (
-                                                <td key={index}>
-                                                    <Input
-                                                        type="number"
-                                                        value={value}
-                                                        onChange={(e) => handleValueChange!((item as BloodTestResponse), e.target.value)}
-                                                    />
-                                                </td>
-                                            );
                                         }
                                         return (
                                             <td key={index}>{highlightText(value, searchInput)}</td>
@@ -132,6 +149,15 @@ export default function MedicalTable({ data, searchInput, onRowClick, handleValu
 
                 </StyledTable>
             </ScrollableContainer>
+            <div>
+                <PaginationButton className="pagination-button" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </PaginationButton>
+                <span> Page {currentPage} of {totalNumberOfPages} </span>
+                <PaginationButton className="pagination-button" onClick={handleNextPage} disabled={currentPage === totalNumberOfPages}>
+                    <FontAwesomeIcon icon={faArrowRight} />
+                </PaginationButton>
+            </div>
 
         </TableWrapper>
     )

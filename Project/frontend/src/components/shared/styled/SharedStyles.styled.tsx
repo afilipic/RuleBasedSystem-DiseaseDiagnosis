@@ -56,7 +56,7 @@ export const StyledInputSearch = styled.input`
   border-radius: 20px;
   font-size: ${({ theme }) => theme.fontSizes.standard};
   margin: 5px;
-
+  margin-right:15px;
   &::placeholder, &::placeholder {
     text-align: left;
     font-size: 16px;

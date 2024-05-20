@@ -23,8 +23,8 @@ const MedicalDiagnosisPage: React.FC = () => {
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
     { key: "Krvna grupa", value: patient.bloodType },
-    { key: "Prethodne bolesti", value: patient.diagnoses.map(diagnosis => diagnosis.disease.description).join(', ') },
-    { key: "Potencijalne bolesti", value: patient.diagnoses.map(diagnosis => diagnosis.disease.description).join(', ') },
+    { key: "Prethodne bolesti", value:  patient.diagnoses.length > 0 ?  patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
+    { key: "Potencijalne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', '): "Ne postoje"  },
 
     // Dodajte ostale informacije koje želite da prikažete
   ];

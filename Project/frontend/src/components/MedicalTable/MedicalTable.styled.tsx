@@ -1,5 +1,9 @@
 import styled from "styled-components";
-
+type PaginationButtonProps = {
+  onClick: () => void;
+  disabled: boolean;
+  children: React.ReactNode;
+};
 export const StyledTable = styled.table`
   margin: 10px;
   width: 98%;
@@ -74,3 +78,18 @@ export const StyledTableRow = styled.tr`
 `;
 
 
+export const PaginationButton = styled.button.attrs<PaginationButtonProps>(({ disabled }) => ({
+  disabled,
+}))<PaginationButtonProps>`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.lightblue};
+  font-size: 1.2rem;
+  padding: 0.5em;
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.superlightblue};
+    cursor: not-allowed;
+  }
+`;

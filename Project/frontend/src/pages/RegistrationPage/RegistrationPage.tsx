@@ -36,8 +36,8 @@ const RegistrationPage = () => {
         password: "",
         birthDate: new Date(),
         gender: "",
-        height: 0,
-        weight: 0,
+        height: null,
+        weight: null,
         bloodType: "",
         role: Role.PATIENT,
         verified: false,
@@ -260,7 +260,7 @@ const RegistrationPage = () => {
                                     type="number"
                                     placeholder="Visina (cm)"
                                     name="height"
-                                    value={userDTO.height}
+                                    value={userDTO.height ?? ""}
                                     onChange={handleInputChange}
                                     className={isHeightValid ? "" : "invalidInput"}
                                 />
@@ -268,7 +268,7 @@ const RegistrationPage = () => {
                                     type="number"
                                     placeholder="Težina (kg)"
                                     name="weight"
-                                    value={userDTO.weight}
+                                    value={userDTO.weight ?? ""}
                                     onChange={handleInputChange}
                                     className={isWeightValid ? "" : "invalidInput"}
                                 />

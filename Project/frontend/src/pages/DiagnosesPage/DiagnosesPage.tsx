@@ -29,11 +29,12 @@ const DiagnosesPage = () => {
         navigate("/medical-diagnosis", { state: { patient: item } });
     };
 
-    return (
+    return (    
         <>
         <TableContainer>
-            <TableTitle>Pacijenti</TableTitle>
+            <TableTitle>Dijagnoza</TableTitle>
             <SearchContainer>
+                <div></div>
                 <div>
                 <StyledFontAwesomeIcon icon={faSearch} />
                 <StyledInputSearch
