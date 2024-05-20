@@ -138,7 +138,11 @@ const MedicalDiagnosisPage: React.FC = () => {
     })
   };
 
+  const doneTests = patientTests.filter(test => test.status === 'DONE');
 
+  if (doneTests.length === 0) {
+    return <p>Nema analiza</p>;
+  }
 
 
   return (
@@ -210,12 +214,12 @@ const MedicalDiagnosisPage: React.FC = () => {
           <Content>
             <MainContent>
               <div style={{ marginTop: '20px' }}>
-                {patientTests.filter(test => test.status === 'DONE').map((test, index) => (
-                  <DiseaseCard key={index} isClicked={false}>
+                {doneTests.map((test, index) => (
+                  <DiseaseCard key={test.id || index} isClicked={false}>
                     <SymptomTitle>{test.type}</SymptomTitle>
                     <p>Status: {test.status}</p>
                     <p>Vrednost: {test.value}</p>
-                    <p>Datum: {test.date.toString()}</p>
+                    <p>Datum: {new Date(test.date).toLocaleDateString()}</p>
                   </DiseaseCard>
                 ))}
               </div>
@@ -252,9 +256,9 @@ const MedicalDiagnosisPage: React.FC = () => {
 
               <div style={{ marginTop: '20px' }}>
                 {Object.entries(evaluationResult?.evaluation || {}).sort((a, b) => b[1] - a[1]).map((disease, index) => (
-                  <DiseaseCard  isAnamnesis={anamnesisResult?.includes(disease[0])}
+                  <DiseaseCard isAnamnesis={anamnesisResult?.includes(disease[0])}
 
-                      key={index} onClick={() => handleClickPossibleDisease(disease[0])} isClicked={selectedPossibleDisease == (disease[0])}>
+                    key={index} onClick={() => handleClickPossibleDisease(disease[0])} isClicked={selectedPossibleDisease == (disease[0])}>
                     <SymptomTitle>{disease[0]} - {disease[1]}%</SymptomTitle>
                   </DiseaseCard>
                 ))}

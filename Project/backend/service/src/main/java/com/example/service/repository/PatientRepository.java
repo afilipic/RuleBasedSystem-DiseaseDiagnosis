@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
     Optional<Patient> findOneByUsername(String username);
 
-    Optional<Patient> findOneById(Integer id);
+    Optional<Patient> findById(Integer id);
 
 }

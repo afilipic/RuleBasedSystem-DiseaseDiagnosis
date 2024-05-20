@@ -24,7 +24,9 @@ class UserService {
   getAllUsers() {
     return customAxios.get(`/user/all`);
   }
-
+  getPatientById(patientId : number) {
+    return customAxios.get(`/patient/${patientId}`);
+}
 }
 
 export default new UserService();

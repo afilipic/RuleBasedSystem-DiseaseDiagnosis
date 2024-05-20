@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import MedicalTable from '../../components/MedicalTable/MedicalTable';
 import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, TableContainer, TableTitle } from '../../components/shared/styled/SharedStyles.styled';
+import { ButtonIcon, ButtonText, SearchContainer, StyledFontAwesomeIcon, StyledInputSearch, StyledRoundButton, TableContainer, TableTitle } from '../../components/shared/styled/SharedStyles.styled';
 import UserService from '../../services/UserService/UserService';
 import { PatientDTO } from '../../models/User';
 import { Button, ButtonContent, ButtonWrapper, Card, Content, HistoryLabel, Label, MainContent, MainContentA, PatientHistoryItem, PatientHistoryList } from '../MedicalExamPage/MedicalExamPage.styled';
@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const AdminHomePage = () => {
     const [data, setData] = useState<PatientDTO[]>([]);
     const [searchInput, setSearchInput] = useState('');
-
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -30,14 +30,21 @@ const AdminHomePage = () => {
         console.log("Admin pregled")
     };
 
-
+    const handleAddUser = () => {
+        navigate("/registration");
+    }
    
     return (
         <>
             <TableContainer>
                 <TableTitle>Korisnici</TableTitle>
                 <SearchContainer>
-                   <div></div>
+                    <StyledRoundButton onClick={handleAddUser}>
+                        <ButtonIcon>
+                            <FontAwesomeIcon icon={faPlus} />
+                        </ButtonIcon>
+                        <ButtonText className="button-text">Dodaj korisnika</ButtonText>
+                    </StyledRoundButton>
 
                     <div>
                         <StyledFontAwesomeIcon icon={faSearch} />

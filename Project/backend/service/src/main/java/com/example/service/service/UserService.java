@@ -39,6 +39,12 @@ public class UserService {
     @Autowired
     private ResonerService resonerService;
 
+    public PatientDTO getPatientById(Integer patientId) {
+        return patientRepository.findById(patientId)
+                .map(patient -> new PatientDTO(patient)) // Pretpostavljam da imate konstruktor u PatientDTO za konverziju
+                .orElseThrow(() -> new RuntimeException("Pacijent nije pronađen"));
+    }
+
 
     public User save(User user){return userRepository.save(user);}
 
@@ -133,6 +139,7 @@ public class UserService {
         return usersDTOS;
 
     }
+
 
     public void activate(Integer userId)throws RuntimeException{
         User user = userRepository.findOneById(userId).orElse(null);
