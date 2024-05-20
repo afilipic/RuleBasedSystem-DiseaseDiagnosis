@@ -40,7 +40,7 @@ const DoctorHomePage = () => {
     return (
         <>
             <TableContainer>
-                <TableTitle>Pacijenti</TableTitle>
+                <TableTitle>Pregled</TableTitle>
                 <SearchContainer>
                     <StyledRoundButton onClick={handleAddPatient}>
                         <ButtonIcon>
