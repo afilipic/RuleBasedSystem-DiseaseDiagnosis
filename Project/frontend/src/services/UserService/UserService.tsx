@@ -2,7 +2,7 @@ import { ChangePassword, NewUser, UserDTO } from "../../models/User";
 import customAxios from "../AxiosInterceptor/AxiosInterceptor";
 
 class UserService {
-  register(userData: NewUser) {
+  register(userData: UserDTO) {
     return customAxios.post(`/user/register`, userData);
   }
   registerAdmin(userData: NewUser) {
@@ -20,6 +20,9 @@ class UserService {
 
   getAllPatients() {
     return customAxios.get(`/patient/all`);
+  }
+  getAllUsers() {
+    return customAxios.get(`/user/all`);
   }
 
 }

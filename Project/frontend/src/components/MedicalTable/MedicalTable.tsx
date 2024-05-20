@@ -80,6 +80,9 @@ export default function MedicalTable({ data, searchInput, onRowClick }: MedicalT
     };
 
     const highlightText = (text: string, search: string) => {
+        if(!text){
+            return;
+        }
         text = text.toString()
         if (!search.trim()) {
             return text;

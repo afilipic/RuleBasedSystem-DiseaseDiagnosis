@@ -70,12 +70,12 @@ export interface UserDTO {
   lastname: string;
   telephoneNumber: string;
   password: string;
-  birthDate: Date;
-  gender: string;
-  height: number | null;
-  weight: number | null;
-  bloodType: string;
-  role: Role;
+  birthDate?: Date;
+  gender?: string;
+  height?: number | null;
+  weight?: number | null;
+  bloodType?: string;
+  role: Role | null;
   verified?: boolean;
 }
 export interface EvaluationResult{

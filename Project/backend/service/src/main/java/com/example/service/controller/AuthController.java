@@ -1,9 +1,7 @@
 package com.example.service.controller;
 
 
-import com.example.model.DTO.LoginDTO;
-import com.example.model.DTO.TokenDTO;
-import com.example.model.DTO.UserDTO;
+import com.example.model.DTO.*;
 import com.example.service.service.JWTService;
 import com.example.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(value="*")
 @RestController
@@ -81,6 +81,19 @@ public class AuthController {
         }
     }
 
+    @GetMapping(value = "/all")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity getAllUsers(){
+
+        try{
+            List<User2DTO> users = userService.getAllUsers();
+            return new ResponseEntity<>(users, HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
 
 }

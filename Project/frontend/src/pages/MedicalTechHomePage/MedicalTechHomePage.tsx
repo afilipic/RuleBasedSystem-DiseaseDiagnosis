@@ -43,7 +43,7 @@ const MedicalTechHomePage: React.FC = () => {
       <TableContainer>
         <TableTitle>Pacijenti</TableTitle>
         <SearchContainer>
-
+          <div></div>
           <div>
             <StyledFontAwesomeIcon icon={faSearch} />
             <StyledInputSearch

@@ -1,5 +1,6 @@
 package com.example.service.service;
 
+import com.example.model.DTO.User2DTO;
 import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
@@ -124,6 +125,14 @@ public class UserService {
 
     }
 
+    public List<User2DTO> getAllUsers() {
+        List<User2DTO> usersDTOS = new ArrayList<>();
+        for (User user : userRepository.findAllByRole()) {
+            usersDTOS.add(new User2DTO(user));
+        }
+        return usersDTOS;
+
+    }
 
     public void activate(Integer userId)throws RuntimeException{
         User user = userRepository.findOneById(userId).orElse(null);

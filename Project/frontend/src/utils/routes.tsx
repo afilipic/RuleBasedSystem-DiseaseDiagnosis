@@ -9,6 +9,7 @@ import LoginPage from "../pages/LoginPage/LoginPage";
 import RegistrationPage from "../pages/RegistrationPage/RegistrationPage";
 import MedicalDiagnosisPage from "../pages/MedicalDiagnosisPage/MedicalDiagnosisPage";
 import MedicalAnalysesPage from "../pages/MedicalAnalysesPage/MedicalAnalysesPage";
+import AdminHomePage from "../pages/AdminHomePage/AdminHomePage";
 
 
 export default function MyRoutes() {
@@ -27,6 +28,10 @@ export default function MyRoutes() {
       <Route path="patient-analyses" element={<MedicalAnalysesPage />} />
 
       <Route path="registration" element={<RegistrationPage />} />
+      <Route path="add-user" element={<RegistrationPage />} />
+
+      <Route path="admin-home-page" element={<AdminHomePage />} />
+
     </Routes>
   );
 }
