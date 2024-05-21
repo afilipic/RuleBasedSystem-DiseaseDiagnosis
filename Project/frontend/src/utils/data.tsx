@@ -48,6 +48,7 @@ export const menuOptions = [
     { href: "/doctor-home-page", value: "Pregled", role: "doctor" },
     { href: "/diagnoses-page", value: "Dijagnoza", role: "doctor" },
     { href: "/admin-home-page", value: "Korisnici", role: "admin" },
+    { href: "/statistics-page", value: "Statistika", role: "admin" },
     { href: "/medical-tech-page", value: "Analize", role: "technician" },  
     { href: "/patient-home-page", value: "Moj profil", role: "patient" },  
     { href: "/login", value: "Uloguj se", role: "guest" },
