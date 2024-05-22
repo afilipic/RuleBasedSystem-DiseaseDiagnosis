@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Anchor,
     Button,
@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { showToast } from "../../components/shared/toast/CustomToast";
 import { DoubleInput, Input, InputGroup, Select } from "./RegistrationPage.styled";
 import Role from "../../models/enums/Role";
+import useUser from "../../utils/UserContext/useUser";
+import { idText } from "typescript";
 
 export interface Props {
     signinIn?: boolean;
@@ -39,9 +41,11 @@ const RegistrationPage = () => {
         height: null,
         weight: null,
         bloodType: "",
-        role: Role.PATIENT,
+        role: null,
         verified: false,
     });
+    const loggedUser = useUser();
+    const [role, setRole] = useState<Role | undefined>();
 
     const [isEmailValid, setIsEmailValid] = useState(true);
     const [isPasswordValid, setPasswordValid] = useState(true);
@@ -53,10 +57,15 @@ const RegistrationPage = () => {
     const [isBloodTypeValid, setBloodTypeValid] = useState(true);
     const [isBirthDateValid, setBirthDateValid] = useState(true);
     const [isTelephoneNumberValid, setTelephoneNumberValid] = useState(true);
-
+    const [isRoleValid, setRoleValid] = useState(true);
     type ValidationRules = {
         [key in keyof UserDTO]?: (value: string) => void;
     };
+
+    useEffect(() => {
+        setRole(loggedUser.user?.role);
+    }, [loggedUser]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -72,24 +81,44 @@ const RegistrationPage = () => {
 
     const handleRegister = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        if (!validateInputs()) {
-            return;
+       
+        if(role=="DOCTOR"){
+            if (!validateInputsPatient()) {
+                return;
+            }else{
+                userDTO.role = Role.PATIENT
+                UserService.registerPatient(userDTO)
+                .then(response => {
+                    showToast("Registracija uspešna!");
+                    navigate("/doctor-home-page");
+                })
+                .catch(error => {
+                    console.error("Error registering:", error);
+                    showToast("Došlo je do greške, probajte ponovo!");
+                });
+            }
+            
         }
-        console.log(userDTO);
-        UserService.registerPatient(userDTO)
-            .then(response => {
-                showToast("Registracija uspešna!");
-                navigate("/doctor-home-page");
-            })
-            .catch(error => {
-                console.error("Error registering:", error);
-                showToast("Došlo je do greške, probajte ponovo!");
-            });
+        if(role=="ADMIN"){
+            if (!validateInputsUser()) {
+                return;
+            }
+            UserService.register(userDTO)
+                .then(response => {
+                    showToast("Registracija uspešna!");
+                    navigate("/admin-home-page");
+                })
+                .catch(error => {
+                    console.error("Error registering:", error);
+                    showToast("Došlo je do greške, probajte ponovo!");
+                });
+        }
+        
 
 
     };
 
-    const validateInputs = () => {
+    const validateInputsPatient = () => {
         let isValid = true;
 
         if (!userDTO.username || !userDTO.firstname || !userDTO.lastname || !userDTO.password || !userDTO.telephoneNumber || !userDTO.birthDate || !userDTO.gender || !userDTO.height || !userDTO.weight || !userDTO.bloodType) {
@@ -105,6 +134,8 @@ const RegistrationPage = () => {
             setGenderValid(!!userDTO.gender);
             setBirthDateValid(!!userDTO.birthDate && !isBirthDateValid);
             setBloodTypeValid(!!userDTO.bloodType);
+                    
+            
 
         } else {
             if (!isFirstNameValid) {
@@ -140,6 +171,50 @@ const RegistrationPage = () => {
         return isValid;
     };
 
+    const validateInputsUser = () => {
+        let isValid = true;
+
+        if (!userDTO.username || !userDTO.firstname || !userDTO.lastname || !userDTO.password || !userDTO.telephoneNumber) {
+            showToast("Popuni sva polja");
+            isValid = false;
+            setFirstNameValid(!!userDTO.firstname);
+            setLastNameValid(!!userDTO.lastname);
+            setIsEmailValid(!!userDTO.username);
+            setPasswordValid(!!userDTO.password);
+            setTelephoneNumberValid(!!userDTO.telephoneNumber);
+            if (!userDTO.role){
+                setRoleValid(!!userDTO.role);
+            }
+            
+            
+            
+            
+
+        } else {
+            if (!isFirstNameValid) {
+                showToast("Ime nije validno.");
+                isValid = false;
+            }
+            if (!isLastNameValid) {
+                showToast("Prezime nije validno");
+                isValid = false;
+            }
+            if (!isEmailValid) {
+                showToast("Email adresa nije validna.");
+                isValid = false;
+            }
+            if (!isPasswordValid) {
+                showToast("Sifra nije validna.");
+                isValid = false;
+            }
+            if (!isTelephoneNumberValid) {
+                showToast("Telefon nije validan.");
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    };
     const validationRules: ValidationRules = {
         firstname: (value: string) => setFirstNameValid(value.length <= 30),
         lastname: (value: string) => setLastNameValid(value.length <= 30),
@@ -167,6 +242,7 @@ const RegistrationPage = () => {
         },
         gender: (value: string) => setGenderValid(value !== ""),
         bloodType: (value: string) => setBloodTypeValid(value !== ""),
+        role: (value: string) => setRoleValid(value !== ""),
     };
 
     return (
@@ -208,71 +284,97 @@ const RegistrationPage = () => {
                                 onChange={handleInputChange}
                                 className={isPasswordValid ? "" : "invalidInput"}
                             />
-                            <InputGroup>
-                                <DoubleInput
-                                    type="text"
-                                    placeholder="Telefon"
-                                    name="telephoneNumber"
-                                    value={userDTO.telephoneNumber}
-                                    onChange={handleInputChange}
-                                    className={isTelephoneNumberValid ? "" : "invalidInput"}
-                                />
-                                <DoubleInput
-                                    type="date"
-                                    placeholder="Datum rodjenja"
-                                    name="birthDate"
-                                    value={userDTO.birthDate.toISOString().split("T")[0]}
-                                    onChange={handleInputChange}
-                                    className={isBirthDateValid ? "" : "invalidInput"}
-                                />
-                            </InputGroup>
-                            <InputGroup>
-                                <Select
-                                    name="gender"
-                                    value={userDTO.gender}
-                                    onChange={handleInputChange}
-                                    className={isGenderValid ? "" : "invalidInput"}
-                                >
-                                    <option value="">Izaberite pol</option>
-                                    <option value="musko">Muško</option>
-                                    <option value="zensko">Žensko</option>
-                                </Select>
 
-                                <Select
-                                    name="bloodType"
-                                    value={userDTO.bloodType}
-                                    onChange={handleInputChange}
-                                    className={isBloodTypeValid ? "" : "invalidInput"}
-                                >
-                                    <option value="">Izaberite krvnu grupu</option>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                </Select>
-                            </InputGroup>
-                            <InputGroup>
-                                <DoubleInput
-                                    type="number"
-                                    placeholder="Visina (cm)"
-                                    name="height"
-                                    value={userDTO.height ?? ""}
-                                    onChange={handleInputChange}
-                                    className={isHeightValid ? "" : "invalidInput"}
-                                />
-                                <DoubleInput
-                                    type="number"
-                                    placeholder="Težina (kg)"
-                                    name="weight"
-                                    value={userDTO.weight ?? ""}
-                                    onChange={handleInputChange}
-                                    className={isWeightValid ? "" : "invalidInput"}
-                                />
-                            </InputGroup>
+                            {role === 'DOCTOR' && (
+                                <>
+                                    <InputGroup>
+                                        <DoubleInput
+                                            type="text"
+                                            placeholder="Telefon"
+                                            name="telephoneNumber"
+                                            value={userDTO.telephoneNumber}
+                                            onChange={handleInputChange}
+                                            className={isTelephoneNumberValid ? "" : "invalidInput"}
+                                        />
+                                        <DoubleInput
+                                            type="date"
+                                            placeholder="Datum rodjenja"
+                                            name="birthDate"
+                                            value={userDTO.birthDate!.toISOString().split("T")[0]}
+                                            onChange={handleInputChange}
+                                            className={isBirthDateValid ? "" : "invalidInput"}
+                                        />
+                                    </InputGroup>
+                                    <InputGroup>
+                                        <Select
+                                            name="gender"
+                                            value={userDTO.gender}
+                                            onChange={handleInputChange}
+                                            className={isGenderValid ? "" : "invalidInput"}
+                                        >
+                                            <option value="">Izaberite pol</option>
+                                            <option value="musko">Muško</option>
+                                            <option value="zensko">Žensko</option>
+                                        </Select>
+                                        <Select
+                                            name="bloodType"
+                                            value={userDTO.bloodType}
+                                            onChange={handleInputChange}
+                                            className={isBloodTypeValid ? "" : "invalidInput"}
+                                        >
+                                            <option value="">Izaberite krvnu grupu</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </Select>
+                                    </InputGroup>
+                                    <InputGroup>
+                                        <DoubleInput
+                                            type="number"
+                                            placeholder="Visina (cm)"
+                                            name="height"
+                                            value={userDTO.height ?? ""}
+                                            onChange={handleInputChange}
+                                            className={isHeightValid ? "" : "invalidInput"}
+                                        />
+                                        <DoubleInput
+                                            type="number"
+                                            placeholder="Težina (kg)"
+                                            name="weight"
+                                            value={userDTO.weight ?? ""}
+                                            onChange={handleInputChange}
+                                            className={isWeightValid ? "" : "invalidInput"}
+                                        />
+                                    </InputGroup>
+                                </>
+                            )}
+                            {role === 'ADMIN' && (
+                                <InputGroup>
+                                    <DoubleInput
+                                            type="text"
+                                            placeholder="Telefon"
+                                            name="telephoneNumber"
+                                            value={userDTO.telephoneNumber}
+                                            onChange={handleInputChange}
+                                            className={isTelephoneNumberValid ? "" : "invalidInput"}
+                                        />
+                                    <Select
+                                        name="role"
+                                        value={userDTO.role ?? ""}
+                                        onChange={handleInputChange}
+                                        className={isRoleValid ? "" : "invalidInput"}
+                                    >
+                                        <option value="">Izaberite korisnika</option>
+                                        <option value="TECHNICIAN">Medicinski tehničar</option>
+                                        <option value="DOCTOR">Doktor</option>
+                                    </Select>
+                                </InputGroup>
+                            )}
                             <RegButton onClick={handleRegister}>Registruj</RegButton>
                         </Form>
                     </SignInContainer>
@@ -290,7 +392,6 @@ const RegistrationPage = () => {
                 </Container>
             </Wrapper>
         </div>
-
     );
 };
 

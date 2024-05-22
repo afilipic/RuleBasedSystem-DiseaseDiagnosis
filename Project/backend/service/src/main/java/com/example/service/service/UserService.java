@@ -1,5 +1,6 @@
 package com.example.service.service;
 
+import com.example.model.DTO.User2DTO;
 import com.example.model.Patient;
 import com.example.model.enums.Role;
 import com.example.model.User;
@@ -37,6 +38,12 @@ public class UserService {
     private MailService mailService;
     @Autowired
     private ResonerService resonerService;
+
+    public PatientDTO getPatientById(Integer patientId) {
+        return patientRepository.findById(patientId)
+                .map(patient -> new PatientDTO(patient)) // Pretpostavljam da imate konstruktor u PatientDTO za konverziju
+                .orElseThrow(() -> new RuntimeException("Pacijent nije pronađen"));
+    }
 
 
     public User save(User user){return userRepository.save(user);}
@@ -121,6 +128,15 @@ public class UserService {
             patientDTOS.add(new PatientDTO(patient));
         }
         return patientDTOS;
+
+    }
+
+    public List<User2DTO> getAllUsers() {
+        List<User2DTO> usersDTOS = new ArrayList<>();
+        for (User user : userRepository.findAllByRole()) {
+            usersDTOS.add(new User2DTO(user));
+        }
+        return usersDTOS;
 
     }
 

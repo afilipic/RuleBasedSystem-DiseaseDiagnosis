@@ -19,7 +19,10 @@ const DiagnosesPage = () => {
 
     useEffect(() => {
         UserService.getAllPatients().then(response => {
-            setData(response.data);
+            const filteredData: PatientDTO[] = response.data.filter((patient: PatientDTO) =>
+                patient.bloodTestAnalyses.some(test => test.status === 'DONE')
+            );
+            setData(filteredData); 
         }).catch(error => {
             console.error("Error fetching real estates: ", error);
         });

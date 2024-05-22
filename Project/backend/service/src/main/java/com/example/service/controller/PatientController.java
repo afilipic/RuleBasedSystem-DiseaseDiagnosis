@@ -31,4 +31,15 @@ public class PatientController {
         }
 
     }
+
+    @GetMapping(value = "/{patientId}")
+    @PreAuthorize("hasAnyAuthority('PATIENT')")
+    public ResponseEntity<?> getPatient(@PathVariable Integer patientId) {
+        try {
+            PatientDTO patient = userService.getPatientById(patientId);
+            return new ResponseEntity<>(patient, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

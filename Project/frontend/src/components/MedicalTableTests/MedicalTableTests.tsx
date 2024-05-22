@@ -17,38 +17,53 @@ export type MedicalTableTestsProps = {
 
 export default function MedicalTableTests({ data, searchInput, onRowClick, handleValueChange }: MedicalTableTestsProps) {
     const [sortedData, setSortedData] = useState<BloodTestResponse[]>(data);
-    const [sortField, setSortField] = useState<string>('timestamp');
+    const [filteredData, setFilteredData] = useState<BloodTestResponse[]>(data);
+    const [sortField, setSortField] = useState<keyof BloodTestResponse>('id');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const itemsPerPage: number = 10;
+    const itemsPerPage: number = 5;
     // const [clickedRow, setClickedRow] = useState< any | null>(null);
 
     useEffect(() => {
-        // const newSortedData = [...data].sort((a, b) => {
-        //     let valueA = a[sortField];
-        //     let valueB = b[sortField];
-        //     // console.log("a:", a); // Provjerite vrijednost objekta a
-        //     // console.log("b:", b);
-        //     if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-        //     if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-        //     if (typeof valueA === 'undefined' || typeof valueB === 'undefined') {
-        //         return 0; // Ako nisu definirane, vratite neutralnu vrijednost
-        //     }
-        //     return sortOrder === 'asc' ?
-        //         valueA.localeCompare(valueB) :
-        //         valueB.localeCompare(valueA);
-        // });
-        // setSortedData(newSortedData);
-        setSortedData(data);
-    }, [data, sortField, sortOrder]);
+        let newFilteredData = data;
+        if (searchInput.trim()) {
+            const searchLower = searchInput.toLowerCase();
+            newFilteredData = data.filter(item =>
+                Object.values(item).some(value =>
+                    value?.toString().toLowerCase().includes(searchLower)
+                )
+            );
+        }
+        setFilteredData(newFilteredData);
+    }, [data, searchInput]);
 
-    const onSortChange = (field: string) => {
+    useEffect(() => {
+        const newSortedData = [...filteredData].sort((a, b) => {
+            let valueA = a[sortField];
+            let valueB = b[sortField];
+
+            if (typeof valueA === 'string' && typeof valueB === 'string') {
+                return sortOrder === 'asc'
+                    ? valueA.localeCompare(valueB)
+                    : valueB.localeCompare(valueA);
+            }
+
+            if (typeof valueA === 'number' && typeof valueB === 'number') {
+                return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+            }
+
+            return 0; // Za nepoznate tipove, vratiti neutralnu vrednost
+        });
+        setSortedData(newSortedData);
+    }, [filteredData, sortField, sortOrder]);
+
+    const onSortChange = (field: keyof BloodTestResponse) => {
         const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortField(field);
         setSortOrder(order);
     };
 
-    const renderSortArrow = (field: string) => {
+    const renderSortArrow = (field: keyof BloodTestResponse) => {
         if (sortField === field) {
             return sortOrder === 'asc' ? '↑' : '↓';
         }
@@ -90,10 +105,10 @@ export default function MedicalTableTests({ data, searchInput, onRowClick, handl
                                     return null; // Ignoriši listu
                                 }
                                 return (
-                                    <th key={index} onClick={() => onSortChange(key)}>
-                                        {key} {renderSortArrow(key)}
+                                    <th key={index} onClick={() => onSortChange(key as keyof BloodTestResponse)}>
+                                        {key} {renderSortArrow(key as keyof BloodTestResponse)}
                                     </th>
-                                );
+                                );  
                             })}
                         </tr>
                     </thead>
