@@ -1,8 +1,11 @@
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
-    <kbase name="myKieBase" packages="rules.backward, rules.cep, rules.forward" eventProcessingMode="stream">
+    <kbase name="myKieBase" packages="rules.backward, rules.forward" eventProcessingMode="stream">
         <ksession name="myKieSession"/>
     </kbase>
     <kbase name="backwardRules" eventProcessingMode="stream" packages="backward">
         <ksession name="backwardRulesKsession"/>
+    </kbase>
+    <kbase name="cepRules" eventProcessingMode="stream" packages="rules.cep" >
+        <ksession name="cepRulesKsession" clockType="pseudo"/>
     </kbase>
 </kmodule>

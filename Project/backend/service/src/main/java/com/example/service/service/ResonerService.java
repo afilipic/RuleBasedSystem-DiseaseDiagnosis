@@ -56,13 +56,13 @@ public class ResonerService {
 
 
 
-    public void cepTest(List<BloodTestAnalysis> tests) {
-        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
-        for (BloodTestAnalysis bloodTestAnalysis : tests) {
-            kieSession.insert(bloodTestAnalysis);
-        }
-        run(kieSession);
-    }
+//    public void cepTest(List<BloodTestAnalysis> tests) {
+//        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
+//        for (BloodTestAnalysis bloodTestAnalysis : tests) {
+//            kieSession.insert(bloodTestAnalysis);
+//        }
+//        run(kieSession);
+//    }
 
     public EvaluationResult diagnosisTestRequest(Patient patient) {
         KieSession kieSession = this.kieContainer.newKieSession("myKieSession");

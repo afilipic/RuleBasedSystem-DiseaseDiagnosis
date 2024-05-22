@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "blood_test_analysis")
@@ -41,6 +42,7 @@ public class BloodTestAnalysis {
         this.date = LocalDate.now();
         this.value = 0.0;
     }
+
 
     @Override
     public String toString() {

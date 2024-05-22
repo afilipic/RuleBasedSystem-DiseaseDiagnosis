@@ -59,7 +59,7 @@ public class BloodTestsService {
             bloodTestAnalysis.setPatient(patient);
             newTests.add(bloodTestAnalysis);
         }
-        this.resonerService.cepTest(newTests);
+//        this.resonerService.cepTest(newTests);
         return bloodTestAnalysisRepository.saveAll(newTests);
     }
 
