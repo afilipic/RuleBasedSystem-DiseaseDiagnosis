@@ -1,1 +1,127 @@
-package cep;
+package rules.cep;
+
+import com.example.model.Patient;
+import com.example.model.Diagnosis;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
+import com.example.model.enums.Symptoms;
+import com.example.model.enums.BloodTestType;
+
+import java.util.List;
+import java.time.LocalDate;
+
+declare AlarmEvent
+    @role(event)
+    patient : Patient
+    name : String
+end
+
+declare BloodTestAnalysis
+    @role(event)
+    id : Long
+    patient : Patient
+    type : BloodTestType
+    value : Double
+    status : String
+    date : LocalDate
+end
+
+declare CheckOther
+    @role(event)
+    check : Boolean
+    patient : Patient
+end
+
+rule "Create alarm event for possible Thyroid Storm in Graves' disease"
+when
+    $patient : Patient()
+    $symptoms : List()
+    $diagnosis : Diagnosis() from $patient.getDiagnoses()
+    Disease(name == "Graves") from $diagnosis.getDisease()
+    eval(
+        $symptoms.contains(Symptoms.FEVER) &&
+        $symptoms.contains(Symptoms.ELEVATED_BODY_TEMPERATURE)
+    )
+then
+    insert(new AlarmEvent($patient, "Tiroidna kriza"));
+end
+
+rule "Create alarm event for possible Hypoglycemia"
+when
+    $test1 : BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value < 54, $patient : patient)
+
+    Number(intValue >= 2) from accumulate(
+        $test2: BloodTestAnalysis(
+            this != $test1,
+            type == BloodTestType.GLUCOSE,
+            patient == $patient,
+            value < 54
+        ) over window:time(3d),
+        count($test2)
+    )
+    not (AlarmEvent(patient == $patient, name == "Hipoglikemija"))
+then
+    insert(new AlarmEvent($patient, "Hipoglikemija"));
+end
+
+rule "Create alarm event for possible Hyperglycemia"
+when
+    $test1 : BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 140 && value <= 250, $patient : patient)
+    Number(intValue >= 2) from accumulate(
+        $test2: BloodTestAnalysis(
+            this != $test1,
+            type == BloodTestType.GLUCOSE,
+            patient == $patient,
+            value > 140 && value <= 250
+        ) over window:time(3d),
+        count($test2)
+    )
+    not (AlarmEvent(patient == $patient, name == "Hiperglikemija"))
+then
+     insert(new AlarmEvent($patient, "Hiperglikemija"));
+end
+
+rule "Create alarm event for possible Ketoacidosis - glucose"
+when
+    $test1 : BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 250, $patient : patient)
+    Number(intValue >= 2) from accumulate(
+        $test2: BloodTestAnalysis(
+            this != $test1,
+            type == BloodTestType.GLUCOSE,
+            patient == $patient,
+            value > 250
+        ) over window:time(3d),
+        count($test2)
+    )
+    not (AlarmEvent(patient == $patient, name == "Dijabeticka ketoacidoza"))
+    not (CheckOther(patient == $patient))
+then
+    insert(new CheckOther(true, $patient));
+end
+
+rule "Create alarm event for possible Ketoacidosis - insulin"
+when
+    $check : CheckOther(check == true, $patient : patient)
+    $test1 : BloodTestAnalysis(type == BloodTestType.INSULIN, status == "DONE", value < 6, patient == $patient)
+    Number(intValue >= 2) from accumulate(
+        $test2: BloodTestAnalysis(
+            this != $test1,
+            type == BloodTestType.INSULIN,
+            patient == $patient,
+            value < 6
+        ) over window:time(3d),
+        count($test2)
+    )
+    not (AlarmEvent(patient == $patient, name == "Dijabeticka ketoacidoza"))
+then
+    insert(new AlarmEvent($patient, "Dijabeticka ketoacidoza"));
+    delete($check);
+end
+
+rule "Send emergency alert when alarm event is detected"
+when
+    $alarmEvent : AlarmEvent()
+    not AlarmEvent(patient != $alarmEvent.patient) over window:time(5s)
+then
+    System.out.println("Alarm: " + $alarmEvent.getName() + " kod pacijenta " + $alarmEvent.getPatient().getFirstname() + " " + $alarmEvent.getPatient().getLastname());
+end

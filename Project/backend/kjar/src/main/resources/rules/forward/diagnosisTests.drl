@@ -1,0 +1,279 @@
+package rules.forward;
+
+import com.example.model.Patient;
+import com.example.model.enums.BloodTestType;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
+import com.example.model.Diagnosis;
+import com.example.model.enums.Symptoms;
+import com.example.model.CheckPossibleDisease;
+import com.example.model.EvaluationResult;
+import com.example.model.DTO.BloodTestDTO;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
+
+
+//Check possible diseases
+rule "Check blood tests"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $disease : Disease() from $patient.getPossibleDiseases()
+    not (CheckPossibleDisease(patientId == $patient.id, possibleDisease == $disease))
+then
+    CheckPossibleDisease newPossibleDisease = new CheckPossibleDisease($patient.id, $disease);
+    insert(newPossibleDisease);
+end;
+
+
+//Hashimoto
+
+rule "Check TSH > 4,0"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Hashimoto")
+    $test : BloodTestAnalysis(type == BloodTestType.TSH, status == "DONE", value > 4.0) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check T3 < 80"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Hashimoto")
+    $test : BloodTestAnalysis(type == BloodTestType.T3, status == "DONE", value < 80) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check T4 < 4,5"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Hashimoto")
+    $test : BloodTestAnalysis(type == BloodTestType.T4, status == "DONE", value < 4.5) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+
+rule "Check Anti-TPO > 35"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Hashimoto")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_TPO, status == "DONE", value > 35) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check Anti-Tg > 20"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Hashimoto")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_TG, status == "DONE", value > 20) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+// Graves
+
+rule "Check TSH < 0,4"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Graves")
+    $test : BloodTestAnalysis(type == BloodTestType.TSH, status == "DONE", value < 0.4) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check T3 > 200"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Graves")
+    $test : BloodTestAnalysis(type == BloodTestType.T3, status == "DONE", value > 200) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check T4 > 11,2"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Graves")
+    $test : BloodTestAnalysis(type == BloodTestType.T4, status == "DONE", value > 11.2) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+
+rule "Check Anti-TPO > 35 (Graves)"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Graves")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_TPO, status == "DONE", value > 35) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check Anti-Tg > 20 (Graves)"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Graves")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_TG, status == "DONE", value > 20) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+// SLE
+
+rule "Check ANA > 1:40"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "SLE")
+    $test : BloodTestAnalysis(type == BloodTestType.ANA, status == "DONE", value > 1/40) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check ANTI-dsDNA > 30"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "SLE")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_DS_DNA, status == "DONE", value > 30) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check ANTI-SM > 0"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "SLE")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_SM, status == "DONE", value > 0) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+// RA
+
+rule "Check RF > 14"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "RA")
+    $test : BloodTestAnalysis(type == BloodTestType.RF, status == "DONE", value > 14) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check Anti-CPP > 20"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "RA")
+    $test : BloodTestAnalysis(type == BloodTestType.ANTI_CCP, status == "DONE", value > 20) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check CRP > 0.5"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "RA")
+    $test : BloodTestAnalysis(type == BloodTestType.CRP, status == "DONE", value > 0.5) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check ESR > 15 (m) or > 20 (f)"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "RA")
+    $test : BloodTestAnalysis(type == BloodTestType.ESR, status == "DONE") from $patient.getBloodTestAnalyses()
+    eval(
+        ($patient.getGender() == "male" && $test.getValue() > 15) ||
+        ($patient.getGender() == "female" && $test.getValue() > 20)
+    )
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+// Diabetes Type 1
+
+rule "Check glucose > 100"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Diabetes Type 1")
+    $test : BloodTestAnalysis(type == BloodTestType.GLUCOSE, status == "DONE", value > 100) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check HbA1c > 6,5"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Diabetes Type 1")
+    $test : BloodTestAnalysis(type == BloodTestType.HBA1C, status == "DONE", value > 6.5) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+rule "Check C-peptide > 6,5"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "Diabetes Type 1")
+    $test : BloodTestAnalysis(type == BloodTestType.C_PEPTIDE, status == "DONE", value > 2.72) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+//Evaluate possible diseases
+rule "Evaluate results"
+    agenda-group "diagnosis tests"
+    salience -1
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id)
+    $evaluation : EvaluationResult(patient == $patient.id)
+then
+    $evaluation.addDisease($check.getPossibleDisease(), $check.evaluate());
+end;

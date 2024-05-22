@@ -1,0 +1,95 @@
+package rules.forward;
+
+import com.example.model.Patient;
+import com.example.model.enums.BloodTestType;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
+import com.example.model.Diagnosis;
+import com.example.model.enums.Symptoms;
+import com.example.model.PossibleDisease;
+import com.example.model.DTO.BloodTestDTO;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
+
+
+global java.util.List allDiseases;
+
+
+//nadji da li ima moguca bolest
+rule "Find possible diseases"
+	agenda-group "blood tests"
+when
+    $patient : Patient()
+    $testsRequest : BloodTestDTO(patient == $patient.username, tests == [])
+    $disease : Disease() from allDiseases
+    $count : Number() from accumulate(
+        $symptom : Symptoms(this memberOf $disease.getSymptoms()) from $testsRequest.symptoms,
+        count($symptom)
+    )
+    eval($count.doubleValue() >= 1)
+    not (PossibleDisease(patientId == $patient.id, possibleDisease == $disease))
+then
+    PossibleDisease newPossibleDisease = new PossibleDisease($patient.id, $disease);
+    $patient.addPossibleDisease($disease);
+    insert(newPossibleDisease);
+end;
+
+//proveri da li pacijent vec ima tu bolest, ako nema zahtevaj testove za tu bolest, ako ima, proveri dalje
+rule "Patient has diagnosis for possible disease"
+    agenda-group "blood tests"
+when
+    $patient : Patient()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == false, requireTests == false)
+    Diagnosis(disease.id == $possibleDisease.possibleDisease.id) from $patient.getDiagnoses()
+then
+    modify($possibleDisease) {
+        setHasDisease(true)
+    }
+end;
+
+rule "Patient does not have diagnosis for possible disease"
+	agenda-group "blood tests"
+when
+    $patient : Patient()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == false, requireTests == false)
+    not (
+       Diagnosis(disease.id == $possibleDisease.possibleDisease.id) from $patient.getDiagnoses()
+    )
+then
+    modify($possibleDisease) {
+        setRequireTests(true)
+    }
+end;
+
+//ako ima proveri neku bolest, proveri datum poslenjeg testa za tu bolest, ako je pre nedelju dana trazi ponovo
+rule "Patient has diagnosis for possible disease but has old tests"
+	agenda-group "blood tests"
+when
+    $patient : Patient()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, hasDisease == true, requireTests == false)
+    $testType : BloodTestType() from $possibleDisease.possibleDisease.getBloodTests()
+    $lastTest : BloodTestAnalysis(type == $testType) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($lastTest.getDate(), LocalDate.now()) > 7)
+ then
+    modify($possibleDisease) {
+        setRequireTests(true)
+    }
+end;
+
+//za bolesti gde su testovi required, nadji koji su to testovi
+rule "Get required blood tests for disease"
+	agenda-group "blood tests"
+when
+    $patient : Patient()
+    $testsRequest : BloodTestDTO()
+    $possibleDisease : PossibleDisease(patientId == $patient.id, requireTests == true)
+    $testType : BloodTestType() from $possibleDisease.possibleDisease.getBloodTests()
+    not(exists BloodTestAnalysis(type == $testType, date == LocalDate.now()) from $patient.getBloodTestAnalyses())
+    not(BloodTestAnalysis(type == $testType) from $testsRequest.tests)
+then
+    $testsRequest.addTest(new BloodTestAnalysis($testType, $patient));
+end;

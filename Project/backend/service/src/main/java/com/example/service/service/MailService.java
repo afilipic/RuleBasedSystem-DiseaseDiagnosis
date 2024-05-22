@@ -19,7 +19,7 @@ public class MailService {
     @Async
     void sendVerificationMail(String username, Integer id) throws MessagingException, UnsupportedEncodingException {
         String subject = "Please verify your account";
-        String senderName = "DiseaseDiagnosis App";
+        String senderName = "MedicLab";
 
         String mailContent =
                 "<!DOCTYPE html>" +
@@ -87,7 +87,7 @@ public class MailService {
                         "<body>" +
                         "<div class=\"container\">" +
                         "<div class=\"header\">" +
-                        "<p class=\"header-title\">Disease Diagnosis App</p>" +
+                        "<p class=\"header-title\">MedicLab</p>" +
                         "</div>" +
                         "<div class=\"body-content\">" +
                         "<h1>Verify Your account</h1>" +
@@ -96,7 +96,7 @@ public class MailService {
                         "<a href=\"http://localhost:8085/api/user/activate/" + id + "\">" +
                         "<button class=\"button\">VERIFY</button>" +
                         "</a>" +
-                        "<p>Thank you!<br>SmartHome App</p>" +
+                        "<p>Thank you!<br>MedicLab</p>" +
                         "</div>" +
                         "<div class=\"footer\">" +
                         "<div class=\"social-icons\">" +
@@ -125,12 +125,12 @@ public class MailService {
     @Async
     void sendRestCodeMail(String username, Integer id) throws MessagingException, UnsupportedEncodingException {
         String subject = "Reset code";
-        String senderName = "DiseaseDiagnosis App";
+        String senderName = "MedicLab";
 
         String mailContent = "<p>Dear, user </p>";
         mailContent +="<p>Your reset code is:</p>";
         mailContent +="<h3>"+id+"</h3>";
-        mailContent +="<p>Thank you!<br>SmartHome App </p>";
+        mailContent +="<p>Thank you!<br>MedicLab</p>";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);

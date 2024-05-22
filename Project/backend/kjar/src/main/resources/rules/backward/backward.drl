@@ -1,3 +1,28 @@
-package backward;
+package rules.backward;
+import com.example.model.BackwardModel
+import com.example.model.enums.BackwardType
 
-import com.example.model.User
+import java.util.List;
+import java.util.Set;
+
+
+global String symptomGlobal;
+
+query findDisease(String symptom, String disease)
+    BackwardModel(symptom, disease; )
+    or
+    (BackwardModel(symptom, z; ) and findDisease(z, disease; ))
+end
+
+rule "confirmRheumatoidArthritis"
+    agenda-group "backward tests"
+when
+    $symptoms: List()
+    $sym : String() from $symptoms
+    $diseases : Set()
+    $model: BackwardModel($symptom: symptom != $sym, $disease: disease, backwardType == BackwardType.DISEASE)
+    not BackwardModel(symptom == $sym, disease == $disease)
+    findDisease($sym, $disease; )
+then
+    $diseases.add($disease);
+end
