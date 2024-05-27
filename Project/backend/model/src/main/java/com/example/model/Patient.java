@@ -10,6 +10,7 @@ import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -57,6 +58,29 @@ public class Patient extends User{
 
     public void removePossibleDisease(Disease disease){
         possibleDiseases.remove(disease);
+    }
+
+    public void addDiagnosis(Diagnosis diagnosis){
+        diagnoses.add(diagnosis);
+    }
+
+
+    public Patient(Integer id, String username, String firstname, String lastname, String telephoneNumber, String password, Role role, boolean isActive, LocalDate birthDate, String gender, Double height, Double weight, String bloodType, List<BloodTestAnalysis> bloodTestAnalyses, Set<Disease> possibleDiseases, List<Anamnesis> anamneses, List<Diagnosis> diagnoses) {
+        super(id, username, firstname, lastname, telephoneNumber, password, role, isActive);
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.height = height;
+        this.weight = weight;
+        this.bloodType = bloodType;
+        this.bloodTestAnalyses = bloodTestAnalyses;
+        this.possibleDiseases = possibleDiseases;
+        this.anamneses = anamneses;
+        this.diagnoses = diagnoses;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Simplify to use only the unique ID
     }
 
     @Override
