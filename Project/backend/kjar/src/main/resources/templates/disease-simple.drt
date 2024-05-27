@@ -1,0 +1,32 @@
+template header
+patientId
+diseaseName
+testType
+condition
+value
+
+package rules.forward;
+
+import com.example.model.Patient;
+import com.example.model.enums.BloodTestType;
+import com.example.model.BloodTestAnalysis;
+import com.example.model.Disease;
+import com.example.model.CheckPossibleDisease;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+template "disease-diagnosis-rules"
+
+rule "Check @{diseaseName} @{testType} @{condition} @{value}"
+	agenda-group "diagnosis tests"
+when
+    $patient : Patient()
+    $check : CheckPossibleDisease(patientId == $patient.id, possibleDisease.name == "@{diseaseName}")
+    $test : BloodTestAnalysis(type == BloodTestType.@{testType}, status == "DONE", value @{condition} @{value}) from $patient.getBloodTestAnalyses()
+    eval(ChronoUnit.DAYS.between($test.getDate(), LocalDate.now()) < 7)
+then
+    modify($check){setCorrectTests($check.getCorrectTests() + 1)};
+end;
+
+end template

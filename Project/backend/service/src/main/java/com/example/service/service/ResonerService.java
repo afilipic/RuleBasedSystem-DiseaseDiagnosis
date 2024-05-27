@@ -9,11 +9,14 @@ import com.example.model.enums.Symptoms;
 import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
 import com.example.service.repository.PatientRepository;
+import org.drools.decisiontable.ExternalSpreadsheetCompiler;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,12 +68,40 @@ public class ResonerService {
     }
 
     public EvaluationResult diagnosisTestRequest(Patient patient) {
-        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
-        kieSession.getAgenda().getAgendaGroup("diagnosis tests").setFocus();
+        // Kreirajte KieSession
+        KieSession kieSession = kieContainer.newKieSession("myKieSession");
+
+        // Učitajte pravila pre i posle template-a
+        kieSession.getAgenda().getAgendaGroup("diagnosis1 tests").setFocus();
+        // Ubacite pacijenta i objekat za evaluaciju u sesiju
         kieSession.insert(patient);
+
+
+        // Učitajte template
+        InputStream template = ResonerService.class.getResourceAsStream("/templates/disease-simple.drt");
+        if (template == null) {
+            throw new IllegalArgumentException("Template not found");
+        }
+        InputStream data = ResonerService.class.getResourceAsStream("/templates/template-data.xls");
+        if (data == null) {
+            throw new IllegalArgumentException("Data not found");
+        }
+        ExternalSpreadsheetCompiler converter = new ExternalSpreadsheetCompiler();
+        String drl = converter.compile(data, template, 3, 2);
+        kieSession.insert(ResourceFactory.newByteArrayResource(drl.getBytes()));
+
+        kieSession.fireAllRules();
+
+        kieSession.getAgenda().getAgendaGroup("diagnosis2 tests").setFocus();
         EvaluationResult evaluationResult = new EvaluationResult(patient);
         kieSession.insert(evaluationResult);
-        run(kieSession);
+
+        kieSession.fireAllRules();
+
+
+        // Zatvorite KieSession
+        kieSession.dispose();
+
         return evaluationResult;
     }
 

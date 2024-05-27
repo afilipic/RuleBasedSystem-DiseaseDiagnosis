@@ -121,6 +121,7 @@ const MedicalDiagnosisPage: React.FC = () => {
       }
       setIsModalVisible(true);
     }
+
   };
 
 
@@ -136,6 +137,7 @@ const MedicalDiagnosisPage: React.FC = () => {
     }).catch(error => {
       console.error("Error fetching test recommendation: ", error);
     })
+
   };
 
   const doneTests = patientTests.filter(test => test.status === 'DONE');
@@ -296,6 +298,45 @@ const MedicalDiagnosisPage: React.FC = () => {
             </ButtonContent>
           </Content>
         </Fieldset>
+
+        <Fieldset className="fieldset" style={{ display: step === 3 ? 'block' : 'none' }}>
+          <ProgressBarr percent={(step + 1) * 33.00} previous={previous} toPercent={toPercent} />
+          <StepIndicatorContainer>
+            <StepCircle>
+              {step + 1}
+            </StepCircle>
+            <TitleContainer className='TitleN'>
+              <FormTitle>Terapija</FormTitle>
+            </TitleContainer>
+          </StepIndicatorContainer>
+          <Content>
+            <MainContent>
+
+             
+
+            </MainContent>
+            <ButtonContent>
+              <ButtonWrapper>
+                <Button onClick={prevStep}>
+                  <span>&#8592;</span>
+                </Button>
+                <Label>Prethodni korak</Label>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <AnamnesisButton onClick={evaluateAnamnesis}>ANAMNZEZA
+                </AnamnesisButton>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <Label>Potvrdi dijagnozu</Label>
+                <Button onClick={decisionMaking}>
+                  <span>&#8594;</span>
+                </Button>
+              </ButtonWrapper>
+            </ButtonContent>
+          </Content>
+        </Fieldset>
+        
+
 
 
       </Container>

@@ -1,7 +1,6 @@
 package com.example.model;
 
 import com.example.model.enums.Anamnesis;
-import com.example.model.enums.BloodTestType;
 import com.example.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 

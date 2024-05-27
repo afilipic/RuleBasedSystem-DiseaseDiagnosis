@@ -5,4 +5,7 @@
     <kbase name="backwardRules" eventProcessingMode="stream" packages="backward">
         <ksession name="backwardRulesKsession"/>
     </kbase>
+    <kbase name="template" eventProcessingMode="stream" packages="template">
+        <ksession name="templateKsession"/>
+    </kbase>
 </kmodule>

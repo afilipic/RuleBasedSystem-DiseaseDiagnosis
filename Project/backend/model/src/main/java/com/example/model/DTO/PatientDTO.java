@@ -3,9 +3,6 @@ package com.example.model.DTO;
 import com.example.model.BloodTestAnalysis;
 import com.example.model.Diagnosis;
 import com.example.model.Patient;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +27,7 @@ public class PatientDTO {
     private List<Diagnosis> diagnoses;
 
 
+
     public PatientDTO(Patient patient) {
         this.username = patient.getUsername();
         this.firstname = patient.getFirstname();
@@ -43,4 +41,5 @@ public class PatientDTO {
         this.bloodTestAnalyses = patient.getBloodTestAnalyses();
         this.diagnoses = patient.getDiagnoses();
     }
+
 }
