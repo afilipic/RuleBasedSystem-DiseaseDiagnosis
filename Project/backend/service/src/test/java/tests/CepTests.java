@@ -59,7 +59,9 @@ public class CepTests {
             true // isActive
     );
     Disease graves = new Disease("Graves", "Graves disease");
-    Diagnosis diagnosis = new Diagnosis(1L, LocalDate.now(), patient, graves, doctor);
+    Therapy therapy = new Therapy(1L, graves, "Drug 1", 500.0);
+    Diagnosis diagnosis = new Diagnosis(1L, LocalDate.now(), patient, therapy, graves, doctor);
+
 
 
     @Order(1)
