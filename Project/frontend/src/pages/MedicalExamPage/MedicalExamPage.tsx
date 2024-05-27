@@ -16,6 +16,8 @@ const MedicalExamPage: React.FC = () => {
   const navigate = useNavigate();
   const patient: PatientDTO = location.state.patient;
 
+
+  
   const patientHistory = [
     { key: "Ime", value: patient.firstname },
     { key: "Prezime", value: patient.lastname },
@@ -23,9 +25,19 @@ const MedicalExamPage: React.FC = () => {
     { key: "Visina", value: patient.height + " cm" },
     { key: "Težina", value: patient.weight + " kg" },
     { key: "Krvna grupa", value: patient.bloodType },
-    { key: "Prethodne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" },
-  
-    // Dodajte ostale informacije koje želite da prikažete
+    { key: "Prethodne bolesti", value: patient.diagnoses.length > 0 ? patient.diagnoses.map(diagnosis => diagnosis.disease.description || "Ne postoje").join(', ') : "Ne postoje" }, 
+    {
+      key: "Terapije",
+      value: patient.diagnoses.length > 0 
+        ? patient.diagnoses.map(diagnosis => {
+            const drugName = diagnosis.patientTherapy.drugName || "Ne postoje";
+            const drugDose = diagnosis.patientTherapy.drugDose || "N/A";
+            return `${drugName} ${drugDose}mg`;
+          }).join(', ') 
+        : "Ne postoje"
+    }
+
+
   ];
 
   const [step, setStep] = useState(0);
@@ -51,7 +63,8 @@ const MedicalExamPage: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const firstCardHistory = patientHistory.slice(0, 6);
-  const secondCardHistory = patientHistory.slice(6);
+  const secondCardHistory = [patientHistory[6]];
+  const thirdCardHistory = [patientHistory[7]];
 
   useEffect(() => {
     console.log(patient.diagnoses);
@@ -194,6 +207,16 @@ const MedicalExamPage: React.FC = () => {
                 <Card>
                   <PatientHistoryList>
                     {secondCardHistory.map((item, index) => (
+                      <PatientHistoryItem key={index}>
+                        <strong>{item.key}:</strong> {item.value}
+                      </PatientHistoryItem>
+                    ))}
+                  </PatientHistoryList>
+                </Card>
+                <HistoryLabel>Istorija terapija pacijenta:</HistoryLabel>
+                <Card>
+                  <PatientHistoryList>
+                    {thirdCardHistory.map((item, index) => (
                       <PatientHistoryItem key={index}>
                         <strong>{item.key}:</strong> {item.value}
                       </PatientHistoryItem>

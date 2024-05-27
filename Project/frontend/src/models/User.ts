@@ -29,6 +29,13 @@ export interface ChangePassword{
   password: string;
   confPassword : string;
 }
+export interface Therapy {
+  id: number;
+  disease: Disease;
+  drugName: string;
+  drugDose: number;
+}
+
 
 export interface PatientDTO{
   birthDate: string;
@@ -54,6 +61,7 @@ export interface Diagnosis {
   doctor : User;
   disease : Disease;
   date : Date;
+  patientTherapy: Therapy;
 }
 
 export interface Disease{

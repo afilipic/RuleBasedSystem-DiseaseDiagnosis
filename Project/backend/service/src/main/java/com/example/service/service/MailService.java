@@ -115,7 +115,7 @@ public class MailService {
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setFrom("UberAppTim19@gmail.com", senderName);
-        helper.setTo("tdz480@gmail.com");  //username
+        helper.setTo("aleksandrafilipic22@gmail.com");  //username
         helper.setSubject(subject);
         helper.setText(mailContent, true);
 

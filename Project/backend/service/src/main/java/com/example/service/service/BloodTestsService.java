@@ -29,6 +29,8 @@ public class BloodTestsService {
     private UserRepository userRepository;
     @Autowired
     private DiagnosisRepository diagnosisRepository;
+    @Autowired
+    private TherapyRepository therapyRepository;
 
     public List<BloodTestAnalysis> getBloodTestAnalysis(BloodTestDTO bloodTestDTO) {
         Patient patient = patientRepository.findOneByUsername(bloodTestDTO.getPatient()).get();
@@ -84,7 +86,7 @@ public class BloodTestsService {
 
         Patient patient = patientRepository.findOneByUsername(saveDiagnosisDTO.getPatient()).get();
         Disease disease = diseaseRepository.findOneByName(saveDiagnosisDTO.getDiagnosisName()).get();
-
+        Therapy therapy = therapyRepository.findById(1).get();
         patient.getPossibleDiseases().remove(disease);
         patientRepository.save(patient);
 
@@ -93,6 +95,7 @@ public class BloodTestsService {
         newDiagnosis.setDate(LocalDate.now());
         newDiagnosis.setDisease(disease);
         newDiagnosis.setDoctor(doctor);
+        newDiagnosis.setPatientTherapy(therapy);
 
         return diagnosisRepository.save(newDiagnosis);
     }

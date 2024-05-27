@@ -9,11 +9,18 @@ import com.example.model.enums.Symptoms;
 import com.example.service.repository.BloodTestAnalysisRepository;
 import com.example.service.repository.DiseaseRepository;
 import com.example.service.repository.PatientRepository;
+import org.drools.decisiontable.ExternalSpreadsheetCompiler;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.Results;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,12 +72,42 @@ public class ResonerService {
 //    }
 
     public EvaluationResult diagnosisTestRequest(Patient patient) {
-        KieSession kieSession = this.kieContainer.newKieSession("myKieSession");
+
+
+        // Učitajte template za nova pravila
+        InputStream template = ResonerService.class.getResourceAsStream("/templates/disease-simple.drt");
+        if (template == null) {
+            throw new IllegalArgumentException("Template not found");
+        }
+        InputStream data = ResonerService.class.getResourceAsStream("/templates/template-data.xls");
+        if (data == null) {
+            throw new IllegalArgumentException("Data not found");
+        }
+        ExternalSpreadsheetCompiler converter = new ExternalSpreadsheetCompiler();
+        String drl = converter.compile(data, template, 3, 2);
+        System.out.println(drl);
+
+        KieHelper kieHelper = new KieHelper();
+        kieHelper.addContent(drl, ResourceType.DRL);
+        Results results = kieHelper.verify();
+        if (results.hasMessages(Message.Level.WARNING, Message.Level.ERROR)){
+            List<Message> messages = results.getMessages(Message.Level.WARNING, Message.Level.ERROR);
+            for (Message message : messages) {
+                System.out.println("Error: "+message.getText());
+            }
+
+            throw new IllegalStateException("Compilation errors were found. Check the logs.");
+        }
+        KieSession kieSession = kieHelper.build().newKieSession();
+
         kieSession.getAgenda().getAgendaGroup("diagnosis tests").setFocus();
+
         kieSession.insert(patient);
         EvaluationResult evaluationResult = new EvaluationResult(patient);
         kieSession.insert(evaluationResult);
+
         run(kieSession);
+
         return evaluationResult;
     }
 
