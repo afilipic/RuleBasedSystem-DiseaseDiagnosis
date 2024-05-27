@@ -7,14 +7,33 @@ value
 
 package rules.forward;
 
-import com.example.model.Patient;
-import com.example.model.enums.BloodTestType;
-import com.example.model.BloodTestAnalysis;
-import com.example.model.Disease;
-import com.example.model.CheckPossibleDisease;
+    import com.example.model.Patient;
+    import com.example.model.enums.BloodTestType;
+    import com.example.model.BloodTestAnalysis;
+    import com.example.model.Disease;
+    import com.example.model.Diagnosis;
+    import com.example.model.enums.Symptoms;
+    import com.example.model.CheckPossibleDisease;
+    import com.example.model.EvaluationResult;
+    import com.example.model.DTO.BloodTestDTO;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+    import java.util.List;
+    import java.util.ArrayList;
+    import java.time.LocalDate;
+    import java.util.Arrays;
+    import java.time.temporal.ChronoUnit;
+
+    //Check possible diseases
+    rule "Check blood tests"
+        agenda-group "diagnosis tests"
+    when
+        $patient : Patient()
+        $disease : Disease() from $patient.getPossibleDiseases()
+        not (CheckPossibleDisease(patientId == $patient.id, possibleDisease == $disease))
+    then
+        CheckPossibleDisease newPossibleDisease = new CheckPossibleDisease($patient.id, $disease);
+        insert(newPossibleDisease);
+    end;
 
 template "disease-diagnosis-rules"
 
@@ -30,3 +49,17 @@ then
 end;
 
 end template
+
+    //Evaluate possible diseases
+    rule "Evaluate results"
+        agenda-group "diagnosis tests"
+        salience -1
+    when
+        $patient : Patient()
+        $check : CheckPossibleDisease(patientId == $patient.id)
+        $evaluation : EvaluationResult(patient == $patient.id)
+
+    then
+        $evaluation.addDisease($check.getPossibleDisease(), $check.evaluate());
+        System.out.println("Evaluation result: " + $check.evaluate());
+    end;
